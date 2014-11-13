@@ -1,0 +1,50 @@
+<hashtable>
+  <entry>
+    <string>standard_submit_time</string>
+    <string>2011.11.26 12:21:55</string>
+  </entry>
+  <entry>
+    <string>clustering</string>
+    <string>2000001</string>
+  </entry>
+  <entry>
+    <string>clustering_filename</string>
+    <string>clustering.cpp</string>
+  </entry>
+  <entry>
+    <string>submarines_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>submarines_submit_time</string>
+    <string>2011.11.26 14:08:31</string>
+  </entry>
+  <entry>
+    <string>standard_filename</string>
+    <string>standard.cpp</string>
+  </entry>
+  <entry>
+    <string>standard</string>
+    <string>2000003</string>
+  </entry>
+  <entry>
+    <string>clustering_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>submarines</string>
+    <string>2000012</string>
+  </entry>
+  <entry>
+    <string>standard_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>submarines_filename</string>
+    <string>submarine.cpp</string>
+  </entry>
+  <entry>
+    <string>clustering_submit_time</string>
+    <string>2011.11.26 11:33:54</string>
+  </entry>
+</hashtable>

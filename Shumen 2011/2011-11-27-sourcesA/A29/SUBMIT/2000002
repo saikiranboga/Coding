@@ -1,0 +1,81 @@
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+const int N = 1010;
+
+int n, m, q, sta;
+int mat[N][N], h[N][N], high[N][N], dp[N][N], bg[N][N];
+int l[N], r[N];
+
+vector <int> V;
+deque <int> Q;
+
+int main( void ) {
+    scanf( "%d %d", &n, &m );
+    for( int i = 0; i < n; ++i ) 
+         for( int j = 0; j < m; ++j ) 
+              scanf( "%d", &mat[i][j] );
+    
+    for( int j = 0; j < m; ++j ) h[0][j] = !mat[0][j];
+    
+    for( int i = 1; i < n; ++i ) {
+         for( int j = 0; j < m; ++j ) {
+              if( mat[i][j] == 1 ) h[i][j] = 0;
+              else h[i][j] = h[i-1][j]+1; 
+         }
+    }
+    
+    for( int i = 0; i < n; ++i ) {
+         V.clear();
+         for( int j = 0; j < m; ++j ) {
+              while( V.size() && h[i][V.back()] >= h[i][j] ) V.pop_back(); 
+              
+              if( !V.size() ) l[j] = 0;
+              else l[j] = V.back()+1;
+              
+              V.push_back( j );
+         } 
+         
+         V.clear();
+         for( int j = m-1; j+1; --j ) {
+              while( V.size() && h[i][V.back()] >= h[i][j] ) V.pop_back(); 
+              
+              if( !V.size() ) r[j] = m-1;
+              else r[j] = V.back()-1;
+              
+              V.push_back( j );
+              high[i][h[i][j]] = max( high[i][h[i][j]], r[j]-l[j]+1 );
+         }
+         
+         Q.clear();
+         sta = 0;
+         for( int j = n+1; j+1; --j ) { 
+              high[i][j] = max( high[i][j], sta );
+              sta = high[i][j];
+              while( Q.size() && high[i][j]*j >= high[i][Q.back()]*Q.back() ) Q.pop_back();
+              Q.push_back(j);
+         }
+         
+         for( int j = 0; j <= i; ++j ) {
+              while( Q.front() > i-j+1 ) Q.pop_front();
+              dp[j][i] = high[i][Q.front()]*Q.front();
+         }
+    }
+    
+    for( int i = 0; i < n; ++i ) {
+         bg[i][i] = dp[i][i];
+         for( int j = i+1; j < n; ++j ) bg[i][j] = max( bg[i][j-1], dp[i][j] );
+    }
+    
+    scanf( "%d", &q );
+    for( int i = 0; i < q; ++i ) {
+         int a, b;
+         scanf( "%d %d", &a, &b );
+         printf( "%d\n", bg[a-1][b-1] );
+    } 
+    
+    return 0;    
+}

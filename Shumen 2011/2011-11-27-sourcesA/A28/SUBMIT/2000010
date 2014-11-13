@@ -1,0 +1,70 @@
+#include<algorithm>
+#include<iostream>
+#include<cstdio>
+using namespace std;
+int n,m;
+struct str
+{
+    int st,pos;
+};
+bool cmp(str x, str y)
+{
+    return x.st<y.st;
+}
+int a[10000001];
+str b[10000001];
+int pos[10000001];
+int main()
+{
+    int i,j,k,l,x,br,ans,pr,pp;
+    cin>>n>>m;
+    for(i=1;i<=n;i++)
+    {
+        scanf("%d",&a[i]);
+        b[i].st=a[i];
+        b[i].pos=i;
+    }
+    sort(b+1,b+n+1,cmp);
+
+    a[0]=0;
+    for(i=1;i<=n;i++)
+    {
+        pos[b[i].pos]=i;
+    }
+    //for(i=1;i<=n;i++)
+    //{
+      //  cout<<pos[i]<<endl;
+    //}
+    for(i=1;i<=m;i++)
+    {
+        cin>>k;
+        if(k!=0)
+        {
+            x=a[k];
+            a[k]=a[k+1];
+            a[k+1]=x;     
+        }
+        else
+        {
+            int ans=0;
+            for(j=n;j>=1;j--)
+            {
+                br=0;
+                int gg=0;
+                int dg=j;
+                if(a[j-1]<a[j])
+                {           
+                    for(pp=j-1;pp>=1;pp--)
+                    {
+                        if(a[pp]<a[dg]&&a[pp]>a[gg]) br++;
+                        if(a[pp]>a[dg]) break;
+                        if(a[pp]>a[gg]) gg=pp;
+                        //if(abs(pos[dg]-pos[gg])==1) break;
+                    }
+                    if(br>ans) ans=br;
+                }
+            }
+            cout<<ans<<endl;    
+        }
+    }
+}

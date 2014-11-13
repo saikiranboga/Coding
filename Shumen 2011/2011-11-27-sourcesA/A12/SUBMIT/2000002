@@ -1,0 +1,47 @@
+#include<cstdio>
+using namespace std;
+
+int N, M, cmnd, maxrec;
+int data[20000];
+int recieve[20000];
+
+int main()
+{
+    scanf("%d%d", &N, &M);
+    for(int i=1;i<=N;i++)scanf("%d", &data[i]);
+
+    for(int i = 0;i < M;i++)
+    {
+        scanf("%d", &cmnd);
+        if(cmnd != 0)
+        {
+            int tmp = data[cmnd];
+            data[cmnd] = data[cmnd+1];
+            data[cmnd+1] = tmp;
+        }
+        else
+        {
+            for(int j = 1;j <= N;j++)
+            {
+                for(int k = j+1;k <= N;k++)
+                {
+                    if(data[j] < data[k])
+                    { recieve[k]++; break; }
+                }
+            }
+
+
+            maxrec = 0;
+            for(int j = 1;j <= N;j++)
+            {
+                if(recieve[j] > maxrec)maxrec = recieve[j];
+                recieve[j] = 0;
+            }
+            printf("%d\n", maxrec);
+        }
+
+
+    }
+
+    return 0;
+}

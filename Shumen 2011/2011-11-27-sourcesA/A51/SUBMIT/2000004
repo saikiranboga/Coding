@@ -1,0 +1,99 @@
+program ololo;
+
+type point = record
+	x,y: int64;
+  end;
+
+var i,j: longint;
+  left,k,ndivk,lind,n: int64;
+  a: array[1..1000000] of point;
+  s: array[1..10000] of extended;
+  x,y: extended;
+
+function less(a,b: point): boolean;
+begin
+  less := a.y/(a.x + 0.1) < (b.y/(b.x + 0.1));
+end;
+
+procedure qsort(l,r: longint);
+var ll,rr: longint;
+ t,m: point;
+begin
+  ll := l;
+  rr := r;
+  m := a[(l+r) div 2];
+
+  while ll<rr do
+  	begin
+  	while less(a[ll], m) do inc(ll);
+  	while less(m, a[rr]) do dec(rr);
+  	if ll<=rr then
+  		begin
+  		t := a[ll];
+  		a[ll] := a[rr];
+  		a[rr] := t;
+  		inc(ll); dec(rr);
+  		end;
+  	end;
+  if ll<r then qsort(ll,r);
+  if rr>l then qsort(l,rr);
+end;
+
+begin
+
+//assign(input, 'input.txt');
+//reset(input);
+//assign(output, 'output.txt');
+//rewrite(output);
+
+read(n, k);
+left := 100000;
+
+for i := 1 to n do
+	begin
+	read(a[i].x, a[i].y);
+	if a[i].x < left then
+		begin
+		left := a[i].x;
+		lind := i;
+		end;
+	end;
+
+for i := 1 to n do
+	begin
+	a[i].x := a[i].x - a[lind].x;
+	a[i].y := a[i].y - a[lind].y;
+	end;
+	
+	
+qsort(1, n);
+
+i := 1;
+j := 1;
+ndivk := n div k;
+
+while i <= n do
+  begin
+  x := 0;
+  y := 0;
+  j := 1;
+  while (j <= ndivk+1) and (i<=n) do
+	begin
+	x := x + a[i].x;
+	y := x + a[i].y;
+	inc(j);
+	inc(i);
+	end;
+ x := x / (j-1);
+ y := y / (j-1);
+
+ if j > 2 then
+ 	begin
+
+ 	end;
+ writeln(x:0:6,' ', y:0:6);
+ end;
+
+close(input);
+close(output);
+end.

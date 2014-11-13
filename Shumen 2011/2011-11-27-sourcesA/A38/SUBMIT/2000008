@@ -1,0 +1,59 @@
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <cmath>
+#define x first
+#define y second
+
+using namespace std;
+
+const int maxn = 1005;
+pair<int, int> a[maxn];
+pair<double, double> c[maxn], d[maxn];
+
+int b[maxn];
+
+inline double dis(pair<int, int> a, pair<double, double> b) {
+	return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+int main() {
+	int N, K; scanf("%d%d", &N, &K);
+	for (int i = 1; i <= N; ++i)
+		scanf("%d%d", &a[i].x, &a[i].y), b[i] = i;
+	
+	int T = 10000000 / (N * K);
+	double ans = 1e20;
+	while (T--) {
+		random_shuffle(a + 1, a + N + 1);
+		random_shuffle(b + 1, b + N);
+		sort(b + 1, b + K);
+		swap(b[K], b[N]);
+		for (int i = 1; i <= K; ++i) {
+			c[i].x = c[i].y = 0;
+			for (int j = b[i - 1] + 1; j <= b[i]; ++j) {
+				c[i].x += a[j].x;
+				c[i].y += a[j].y;
+			}
+			c[i].x /= (double)(b[i] - b[i - 1]);
+			c[i].y /= (double)(b[i] - b[i - 1]);
+		}
+		swap(b[K], b[N]);
+
+		double aux = 0;
+		for (int i = 1; i <= N; ++i) {
+			double temp = 1e20;
+			for (int j = 1; j <= K; ++j)
+				temp = min(temp, dis(a[i], c[j]));
+			aux += temp;
+		}
+		if (aux < ans) {
+			ans = aux;
+			for (int i = 1; i <= K; ++i)
+				d[i] = c[i];
+		}
+	}
+
+	for (int i = 1; i <= K; ++i)
+		printf("%.6lf %.6lf\n", d[i].x, d[i].y);
+}

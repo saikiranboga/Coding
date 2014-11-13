@@ -1,0 +1,58 @@
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+using namespace std;
+
+int N, M, a[1000001];
+int r[1000001]; // r  - >  receive signal
+
+int max_sig()
+{ 
+  for( int i = 1; i < N; i++ )
+  { 
+    int j = i+1;
+    while( a[i] > a[j] && j <= N )
+    j++;
+      
+    if( j <= N )  r[j]++;
+   }
+  
+  int max_r = r[1];
+  for( int i = 2; i <= N; i++ )
+  if( r[i] > max_r )  max_r = r[i];
+  
+  return max_r;
+}
+
+
+int main()
+{ 
+  scanf("%d %d", &N, &M);
+  
+  for( int i = 1; i <= N; i++ )
+  scanf("%d", &a[i]);
+  
+  int c;  // c  - >  command
+  for( int i = 0; i < M; i++ )
+  { 
+    scanf("%d", &c);
+    
+    if( c > 0 )  swap(a[c], a[c+1]);
+    else
+    { 
+      printf("%d\n", max_sig());
+      memset(r, 0, sizeof(r));
+     }
+   }
+  
+  scanf("%d", &N);
+  return 0;
+}
+
+/*
+9 3
+100 300 50 1000 1100 1200 500 400 600
+0
+1
+0
+*/

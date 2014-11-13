@@ -1,0 +1,71 @@
+#include<cstdio>
+#include<set>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+struct marine
+{
+    int pos,depth;
+    bool operator < (marine b)
+    {
+        return pos<b.pos;
+    }
+
+};
+marine newmarine(int p,int l)
+{
+    marine k;
+    k.pos=p;k.depth=l;
+    return k;
+}
+bool deptsort(marine a,marine b)
+{
+    return a.depth>b.depth;
+}
+int tmp[1000001];
+vector<marine> state;
+int n,m;
+int main()
+{
+    scanf("%d%d",&n,&m);
+    int d;
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&d);
+        state.push_back(newmarine(i,d));
+    }
+    sort(state.begin(),state.end(),deptsort);
+    int command;
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d",&command);
+        if(command)
+        {
+            int s=command-1;
+            for(int j=0;j<state.size();j++)
+            if(state[j].pos==s) state[j].pos=s+1; else if(state[j].pos==s+1) state[j].pos=s;
+        }
+        else
+        {
+            memset(tmp,0,sizeof(tmp));
+            set<int> btree;
+            pair<set<int>::iterator,bool> test;
+            int mx=0;
+            set<int>::iterator it;
+            for(int j=0;j<state.size();j++)
+            {
+           //     printf("\n--%d--",state[j].pos);
+                test=btree.insert(state[j].pos);
+         //       printf("\n%d",test.second);
+                test.first++;
+                it=test.first;
+           //     if(it==btree.end()) printf("\nKAboom\n");
+           //     for(it=btree.begin();it!=btree.end();it++)
+                if(it!=btree.end()) {tmp[*it]++; if(tmp[*it]>mx) mx=tmp[*it] ;}
+            }
+            printf("%d\n",mx);
+        }
+    }
+}
+

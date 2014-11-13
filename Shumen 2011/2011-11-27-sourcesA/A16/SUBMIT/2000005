@@ -1,0 +1,71 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct fly
+{
+    int a;
+    int count;
+    int nr;
+};
+
+vector <fly> v;
+int n, m, mx;
+
+int muha ( int x )
+{
+
+
+    int i, j, temp, temp1, l;
+    if ( x ){
+        for ( i=0; i<n; i++ ){
+            if ( v[i].nr==x ) temp=i;
+            if ( v[i].nr== (x+1) ) temp1=i;
+        }
+        swap (v[temp], v[temp1]);
+    }
+    else {
+        for ( i=0; i<n; i++ ) {
+            j=i+1;
+            do{
+                if ( v[i].a < v[j].a )
+                    { v[j].count+=1; break; }
+                j++;
+            }while ( j<=n );
+            if ( mx < v[j-1].count ) {mx = v[j].count ; }
+        }
+        printf ( "%d\n", mx );
+        for (int  i=0; i<n; i++ ){
+        //    printf ( "%d %d\n",v[i].a, v[i].count );
+            v[i].count=0;}
+    }
+}
+
+void read()
+{
+    int i, j, p;
+    fly w;
+    scanf ( "%d%d", &n,&m );
+    for ( i=0; i<n; i++ )
+    {
+        scanf ( "%d", &p );
+        w.a=p;
+        w.count=0;
+        w.nr=i+1;
+        v.push_back(w);
+    }
+    for ( i=0; i<m; i++ )
+    {
+        scanf ( "%d", &p );
+        muha (p);
+    }
+}
+
+int main ()
+{
+    read ();
+
+    return 0;
+}

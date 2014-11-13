@@ -1,0 +1,77 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+struct fly
+{
+    int a;
+    int count;
+    int nr;
+};
+
+vector <fly> v_def,v;
+int n, m, mx;
+
+int muha ( int x )
+{
+
+    int i, j, temp, temp1;
+    if ( x ){
+        for ( i=0; i<n; i++ ){
+            if ( v[i].nr==x ) temp=i;
+            if ( v[i].nr== (x+1) ) temp1=i;
+        }
+      //  fly e=v[temp];
+    //    v[temp]=v[temp1];
+     //   v[temp1]=e;
+        swap (v[temp].a, v[temp1].a);
+        swap (v[temp].count, v[temp1].count);
+       // swap (v[temp].nr, v[temp1].nr);
+
+    }
+    if (x==0) {
+        for ( i=0; i<n; i++ ) {
+            j=i+1;
+            while ( j<=n ){
+                if ( v[i].a < v[j].a )
+                    { v[j].count+=1; break; }
+                j++;
+            }
+            if ( mx < v[j].count ) {mx = v[j].count ;}
+        }
+        printf ( "%d\n", mx );
+        for (int  i=0; i<n; i++ ){
+         //   printf ( "%d %d\n",v[i].a, v[i].count );
+            v[i].count=0;}
+    }
+}
+
+void read()
+{
+    int i, j, p;
+    fly w;
+    scanf ( "%d%d", &n,&m );
+    for ( i=0; i<n; i++ )
+    {
+        scanf ( "%d", &p );
+        w.a=p;
+        w.count=0;
+        w.nr=i+1;
+        v.push_back(w);
+    }
+    for ( j=0; j<m; j++ )
+    {
+        scanf ( "%d", &p );
+        muha (p);
+    }
+}
+
+int main ()
+{
+    read ();
+
+    return 0;
+}

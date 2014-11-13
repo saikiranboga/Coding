@@ -1,0 +1,50 @@
+#include "iostream"
+
+using namespace std;
+
+int main()
+{
+    int n, m, c, max=0, z=0, t;
+    cin>>n>>m;
+    int a[n],sig[n], val[n];
+    for(int i=0; i<n; i++)
+    {
+        cin>>a[i];
+        sig[i]=0;
+    }
+    for(int i=0; i<m; i++)
+    {
+        cin>>c;
+        if(c==0)
+        {
+            for(int j=0; j<n-1; j++)
+            {
+                for(int k=j+1; k<n; k++)
+                {
+                    if(a[j]<a[k])
+                    {
+                        sig[k]++;
+                        if(max<sig[k])
+                        {
+                            max=sig[k];
+                        }
+                        break;
+                    }
+                }
+            }
+            val[z]=max;
+            z++;
+            for(int u=0; u<n; u++)sig[u]=0;
+        }
+        else
+        {
+            t=a[c-1];
+            a[c-1]=a[c];
+            a[c]=t;
+        }
+    }
+    for(int i=0; i<z; i++)
+    {
+        cout<<val[i]<<endl;
+    }
+}

@@ -1,0 +1,59 @@
+#include<iostream>
+using namespace std;
+int a[1024][1024],n,m,q,r1,r2;
+void read()
+{
+    cin>>n>>m;
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=m;j++)
+        {
+            cin>>a[i][j];
+        }
+    }
+}
+int funkciq()
+{
+    int br=0,ans=0,mxans=0;
+    for(int i=1;i<=r2-r1+1;i++)
+    {
+            for(int j=1;j<=m;j++)
+            {
+                for(int jj=r1;jj<=r1+i;jj++)
+                {
+                    if(a[jj][j]==1) br++;
+                }
+                //cout<<i<<" "<<j<<" "<<br<<endl;
+                if(!br) ans+=i;
+                else {
+                if(ans>mxans)
+                {
+                    mxans=ans;
+                    ans=0;
+                }
+                }
+                br=0;
+            }
+            if(ans>mxans)
+                {
+                    mxans=ans;
+                    ans=0;
+                }
+    }
+    cout<<mxans<<endl;
+}
+void solve()
+{
+    cin>>q;
+    for(int f=1;f<=q;f++)
+    {
+        cin>>r1>>r2;
+        funkciq();
+    }
+}
+int main()
+{
+    read();
+    solve();
+    return 0;
+}

@@ -1,0 +1,67 @@
+#include <iostream>
+#include <map>
+#include <set>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <string.h>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+const int MAXN=1000;
+
+int table[MAXN+1][MAXN+1];
+int calc[MAXN+1][MAXN+1];
+int value[MAXN+1][MAXN+1];
+int row[MAXN+1];
+int N,M,Q;
+
+int main(){
+    //freopen("stadard.in","r",stdin);
+    scanf("%d%d",&N,&M);
+    for(int i=1; i<=N; i++){
+        for(int j=1; j<=M; j++){
+            scanf("%d",&table[i][j]);
+        }
+    }
+    for(int j=1; j<=M; j++){
+        for(int i=N; i>=1; i--){
+            if(table[i][j]==0){
+                calc[i][j]=calc[i+1][j]+1;
+            }
+        }
+    }
+    for(int i=1; i<=N; i++){
+        for(int k=i+1; k<=N+1; k++){
+            for(int j=1; j<=M; j++){
+                if(calc[i][j]==calc[k][j]+(k-i))
+                    row[j]=calc[i][j]-calc[k][j];
+                else
+                    row[j]=calc[i][j];
+            }
+            int maxs=0;
+            for(int l=1; l<=M; l++){
+                for(int m=l; m<=M; m++){
+                    int minh=1001;
+                    for(int at=l; at<=m; at++){
+                        if(minh>row[at])
+                            minh=row[at];
+                    }
+                    if(maxs<minh*(m-l+1))
+                        maxs=minh*(m-l+1);
+                }
+            }
+            //cout<<i<<" "<<k-1<<" "<<maxs<<endl;
+            value[i][k-1]=maxs;
+        }
+    }
+    scanf("%d",&Q);
+    int a,b;
+    for(int i=0; i<Q; i++){
+        scanf("%d%d",&a,&b);
+        printf("%d\n",value[a][b]);
+    }
+	return 0;
+}

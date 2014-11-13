@@ -1,0 +1,44 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+struct bla
+{
+    double x,y;
+};
+
+int n,k;
+bla a[1024];
+
+int cmp(bla b1,bla b2)
+{
+    if(b1.x==b2.x)return b1.y<b2.y;
+    return b1.x<b2.x;
+}
+
+int main()
+{
+    int p1,p2,i,j;
+    double ans1,ans2,r;
+    scanf("%d%d",&n,&k);
+    for(i=0;i<n;i++)
+     scanf("%lf%lf",&a[i].x,&a[i].y);
+    sort(a,a+n,cmp);
+    p1=n/k;
+    p2=n%k;
+    i=0;
+    j=n/k;
+    if(p2){p2--;j++;}
+    while(i<n)
+    {
+        r=(double)(j-i);
+        ans1=ans2=0.00;
+        for(;i<j;i++){
+         ans1+=a[i].x;ans2+=a[i].y;}
+        ans1/=r;
+        ans2/=r;
+        j+=n/k;
+        if(p2){p2--;j++;}
+        printf("%.6lf %.6lf\n",ans1,ans2);
+    }
+}

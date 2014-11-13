@@ -1,0 +1,83 @@
+#include <algorithm>
+#include <stdio.h>
+#include <math.h>
+#include <climits>
+
+#define MAX 1010
+#define mp make_pair
+#define f first
+#define s second
+
+using namespace std;
+
+int n, k;
+double x[MAX], y[MAX];
+double maxGs = LONG_MAX;
+pair <pair <double, double>, int> sol[MAX];
+pair <double, double> rez[MAX];
+
+inline double dist(double x1, double y1, double x2, double y2)
+{
+    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+
+int main()
+{
+    //freopen("clustering.in", "r", stdin);
+    //freopen("clustering.out", "w", stdout);
+
+    scanf("%d %d", &n, &k);
+
+    for (int i = 1; i <= n; i++)
+        scanf("%lf %lf", &x[i], &y[i]);
+
+    for (int teste = 10; teste; teste--)
+    {
+        for (int i = 1; i <= k; i++)
+            sol[i] = mp(mp(0, 0), 0);
+        for (int i = 1; i <= k; i++)
+        {
+            int loc = rand() % n + 1;
+
+            sol[i] = mp(mp(x[loc], y[loc]), 0);
+        }
+
+        for (int i = 1; i <= n; i++)
+        {
+            double gs = LONG_MAX;
+            int loc = 0;
+            for (int j = 1; j <= k; j++)
+                if (dist(x[i], y[i], sol[j].f.f, sol[j].f.s) < gs)
+                {
+                    gs = dist(x[i], y[i], sol[j].f.f, sol[j].f.s);
+
+                    loc = j;
+                }
+
+            int f = sol[loc].s;
+            sol[loc] = mp(mp((x[i] + sol[loc].f.f * f) / (f + 1), (y[i] + sol[loc].f.s * f) / (f + 1)), f + 1);
+        }
+
+        double totGs = 0;
+        for (int i = 1; i <= n; i++)
+        {
+            double gs = LONG_MAX;
+            for (int j = 1; j <= k; j++)
+                gs = min(gs, dist(x[i], y[i], sol[j].f.f, sol[j].f.s));
+
+            totGs += gs;
+        }
+
+        if (totGs < maxGs)
+        {
+            maxGs = totGs;
+            for (int i = 1; i <= k; i++)
+                rez[i] = sol[i].f;
+        }
+    }
+
+    for (int i = 1; i <= k; i++)
+        printf("%.6lf %.6lf\n", rez[i].f, rez[i].s);
+
+    return 0;
+}

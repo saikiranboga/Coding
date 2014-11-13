@@ -1,0 +1,16 @@
+-> fastIO : http://programmerthing.blogspot.in/2011/06/spoj-450-enormous-input-test.html
+
+-> Gold Coins: http://www.codechef.com/viewsolution/90829
+
+PROGRAMMING LINKS >>
+
+http://www.algorithmist.com/index.php/Category:Dynamic_Programming
+   |
+   |___http://www.algorithmist.com/index.php/Coin_Change  
+   
+   
+Maths For CS >>
+
+http://www.cs.princeton.edu/academics/coursesched
+
+http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/

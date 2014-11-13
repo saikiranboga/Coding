@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+#include <math.h>
+#include <time.h>
+
+using namespace std;
+
+#define point pair<double, double>
+#define x first
+#define y second
+#define MAXN 1010
+#define ERR 1e-6
+
+vector<point> V[MAXN];
+point A[MAXN], B[MAXN];
+int N,K;
+int i,j,ok,maxim,st,dr,nr;
+point Ant;
+int t1,t2;
+
+inline double dist(const point &a, const point &b)
+{ return sqrt((a.x - b.x)*(a.x-b.x) + (a.y - b.y)*(a.y-b.y)); }
+
+inline double sum_dist(const int &T, point A)
+{
+    double sum = 0;
+    for (vector<point>::iterator it = V[T].begin(); it != V[T].end(); ++it)
+        sum += dist(A, *it);
+    return sum;
+}
+
+inline point center_cluster(const int &T, bool ok)
+{
+    double lim = 1000.0;
+    double act, nou;
+
+    point Ans = make_pair(0,0);
+
+    vector<point>::iterator it;
+    for (it = V[T].begin(); it != V[T].end(); ++it){
+        Ans.x += (*it).x;
+        Ans.y += (*it).y;
+    }
+    Ans.x /= V[T].size();
+    Ans.y /= V[T].size();
+
+    if (ok){
+        while (lim > ERR){
+            act = sum_dist(T, Ans);
+            nou = sum_dist(T, make_pair(Ans.x+lim, Ans.y) );
+            if (act > nou) {
+                Ans = make_pair(Ans.x+lim , Ans.y);
+                continue;
+            }
+            nou = sum_dist(T, make_pair(Ans.x-lim, Ans.y) );
+            if (act > nou) {
+                Ans = make_pair(Ans.x-lim, Ans.y);
+                continue;
+            }
+            nou = sum_dist(T, make_pair(Ans.x, Ans.y+lim) );
+            if (act > nou) {
+                Ans = make_pair(Ans.x , Ans.y+lim);
+                continue;
+            }
+            nou = sum_dist(T, make_pair(Ans.x, Ans.y-lim) );
+            if (act > nou) {
+                Ans = make_pair(Ans.x , Ans.y-lim);
+                continue;
+            }
+            lim = lim/2;
+        }
+    }
+    return Ans;
+}
+
+int main()
+{
+    t1 = clock();
+ //   freopen("clustering.in","r",stdin);
+ //   freopen("clustering.out","w",stdout);
+
+    scanf("%d %d",&N,&K);
+    for (i=1; i<=N; ++i)
+        scanf("%lf %lf",&A[i].x, &A[i].y);
+
+    sort(A+1, A+N+1);
+
+    st = 1;  dr = N/K; nr = 1;
+    while (dr <= N){
+        for (i=st; i<=dr; ++i)
+            V[nr].push_back(A[i]);
+        B[nr] = center_cluster(nr, false);
+        st = dr + 1;
+        dr += N/K;
+        ++nr;
+    }
+
+    ok = 1;
+    while (ok){
+        ok = 0;
+        for (i=1; i<=K; ++i)
+            while (V[i].size()) V[i].pop_back();
+        for (i=1; i<=N; ++i){
+            maxim = 1;
+            for (j=2; j<=K; ++j)
+                if (dist(A[i], B[maxim]) > dist(A[i], B[j]) )
+                    maxim = j;
+            V[maxim].push_back(A[i]);
+        }
+        for (i=1; i<=K; ++i){
+            Ant = B[i];
+            B[i] = center_cluster(i, false);
+            if (fabs(Ant.x - B[i].x) > ERR || fabs(Ant.y - B[i].y) > ERR)
+                ok = 1;
+        }
+    }
+    ok = 1;
+    t2 = clock();
+    while (ok && t2 - t1 < 1150){
+        ok = 0;
+        for (i=1; i<=K; ++i)
+            while (V[i].size()) V[i].pop_back();
+        for (i=1; i<=N; ++i){
+            maxim = 1;
+            for (j=2; j<=K; ++j)
+                if (dist(A[i], B[maxim]) > dist(A[i], B[j]) )
+                    maxim = j;
+            V[maxim].push_back(A[i]);
+        }
+        for (i=1; i<=K; ++i){
+            Ant = B[i];
+            B[i] = center_cluster(i, true);
+            if (fabs(Ant.x - B[i].x) > ERR || fabs(Ant.y - B[i].y) > ERR)
+                ok = 1;
+        }
+        t2 = clock();
+    }
+    for (i=1; i<=K; ++i)
+        while (V[i].size()) V[i].pop_back();
+    for (i=1; i<=N; ++i){
+        maxim = 1;
+        for (j=2; j<=K; ++j)
+            if (dist(A[i], B[maxim]) > dist(A[i], B[j]) )
+                maxim = j;
+        V[maxim].push_back(A[i]);
+    }
+    for (i=1; i<=K; ++i){
+        B[i] = center_cluster(i, true);
+        printf("%.6lf %.6lf\n",B[i].x, B[i].y);
+    }
+
+    return 0;
+}

@@ -1,0 +1,80 @@
+#include<cstdio>
+
+int t[1<<10][1<<10], n, m, rs[1<<10][1<<10];
+
+void read () {
+    
+    scanf("%d%d", &n, &m);
+    
+    int i, j;
+    
+    for( i=0; i<n; ++i )
+        for( j=0; j<m; ++j ) 
+            scanf("%d", &t[i][j]);
+}
+
+int find_left ( int i, int j ) {
+    
+    int k;
+    for( k=j-1; k>=0; --k ) 
+        if( rs[i][k] < rs[i][k+1] ) return k+1;
+    return k+1;
+}
+
+int find_right ( int i, int j ) {
+    
+    int k;
+    for( k=j+1; k<m; ++k ) 
+        if( rs[i][k] < rs[i][k-1] ) return k-1;
+    return k-1;
+}
+
+void solve () {
+    
+    int q, i, j, k;
+    scanf("%d", &q);
+    
+    for( i=0; i<q; ++i ) {
+        
+        int l, r;
+        scanf("%d%d", &l, &r);
+        int mx=0;
+        
+        for( j=l-1; j<r; ++j ) {
+            
+            for( k=0; k<m; ++k ) {
+                
+                if( !t[j][k] ) rs[j][k]=rs[j-1][k]+1;
+                else {
+                    
+                    rs[j][k]=0;
+                    if( rs[j-1][k] ) {
+                        //printf("j %d k %d key %d\n", j-1, k, rs[j-1][k]);
+                        int w= (find_right( j-1, k ) - find_left( j-1, k ) +1)*rs[j-1][k];
+                        //printf("w %d\n", w);
+                        if( w>mx ) mx=w;
+                    }
+                }
+            }
+        }
+        //printf("j %d\n", j);
+        for( k=0; k<m; ++k ) {
+            
+            if( rs[j-1][k] ) {
+                //printf("j %d k %d key %d\n", j-1, k, rs[j-1][k]);
+                //printf("left %d right %d\n", find_right( j-1, k ), find_left( j-1, k ) );
+                int w= (find_right( j-1, k ) - find_left( j-1, k ) +1)*rs[j-1][k];
+                //printf("w %d\n", w);
+                if( w>mx ) mx=w;
+            }
+        }
+        printf("%d\n", mx);
+    }
+}
+
+main () {
+    
+    read();
+    solve();
+    return 0;
+}

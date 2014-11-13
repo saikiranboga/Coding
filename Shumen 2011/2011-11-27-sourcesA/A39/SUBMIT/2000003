@@ -1,0 +1,92 @@
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+
+#define MAX 1024
+#define mp make_pair
+#define f first
+#define s second
+
+using namespace std;
+
+int n, m, msStv;
+int up[MAX][MAX], sol[MAX][MAX];
+int lungSt[MAX], lungDr[MAX];
+pair <int, int> stiva[MAX];
+
+int main()
+{
+    //freopen("standard.in", "r", stdin);
+    //freopen("standard.out", "w", stdout);
+
+    scanf("%d %d", &n, &m);
+
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++)
+        {
+            int a;
+            scanf("%d", &a);
+
+            if (a)
+                up[i][j] = 0;
+            else up[i][j] = up[i - 1][j] + 1;
+        }
+
+    for (int i = 1; i <= n; i++)
+    {
+        msStv = 1;
+        stiva[1] = mp(0, 0);
+
+        for (int j = 1; j <= m; j++)
+        {
+            stiva[++msStv] = mp(up[i][j], j);
+
+            for (; stiva[msStv].f <= stiva[msStv - 1].f && msStv > 1; msStv--)
+                stiva[msStv - 1].f = stiva[msStv].f;
+
+            lungSt[j] = j - stiva[msStv].s + 1;
+        }
+
+        msStv = 1;
+        stiva[1] = mp(0, m + 1);
+
+        for (int j = m; j; j--)
+        {
+            stiva[++msStv] = mp(up[i][j], j);
+
+            for (; stiva[msStv].f <= stiva[msStv - 1].f && msStv > 1; msStv--)
+                stiva[msStv - 1].f = stiva[msStv].f;
+
+            lungDr[j] = stiva[msStv].s - j + 1;
+        }
+
+        int mas[MAX], l[MAX];
+        for (int j = 0; j <= i; j++)
+            mas[j] = 0, l[j] = 0;
+
+        for (int j = 1; j <= m; j++)
+            l[up[i][j]] = max(l[up[i][j]], lungDr[j] + lungSt[j] - 1);
+
+        for (int j = i; j; j--)
+        {
+            l[j] = max(l[j + 1], l[j]);
+
+            mas[j] = l[j] * j;
+        }
+
+        for (int j = 1; j <= i; j++)
+            sol[i - j + 1][i] = max(max(sol[i - j + 1 + 1][i], sol[i - j + 1][i - 1]), mas[j]);
+    }
+
+    int q;
+    for (cin >> q; q; q--)
+    {
+        int i, j;
+        scanf("%d %d", &i, &j);
+
+        printf("%d\n", sol[i][j]);
+    }
+
+    return 0;
+}

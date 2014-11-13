@@ -1,0 +1,112 @@
+#define MAXN 1024
+#define MAXK 128
+#include<cstdio>
+#include<queue>
+#include<cmath>
+using namespace std;
+
+struct data
+{
+    double d;
+    int f,t;
+    const bool operator< (const data other) const
+    {
+        if(other.d<d) return 1;
+        return 0;
+    }
+};
+
+
+struct comp
+{
+    double x,y;
+    int cnt;
+};
+
+double ab(double x)
+{
+    if(x<0) return -x;
+    return x;
+}
+
+double dist(double x1,double y1,double x2,double y2)
+{
+    double a=abs(x1-x2),b=abs(y1-y2);
+    return a*a+b*b;
+}
+
+
+int cc,n,k,b[MAXN],input[MAXN][2];
+priority_queue<data> a;
+comp c[MAXN];
+double d[MAXN][MAXN];
+
+bool garbage(data x)
+{
+    if(c[x.f].cnt==-1) return 1;//{printf("reason 1 --");return 1;}
+    if(c[x.t].cnt==-1) return 1;//{printf("reason 2 --");return 1;}
+    if(d[x.f][x.t]!=x.d) return 1;//{printf("reason 3 --");return 1;}
+    return 0;
+}
+
+int main()
+{
+    int i,j;
+    data r,o;
+
+    scanf("%d%d",&n,&k);
+    cc=n;
+    for(i=0;i<n;i++)
+    {
+        scanf("%d%d",&input[i][0],&input[i][1]);
+        b[i]=i;
+        c[i].x=input[i][0];
+        c[i].y=input[i][1];
+        c[i].cnt=1;
+    }
+
+    for(i=0;i<n;i++)
+        for(j=i+1;j<n;j++)
+        {
+            d[i][j]=dist(c[i].x,c[i].y,c[j].x,c[j].y);
+            r.d=d[i][j];
+            r.f=i;
+            r.t=j;
+            d[j][i]=d[i][j];
+            a.push(r);
+        }
+
+    while(cc!=k)
+    {
+        printf("%d\n",cc);
+        cc--;
+        r=a.top();
+        a.pop();
+        while(garbage(r)&&!a.empty()) { /*printf("%d to %d is garbage\n",r.f,r.t);*/ r=a.top(); a.pop(); }
+        //printf("merging %lf %lf with %lf %lf\n",c[r.f].x,c[r.f].y,c[r.t].x,c[r.t].y);
+        //printf("%d doesn't exist anymore\n",r.t);
+        c[r.f].cnt+=c[r.t].cnt;
+        c[r.t].cnt=-1;
+        c[r.f].x=(c[r.f].x+c[r.t].x)/2;
+        c[r.f].y=(c[r.f].y+c[r.t].y)/2;
+        for(i=0;i<n;i++)
+        {
+            if(i==r.f||c[i].cnt==-1) continue;
+            d[r.f][i]=dist(c[r.f].x,c[r.f].y,c[i].x,c[i].y);
+            o.d=d[r.f][i];
+            o.f=r.f;
+            o.t=i;
+            d[i][r.f]=d[r.f][i];
+            a.push(o);
+        }
+    }
+
+    for(i=0;i<n;i++)
+    {
+        if(c[i].cnt==-1) continue;
+        printf("%.6lf %.6lf\n",c[i].x,c[i].y);
+    }
+    //while(!a.empty()) { printf("%lf %d %d\n",a.top().d,a.top().f,a.top().t); a.pop(); }
+
+    return 0;
+}

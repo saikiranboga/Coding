@@ -1,0 +1,42 @@
+#include<iostream>
+#define max(x,y) (x>y?x:y)
+using namespace std;
+int n,m,x[1<<20],rx[1<<20],y[1<<20],q;
+void findRec()
+{
+    for(int i=0;i<n;i++) rx[i]=0;
+    //int br=1;
+    for(int i=0;i<n;i++)
+    {
+        //cout<<5<<endl;
+        int j=i+1;
+        while(x[i]>=x[j] && j<n) j++;
+        rx[j]++;
+    }
+    //cout<<"RX:\n";
+    //for(int i=0;i<n;i++) cout<<rx[i]<<" "; cout<<endl;
+    return;
+}
+int findMaxRec()
+{
+    int ans=rx[0];
+    for(int i=1;i<n;i++) ans=max(rx[i],ans);
+    return ans;
+}
+int main()
+{
+    cin>>n>>m;
+    for(int i=0;i<n;i++) cin>>x[i];
+    findRec();
+    for(int i=0;i<m;i++)
+    {
+        cin>>q;
+        if(q==0) cout<<findMaxRec()<<endl;
+        else
+        {
+            swap(x[i],x[i-1]);
+            findRec();
+        }
+    }
+    return 0;
+}

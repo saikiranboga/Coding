@@ -1,0 +1,69 @@
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+const int N_MAX = 1 << 10;
+const int INF = 1 << 29;
+
+class Submarine
+{
+public:
+    int x, y;
+};
+
+int n, m,
+    dist[N_MAX];
+Submarine submarines[N_MAX];
+
+double computeDistance(int i, int j)
+{
+    return (submarines[i].x - submarines[j].x) * (submarines[i].x - submarines[j].x) +
+    (submarines[i].y - submarines[j].y) * (submarines[i].y - submarines[j].y);
+}
+
+int main()
+{
+    scanf("%d%d", &n, &m);
+    
+    for (int i = 1; i <= n; i++)
+    {
+        submarines[i].x = i * 5;
+        scanf("%d", &submarines[i].y);
+    }
+    
+    for (int i = 1; i <= m; i++)
+    {
+        int query;
+        
+        scanf("%d", &query);
+        if (!query)
+        {
+            memset(dist, 0, sizeof(dist));
+            for (int i = 1; i <= n; i++)
+            {
+                int minDist = INF, indx = -1;
+                
+                for (int j = 1; j <= n; j++)
+                    if (i != j && minDist > computeDistance(i, j))
+                    {
+                        minDist = computeDistance(i, j);
+                        indx = j;
+                    }
+                dist[indx]++;
+            }
+            printf("%d\n", *max_element(dist + 1, dist + n + 1));
+            
+           // for (int i = 1; i <= n; i++)
+               // printf("%d ", dist[i]);
+            
+        //    printf("\n");
+        }
+        else
+        {
+            swap(submarines[query], submarines[query + 1]);
+        }
+    }
+    return 0;
+}

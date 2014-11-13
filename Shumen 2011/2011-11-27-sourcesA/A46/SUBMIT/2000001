@@ -1,0 +1,74 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+const int N = 1000001;
+
+int n, m;
+int h[N];
+int f[N];
+
+void Read()
+{
+    cin >> n >> m;
+    for (int i = 1; i <= n; ++i)
+        cin >> h[i];
+}
+
+inline int dist(int a, int b)
+{
+    return 5*(b-a) + (h[b]-h[a]);
+}
+
+int Generate()
+{
+    memset(f, 0, sizeof(f));
+    for(int i = 1; i <= n; ++i)
+    {
+        int dmin = 2000000002;
+        int pmin = 0;
+        for (int j = i+1; j<=n; ++j)
+            if (h[i] < h[j])
+            {
+                int dk = dist(i, j);
+                if (dk < dmin)
+                {
+                    dmin = dk;
+                    pmin = j;
+                }
+            }
+        f[pmin]++;
+    }
+
+    int mact = N-1;
+    for (int i = 2; i <= n; ++i)
+        if (f[i] > f[mact])
+            mact = i;
+
+    return f[mact];
+}
+
+void Solve20()
+{
+    while (m--)
+    {
+        int x;
+        cin >> x;
+        if (x == 0)
+            cout << Generate() << "\n";
+        else
+            h[x] ^= h[x+1] ^= h[x] ^= h[x+1];
+    }
+}
+
+int main()
+{
+    Read();
+
+    if (n <= 1000)
+        Solve20();
+
+    return 0;;
+}

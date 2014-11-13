@@ -1,0 +1,104 @@
+/*
+TASK: standart
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+#include <bitset>
+
+using namespace std;
+
+int n, m, q;
+bitset<1000> r[1024];
+int dp1[1024][1024];
+int dp[1024][1024];
+
+void read()
+{
+    scanf("%d %d", &n, &m);
+    for(int i = 0; i < n; i ++)
+        for(int j = 0; j < m; j ++)
+        {
+            int a;
+            scanf("%d", &a);
+            r[i][j] = a;
+        }
+}
+
+int getMax(bitset<1000> tmp)
+{
+    int mx = 0, cnt = 0;
+    for(int i = 0; i < m; i ++)
+        if(tmp[i])
+        {
+            if(cnt > mx) mx = cnt;
+            cnt = 0;
+        }
+        else cnt ++;
+    
+    if(mx < cnt) mx = cnt;
+    return mx;
+}
+
+void init()
+{
+    for(int i = 0; i < n; i ++)
+    {
+        bitset<1000> t;
+        t = r[i];
+        for(int j = i; j < n; j ++)
+        {
+            t |= r[j];
+            dp1[i][j] = getMax(t);
+        }
+    }
+}
+
+int f(int r1, int r2)
+{
+    if(dp[r1][r2] != -1)
+        return dp[r1][r2];
+    
+    if(r1 == r2)
+        return dp[r1][r2] = dp1[r1][r1];
+    
+    int c1 = dp1[r1][r2] * (r2 - r1 + 1);
+    int c2 = f(r1 + 1, r2);
+    int c3 = f(r1, r2 - 1);
+    
+    return dp[r1][r2] = max(c1, max(c2, c3));
+}
+
+void solve()
+{
+    memset(dp, -1, sizeof(dp));
+    
+    scanf("%d", &q);
+    for( ; q; q --)
+    {
+        int r1, r2;
+        scanf("%d %d", &r1, &r2);
+        r1 --; r2 --;
+        printf("%d\n", f(r1, r2));
+    }
+}
+
+int main()
+{
+    read();
+    init();
+    /*
+    for(int i = 0; i < n; i ++)
+    {
+        for(int j = i; j < n; j ++)
+            cout << dp1[i][j] << " ";
+        cout << endl;
+    }
+    
+    cout << endl;
+    */
+    solve();
+
+    return 0;
+}

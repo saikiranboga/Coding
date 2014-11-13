@@ -1,0 +1,77 @@
+Question 2/2
+
+Weighted Stone Arrangement
+You are given an infinite number of stones.
+
+The 1st stone has the weight 1
+
+The 2nd stone has the weight 3
+
+The tth stone has the weight W(t) = 2 * W(t-1) + W(t-2)
+
+Thus, the weights of the first 10 stones are 1, 3, 7, 17, 41, 99, 239, 577, 1393, 3363
+
+Note that you only have one stone of each weight.
+
+You have a weighing machine which is the age old 2-pan balance. You wish to use this machine to measure the weight of an item whose weight is T. The item will always be kept on the right pan. A stone may be kept on either one of the pans. Also, it is not required to use all the stones.
+
+The stones have a weird magnetic property, due to which, the kth stone cannot be in the same pan as the (k-1)th stone. This means that the stone with weight 239 cannot be in the same pan as the stone with weight 99, or in the same pan as the stone with weight 577; and so on.
+
+For example,
+T = 11 can be measured as
+LEFT PAN: 1, 17
+RIGHT PAN: 7
+Note that the other alternative
+
+LEFT PAN: 1, 3, 7
+RIGHT PAN:
+is Illegal since 3 cannot be in the same pan as 1 (or 7 cannot be in the same pan as 3).
+
+T = 21 can be measured as
+LEFT PAN: 41
+RIGHT PAN: 3, 17
+It can be proven that to measure any weight T, there exists a unique arrangement of stones that satisfy the given constraints and measure weight T. Thus, T = 11 or T = 21 can only be measured by the respective arrangements above.
+
+You are given T in the input. Output the arrangement of stones that measures T.
+
+Input Specification
+The input contains a single positive integer T.
+
+Output Specification
+Output the weights of the stones used on the left pan in increasing order, one number per line.     Then output a blank line.
+Followed by the weights of the stones used on the right pan in increasing order. Note that it is     assumed that the item will be
+kept on the right pan.
+If there is no stone kept on the right pan, simply output the weights of the stones used on the     left pan in increasing order as
+above, followed by a blank line.
+
+Constraints
+1 = T = 1015
+
+Sample Input 1
+11
+Sample Output 1
+1
+17
+
+7
+
+Sample Input 2
+21
+
+Sample Output 2
+41
+
+3
+17
+
+Sample Input 3
+1000
+
+Sample Output 3
+3
+41
+239
+1393
+
+99
+577

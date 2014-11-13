@@ -1,0 +1,148 @@
+/*
+TASK: clustering
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <math.h>
+#include <string.h>
+
+#define x first
+#define y second
+#define mp make_pair
+
+using namespace std;
+
+typedef pair<double, double> Point;
+
+const double eps = 1e-9;
+
+int n, k;
+Point p[1024];
+Point c[128];
+
+double sumx[128], sumy[128];
+int cnt[128];
+
+double SQU(double x) { return x * x; }
+double Dist2(Point A, Point B) { return SQU(A.x - B.x) + SQU(A.y - B.y); }
+double Dist(Point A, Point B) { return sqrt(Dist2(A, B)); }
+
+int cmpDouble(double a1, double a2)
+{
+    if(a1 - a2 > eps) return 1;
+    if(a1 - a2 < -eps) return -1;
+    return 0;
+}
+
+void read()
+{
+    scanf("%d %d", &n, &k);
+    for(int i = 0; i < n; i ++)
+        scanf("%lf %lf", &p[i].x, &p[i].y);
+    
+    sort(p, p + n);
+/*
+    for(int i = 0; i < n; i ++)
+        cout << p[i].x << " " <<  p[i].y << endl;
+*/
+}
+
+void init()
+{
+    int per = n / k;
+    int l, r;
+    
+    for(int i = 0; i < k; i ++)
+    {
+        l = i * per;
+        
+        if(i == k - 1) r = n;
+        else r = (i + 1) * per;
+        
+        double sx = 0.0, sy = 0.0;
+        for(int j = l; j < r; j ++)
+        {
+//            cout << p[j].x << " " << p[j].y << endl;
+            sx += p[j].x;
+            sy += p[j].y;
+        }
+        
+//        cout << sx << " " << sy << endl;
+//        cout << endl;
+        
+        c[i] = mp(sx / (double)(r - l), sy / (double)(r - l));
+    }
+/*    
+    for(int i = 0; i < k; i ++)
+        cout << c[i].x << " " << c[i].y << endl;
+    cout << endl;
+*/
+}
+
+bool fix()
+{
+    memset(cnt, 0, sizeof(cnt));
+    for(int i = 0; i < k; i ++)
+    {
+        sumx[i] = 0.0;
+        sumy[i] = 0.0;
+    }
+    
+    for(int i = 0; i < n; i ++)
+    {
+        double mn = 200200200;
+        int idx = -1;
+        for(int j = 0; j < k; j ++)
+        {
+            double t = Dist2(p[i], c[j]);
+            if(cmpDouble(mn, t) == 1)
+            {
+                mn = t;
+                idx = j;
+            }
+        }
+        
+        sumx[idx] += p[i].x;
+        sumy[idx] += p[i].y;
+        cnt[idx] ++;
+    }
+    
+    bool fl = false;
+    for(int i = 0; i < k; i ++)
+    {
+        if(!cnt[i]) continue;
+        Point np = mp(sumx[i] / (double)cnt[i], sumy[i] / (double)cnt[i]);
+        if(cmpDouble(np.x, c[i].x) != 0 || cmpDouble(np.y, c[i].y) != 0)
+        {
+            fl = true;
+            c[i] = np;
+        }
+    }
+    return fl;
+}
+
+void solve()
+{
+    for(int iter = 0; iter < 500; iter ++)
+        if(!fix())
+            break;
+}
+
+void write()
+{
+    for(int i = 0; i < k; i ++)
+        printf("%.6lf %.6lf\n", c[i].x, c[i].y);
+        //cout << c[i].x << " " << c[i].y << endl;
+}
+
+int main()
+{
+    read();
+    init();
+    solve();
+    write();
+    
+    return 0;
+}

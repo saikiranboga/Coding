@@ -1,0 +1,53 @@
+#include<cstdio>
+#include<iostream>
+using namespace std;
+
+int dpts[1000010], n, q;
+
+void read() {
+    
+    int i;
+    scanf("%d%d", &n, &q);
+    
+    for( i=0; i<n; ++i ) 
+        scanf("%d", &dpts[i]);
+        
+}
+
+void solve () {
+    
+    int i, j;
+    for( i=0; i<q; ++i ) {
+        
+        int t;
+        scanf("%d", &t);
+        if( t ) {
+            
+            swap( dpts[t-1], dpts[t] );
+            continue;
+        }
+        
+        int cc=1, mc=0;
+        
+        for( j=1; j<n; ++j ) {
+            
+            if( dpts[j] < dpts[j-1] ) cc++;
+            else {
+                
+                if( cc > mc ) mc=cc;
+                cc=0;
+            }
+        }
+        if( cc>mc ) mc=cc;
+        printf("%d\n", mc);
+    }
+}
+        
+        
+
+main () {
+    
+    read();
+    solve();
+    return 0;
+}

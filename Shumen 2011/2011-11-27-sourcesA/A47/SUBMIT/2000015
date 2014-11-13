@@ -1,0 +1,110 @@
+#include <cstdio>
+#include <set>
+
+using namespace std;
+
+const int N = 1000015;
+
+int n, m, h[N], hit[N];
+
+void read() {
+    scanf("%d%d", &n, &m);
+
+    for (int i = 1; i <= n; ++i)
+        scanf("%d", &h[i]);
+}
+
+void query_brute() {
+    int rez = 0;
+
+    for (int i = 1; i <= n; ++i)
+        hit[i] = 0;
+
+    for (int i = 1; i <= n; ++i) {
+        double min = 1000000000;
+        int pos = 0;
+
+        for (int j = i + 1; j <= n; ++j)
+            if (h[i] < h[j] && min > ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000) {
+                min =  ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000;
+                pos = j;
+            }
+
+        ++hit[pos];
+
+        if (pos && hit[pos] > rez)
+            rez = hit[pos];
+    }
+
+    printf("%d\n", rez);
+}
+
+void brute() {
+    int op;
+
+    for (int i = 1; i <= m; ++i) {
+        scanf("%d", &op);
+
+        if (op == 0)
+            query_brute();
+        else {
+            int aux = h[op];
+            h[op] = h[op + 1];
+            h[op + 1] = aux;
+        }
+    }
+}
+
+void query_solve2() {
+    set <int> S;
+
+    int rez = 0;
+
+    S.insert(h[1]);
+
+    for (int i = 2; i <= n; ++i) {
+        int nrp = 0;
+
+        while (!S.empty() && *S.begin() < h[i]) {
+            ++nrp;
+            S.erase(S.begin());
+        }
+
+        if (nrp > rez)
+            rez = nrp;
+
+        S.insert(h[i]);
+    }
+
+    printf("%d\n", rez);
+}
+
+void solve2() {
+    int op;
+
+    for (int i = 1; i <= m; ++i) {
+        scanf("%d", &op);
+
+        if (op == 0)
+            query_solve2();
+        else {
+            int aux = h[op];
+            h[op] = h[op + 1];
+            h[op + 1] = aux;
+        }
+    }
+
+}
+
+int main() {
+    //freopen("test.in", "r", stdin);
+
+    read();
+
+    /*if (n <= 1000 && m <= 100)
+        brute();
+    else if (n <= 1000000 && m <= 20)*/
+        solve2();
+
+    return 0;
+}

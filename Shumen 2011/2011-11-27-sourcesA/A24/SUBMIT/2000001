@@ -1,0 +1,54 @@
+#include <cstdio>
+#include <cmath>
+using namespace std;
+
+const int x=5;
+int N,M;
+int subd[1000010]; // dulbo4ini
+int subsigs[1000010]; // broi polu4eni signali
+int maxrec;
+int i,j,k;
+
+void swap(int p)
+{
+	int sw=subd[p];
+	subd[p]=subd[p+1];
+	subd[p+1]=sw;	
+}
+
+void findtar()
+{
+	maxrec=0;
+	for(j=2; j<=N; j++) subsigs[j]=0;
+	for(j=1; j<=N; j++)
+	{
+		for(k=j+1; k<=N; k++)
+		{
+			if(subd[j]<subd[k])
+			{
+				subsigs[k]++;
+				if(maxrec<subsigs[k]) maxrec=subsigs[k];
+				break;
+			}
+		}
+	}
+	printf("%d\n", maxrec);
+}
+
+int main()
+{
+	scanf("%d %d", &N, &M);
+	for(i=1; i<=N; i++)
+	{
+		scanf("%d", &subd[i]);
+	}
+	int c;
+	for(i=1; i<=M; i++)
+	{
+		scanf("%d", &c);
+		if(c>0) swap(c);
+		else findtar();
+	}
+	
+	return 0;
+}

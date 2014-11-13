@@ -1,0 +1,82 @@
+//Georgi Gaidarov
+// No_ReSponSe
+// Esenen shumen s katmi
+// 26.11.2011
+
+// Task : submarines
+// pustite mu i dyrveta
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <queue>
+#include <stack>
+#include <cstdlib>
+#include <fstream>
+#include <list>
+
+using namespace std;
+
+int a[1000000];
+int n, r;
+//int step[100]; // kletka otgovaria za  10 000 podvodnici
+int sumup = 0;
+
+int dvaiseTochki()
+{
+    list<int> sent;
+    int maxed = 0;
+    for(int i=0; i<n; i++)
+    {
+        int thisGot = 0;
+        sent.push_back(a[i]);
+        for(list<int>::iterator li = sent.begin(); li!=sent.end(); )
+        {
+            //cout<<"got here\n";
+            if(a[i] > *li)
+            {
+                thisGot++;
+                list<int>::iterator d = li;
+                li++;
+                sent.erase(d);
+                //cout<<"got here\n";
+                continue;
+            }
+            li++;
+        }
+        if(thisGot > maxed) maxed = thisGot;
+    }
+    return maxed;
+}
+
+int main()
+{
+    //freopen("submarines.txt", "r", stdin);
+    cin>>n>>r;
+    for(int i=0; i<n; i++)
+    scanf("%d", a+i);
+
+
+
+
+
+
+
+
+
+
+
+    for(int i=0; i<r; i++)
+    {
+        int rq;
+        scanf("%d", &rq);
+        if(!rq) cout<<dvaiseTochki()<<endl;
+        else
+        {
+            a[rq-1] ^= a[rq];
+            a[rq] ^= a[rq-1];
+            a[rq-1] ^= a[rq];
+        }
+    }
+
+    return 0;
+}

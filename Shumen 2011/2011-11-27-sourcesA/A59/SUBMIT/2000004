@@ -1,0 +1,60 @@
+#include<cstdio>
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+struct point {
+
+    double x,y;
+
+};
+
+point a[1024];
+vector<point>ans;
+
+double n;
+int k;
+double sumx,sumy;
+double dir[4][2]={{0.0,0.1},{0.1,0},{0,-0.1},{-0.1,0}};
+
+void read() {
+
+    int i;
+
+    scanf("%lf%d",&n,&k);
+
+    for(i=0;i<n;i++) {
+        scanf("%lf%lf",&a[i].x,&a[i].y);
+        sumx+=a[i].x;
+        sumy+=a[i].y;
+    }
+
+}
+
+void solve() {
+
+    int i;
+    double prevx,prevy;
+
+    printf("%.6lf %.6lf\n",sumx/n,sumy/n);
+
+    prevx=sumx/n;
+    prevy=sumy/n;
+
+    for(i=2;i<=k;i++) {
+        prevx+=dir[k%i][0];
+        prevy+=dir[k%i][1];
+        printf("%.6lf %.6lf\n",prevx,prevy);
+    }
+
+}
+
+int main() {
+
+    read();
+    solve();
+
+    return 0;
+
+}

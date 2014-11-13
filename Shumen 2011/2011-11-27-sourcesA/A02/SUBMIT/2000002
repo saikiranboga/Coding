@@ -1,0 +1,65 @@
+#include<iostream>
+#include<cstdio>
+#define MAXN 1100
+using namespace std;
+int n, m, s, p;
+long long int z=0;
+long long int br=0;
+long long int maxx=0;
+int table[MAXN][MAXN];
+long long int shema[1000100];
+int lice (int x, int y)
+{
+         if(table[x][y]==0)
+          {
+            table[x][y]=3;
+            br++;
+            if(x-1>=s && x-1>p && table[x-1][y]==0)lice(x-1, y);
+            if(x+1>=s && x+1>p && table[x+1][y]==0)lice(x+1, y);
+            if(x>=s && x>p && table[x][y-1]==0)lice(x, y-1);
+            if(x>=s && x>p && table[x][y+1]==0)lice(x, y+1);
+          }
+         //shema[z]=br;
+         //z++;
+}
+int main ()
+{
+
+  long long int q;
+  cin>>n>>m;
+  //scanf("%d%d", &n &m);
+  for(int i=0;i<n+2;i++)
+    for(int j=0;j<m+2;j++)
+      {
+        table[i][j]=2;
+        //scanf("%d", &table[i][j]);
+      }
+  for(int i=1;i<n+1;i++)
+    for(int j=1;j<m+1;j++)
+      {
+        cin>>table[i][j];
+        //scanf("%d", &table[i][j]);
+      }
+  cin>>q;
+  for(int j=0;j<q;j++)
+    {
+        cin>>s>>p;
+        for(int i=s;i<=p;i++)
+          for(int j=1;j<m+1;j++)
+            if(table[i][j]==0)lice(i, j);
+            if(maxx<br)maxx=br;
+            br=0;
+            shema[z]=maxx;
+            z++;
+            maxx=0;
+            for(int i=1;i<n+1;i++)
+    for(int j=1;j<m+1;j++)
+      {
+        if(table[i][j]==3)table[i][j]=0;
+        //scanf("%d", &table[i][j]);
+      }
+    }
+  for(int sheminator=0;sheminator<z;sheminator++)
+    cout<<shema[sheminator]<<endl;
+}
+// 420 420 420<------------------------------------------

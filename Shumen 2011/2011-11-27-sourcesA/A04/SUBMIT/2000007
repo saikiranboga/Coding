@@ -1,0 +1,57 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+int n,m,x[1<<10],rx[1<<10],q;
+double ab(int a, int b)
+{
+    double ans=(b-a)*5000000; ans=ans*ans;
+    double bns=x[b]-x[a]; bns=bns*bns;
+    return sqrt(ans+bns);
+
+}
+void findRec()
+{
+    for(int i=0;i<=n;i++) rx[i]=0;
+    for(int i=0;i<n-1;i++)
+    {
+        int j=i+1,ind=n;
+        double rec=-1;
+        for(j=i+1;j<n;j++)
+        {
+            if(x[i]>=x[j]) continue;
+            double now=ab(i,j);
+            if(ind ==n || rec>now) {rec=ab(i,j); ind=j;}
+        }
+        rx[ind]++;
+    }
+    //cout<<"RX:\n";
+    //for(int i=0;i<n;i++) cout<<rx[i]<<" "; cout<<"   "<<rx[n]<<endl;
+    return;
+}
+int findMaxRec()
+{
+    int ans=rx[0];
+    for(int i=1;i<n;i++) ans=max(rx[i],ans);
+    return ans;
+}
+int main()
+{
+    cin>>n>>m;
+    if(m<=100 && n<=1000)
+    {
+        for(int i=0;i<n;i++) cin>>x[i];
+        findRec();
+        for(int i=0;i<m;i++)
+        {
+            cin>>q;
+            if(q==0) cout<<findMaxRec()<<endl;
+            else
+            {
+                swap(x[i],x[i-1]);
+                findRec();
+            }
+        }
+    }
+    else cout<<"##\n";
+    return 0;
+}

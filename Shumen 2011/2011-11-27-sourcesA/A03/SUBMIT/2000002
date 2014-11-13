@@ -1,0 +1,64 @@
+#include<iostream>
+#define MAXN 1024
+using namespace std;
+int a[MAXN][MAXN],ch,maxi[MAXN],maxj[MAXN],maxjj[MAXN],maxii[MAXN],j1,i1,br[MAXN],m,b,r_1,r_2,max[MAXN];
+long long int q;
+void maxx(int r1,int r2)
+{
+//----------------------------------------------------------------------------
+  for(int i=r1;i<=r2;i++)
+    { for(int j=1;j<m;j++) 
+         { if(a[i][j]==0 && a[i][j+1]==0 && j<(m-1)) br[ch]++;
+            else { ch++; }
+         }
+      j1++;
+      maxj[j1]=br[0]; 
+      for(int k=1;k<=ch;k++) { if(br[k]>maxj[j1]) maxj[j1]=br[k]; br[k]=0; }  
+      br[0]=0;
+      ch=0;
+    }
+    maxjj[b]=maxj[0]; for(int i=1;i<=m;i++) if(maxj[i]>maxjj[b]) maxjj[b]=maxj[i]; maxjj[b]++;
+//----------------------------------------------------------------------------
+    i1=r1-1;
+    for(int j=1;j<=m;j++)
+    {
+      for(int i=r1;i<r2;i++) 
+         { if(a[i][j]==0 && a[i+1][j]==0 && i<r2-1) br[ch]++;
+            else { ch++; } 
+         }
+      i1++;
+      maxi[i1]=br[0]; 
+      for(int k=1;k<=ch;k++) { if(br[k]>maxi[i1]) maxi[i1]=br[k]; br[k]=0; }  
+      br[0]=0;
+      ch=0;
+    }
+    maxii[b]=maxi[0]; for(int j=1;j<=r2;j++) if(maxi[j]>maxii[b]) maxii[b]=maxi[j]; maxii[b]++;
+//-------------------------------------------------------------------------------    
+    //cout<<maxii<<endl; cout<<maxjj<<endl;
+
+ 
+    
+ 
+   
+
+
+
+}
+
+int main()
+{ int n;
+  cin>>n>>m;
+  for(int i=1;i<=n;i++)
+    {
+      for(int j=1;j<=m;j++) { cin>>a[i][j]; }
+    }
+  cin>>q;
+  for(int i=0;i<q;i++) 
+  { cin>>r_1>>r_2; maxx(r_1,r_2); b++;
+    
+  }
+  for(int i=0;i<b;i++) if(maxii[b]>maxjj[b]) cout<<maxii[b]; else cout<<maxjj[b];
+                             
+  //cout<<maxii<<endl; cout<<maxjj<<endl;
+return 0;
+}

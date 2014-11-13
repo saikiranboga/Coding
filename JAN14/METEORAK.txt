@@ -1,0 +1,32 @@
+ANS: INTERNATIONAL TOURNAMENT IN INFORMATICS shumen 2011 problem(senior section).
+
+There is a rectangular box size NxM. Some of the cells in it are "dangerous". only
+there are exactly K such cells. Also there is a query Q, each has the form Li Hi. The answer to
+inquiry of this type is the maximum possible area of a rectangle such that it
+lies in the strip with Li-th in Hi-th row inclusive and does not contain a "dangerous" cells.
+
+input:
+The first line of input contains the number N, M and K, respectively, separated by single
+spaces.
+The following K lines contain different pairs of numbers xi yi - coordinates of the "dangerous" cells.
+The next line contains the number of Q - the number of requests.
+Followed by Q lines, each sets the query in the form of Li Hi.
+
+
+http://math.stackexchange.com/questions/628157/maximum-area-of-rectangle-without-any-monsters
+http://www.careercup.com/question?id=5065160578301952
+http://stackoverflow.com/questions/20937580/maximum-area-of-rectangle-without-any-monsters
+
+http://www.spoj.com/problems/CTGAME/
+**http://stackoverflow.com/questions/2478447/find-largest-rectangle-containing-only-zeros-in-an-nn-binary-matrix/4671342
+http://www.drdobbs.com/database/the-maximal-rectangle-problem/184410529
+
+histogram:
+http://www.informatik.uni-ulm.de/acm/Locals/2003/html/judge.html
+
+[[ http://en.wikipedia.org/wiki/Largest_empty_rectangle ]]
+
+
+implementation of maximal rectangle problem in c++:
+http://www.seas.gwu.edu/~simhaweb/cs151/lectures/module6/module6.html
+http://stackoverflow.com/questions/7245/puzzle-find-largest-rectangle-maximal-rectangle-problem

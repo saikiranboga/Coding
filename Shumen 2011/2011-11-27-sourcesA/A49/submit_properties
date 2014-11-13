@@ -1,0 +1,50 @@
+<hashtable>
+  <entry>
+    <string>standard_submit_time</string>
+    <string>2011.11.26 13:44:44</string>
+  </entry>
+  <entry>
+    <string>clustering</string>
+    <string>2000001</string>
+  </entry>
+  <entry>
+    <string>clustering_filename</string>
+    <string>clustering.pas</string>
+  </entry>
+  <entry>
+    <string>submarines_language</string>
+    <string>PASCAL</string>
+  </entry>
+  <entry>
+    <string>submarines_submit_time</string>
+    <string>2011.11.26 13:00:19</string>
+  </entry>
+  <entry>
+    <string>standard_filename</string>
+    <string>standard.pas</string>
+  </entry>
+  <entry>
+    <string>standard</string>
+    <string>2000005</string>
+  </entry>
+  <entry>
+    <string>clustering_language</string>
+    <string>PASCAL</string>
+  </entry>
+  <entry>
+    <string>submarines</string>
+    <string>2000004</string>
+  </entry>
+  <entry>
+    <string>standard_language</string>
+    <string>PASCAL</string>
+  </entry>
+  <entry>
+    <string>submarines_filename</string>
+    <string>submarines.pas</string>
+  </entry>
+  <entry>
+    <string>clustering_submit_time</string>
+    <string>2011.11.26 11:59:54</string>
+  </entry>
+</hashtable>

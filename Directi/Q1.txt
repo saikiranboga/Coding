@@ -1,0 +1,128 @@
+Question 1/2
+
+Compromised Posts
+This is year 4096 and humans have found a medicine for immortality in the year 2048. Tukro a famous online social networking site founded in the year 3072 was celebrating its 1024th anniversary. To celebrate the occasion its CEO, Shark, and his team had launched a unique personalised video of length 17min 4sec for each user. The video consisted of a collage of all popular posts made by the user on Tukro.
+
+Raka shared this video with all his friends without reviewing it. Immediately after he finished watching the 1024 second length clip he realised that he made a huge mistake. The video was made of all posts made by Raka, irrespective of the privacy settings of the individual post.
+
+A post is compromised if a friend who was not supposed to see the original post, has seen it now. Raka wants to know how many of his posts have been compromised. Tukro provides the list of users who have watched the video till now. Help Raka find how many posts were compromised.
+
+Raka has N friends, identified by a unique integer between 0 and N-1.
+
+Raka has L lists of friends, identified by a unique integer between 0 and L-1.
+
+Each list can be of length at the most N.
+
+One friend cannot be added more than once to the same list.
+
+A list must have at least one friend.
+
+A friend may be added to multiple lists.
+
+Visibility of a post in Tukro works through two filters
+
+Include Filter: An array of lists, from the L lists above. Friends can view a post if they belong to any friend list, specified in the Include Filter.
+
+Exclude Filter: An array of lists, from the L lists above. Friends can view a post if their name does not belong to any friend list, specified in the Exclude Filter. Some caveats of the above are If no Filter is active, the post is visible to all friends If only Include Filter is active, a friend can see the post only if he is present in at least one of the lists of Include Filter. If only Exclude Filter is active, a friend can see the post only if he is not present in any of the lists of exclude filter. If both Include and Exclude Filters are active, a friend can see the post if and only if he is present in at least one of the lists of include filter and he is not present in any of the lists of exclude filter if he is present in both an include filter list, and exclude filter list, he should not be able to see the post
+
+Input Specification
+
+First line contains a single integer N, the number of friends.
+
+Second line contains a list of integers separated by a single space. The first integer V, represents the number of friends who viewed the video. There are V other integers in the line representing the ID's of friends who viewed the video.
+
+Third line contains a single integer L representing the number of lists.
+
+L lines follow. Each line representing a list. The first integer of the line A, denotes the size of the list; followed by A integers, each denoting the friends in the list.
+
+Next line contains a single integer P denoting the number of posts in the video. 2 * P lines follow. Each pair denoting the Include Filter and Exclude Filters of one post respectively. First two lines denote the Include and Exclude Filters for first post Next two lines denote the Include and Exclude Filters of second post and so on..
+
+An include filter is represented by a list of space separated integers. The first integer B represents the number of lists in the filter. B may be 0, to denote that the include filter is not active. If B is more than 0, the include filter is active and the next B integers in the line denote the ID's of lists present in the include filter.
+
+Exclude filters are also represented in the same format.
+
+Output Specification
+
+Print a single integer specifying the number of posts that are compromised according to the definition above.
+
+Constraints
+
+1 = N = 10000
+1=V=N
+1=L=6
+1 = P = 100000
+Note that the constraints on N and P are large.
+
+Your solution will exceed time limits if its complexity is O(N*P).
+
+Even O(V*P) solutions may exceed time limit!
+
+Note the small constraint on L.
+
+Sample Input 1
+
+10
+8 1 2 5 6 0 9 8 7
+4
+2 4 3
+2 7 6
+3 0 1 5
+3 2 8 9
+4
+0
+1 0
+1 1
+0
+0
+0
+3 1 2 3
+0
+
+Sample Output 1
+
+1
+
+Explanation
+There are 10 friends. Their ID's are from 0 to 9
+8 of them viewed the video = {0,1,2,5,6,7,8,9}
+There are 4 lists
+List-0 has 2 friends {3,4}
+List-1 has 1 friend {7,6}
+List-2 has 3 friends {0,1,5}
+List-3 has 3 friends {2,8,9}
+There are 4 posts
+Post-0 doesn't have any include filter but has List-0 - {3,4} - in exclude filter
+3, or 4, have not seen the video
+Hence Post-0 is not compromised
+Post-1 has an include filter of List-1 - {7,6} - and no exclude filter.
+But other friends have seen the video
+Hence Post-1 is compromised
+Post-2 doesn't have any filters. Such a post was intended to be seen by anyone.
+Hence Post-2 is not compromised.
+Post-3 has a include filter of List-1, List-2 and List-3.
+Their union is {0,1,2,5,6,7,8,9}
+These are the exact friends who saw the video
+Hence Post-3 is not compromised
+Hence only 1 post is compromised.
+
+Sample Input 2
+5
+2 2 3
+5
+1 0
+1 1
+1 2
+1 3
+1 4
+4
+3 2 3 4
+1 0
+3 1 2 3
+0
+3 0 1 3
+0
+3 2 3 4
+1 0
+
+Sample Output 2
+1

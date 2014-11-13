@@ -1,0 +1,101 @@
+program shablon;
+
+{$MODE OBJFPC}{$H+}
+
+uses math;
+
+const nmax = 1000 + 100;
+
+var a, b, arans, normans : array[0 .. nmax, 0 .. nmax] of longint;
+    n, m, q, i, j, r1, r2, ans, rr1, rr2 : longint;
+
+procedure pinit;
+begin
+    assign(input, 'input.txt');
+    reset(input);
+    assign(output, 'output.txt');
+    rewrite(output);
+ end;
+
+procedure pout;
+begin
+    close(input);
+    close(output);
+end;
+
+
+function getans(r1, r2 : longint) : longint;
+var j1, j2 : longint;
+begin
+    result := 0;
+//    if b[r2, 1] - b[r1 - 1, 1] = 0 then begin
+//        result := r2 - r1 + 1;
+//    end;
+    for j2 := 2 to m do begin
+        for j1 := 1 to j2 do begin
+            if b[r2, j2] - b[r2, j1 - 1] - b[r1 - 1, j2] + b[r1 - 1, j1 - 1] = 0 then begin
+                result := max(result, (r2 - r1 + 1) * (j2 - j1 + 1));
+            end;
+        end;
+    end;
+end;
+
+begin
+ //   pinit;
+    read(n, m);
+    for i := 1 to n do begin
+        for j := 1 to m do begin
+            read(a[i, j]);
+        end;
+    end;
+    b[1, 1] := a[1, 1];
+    for i := 1 to n do begin
+        for j := 1 to m do begin
+            b[i, j] := a[i, j] + b[i - 1, j] + b[i, j - 1] - b[i - 1, j - 1];
+        end;
+    end;     {
+    for r1 := 1 to n do begin
+        for r2 := r1 to n do begin
+            if r1 = r2 then begin
+                arans[r1, r2] := 0;
+            end
+            else begin
+                arans[r1, r2] := arans[r1, r2 - 1];
+            end;
+    //        for rr1 := 1 to r1 - 1 do begin
+    //            arans[r1, r2] := max(arans[r1, r2], arans[r1, rr1]);
+    //        end;
+            arans[r1, r2] := max(arans[r1, r2], getans(r1, r2));
+        end;
+    end;    }
+
+    for r2 := 1 to n do begin
+        for r1 := 1 to r2 do begin
+            arans[r1, r2] := getans(r1, r2);
+        end;
+    end;
+    for r1 := 1 to n do begin
+        for r2 := r1 to n do begin
+            normans[r1, r2] := 0;
+            for i := r1 to r2 do begin
+                for j := i to r2 do begin
+                    normans[r1, r2] := max(normans[r1, r2], arans[i, j]);
+                end;
+            end;
+
+        end;
+    end;
+    read(q);
+    for i := 1 to q do begin
+        read(r1, r2);
+        ans := 0;
+//        for rr1 := r1 to r2 do begin
+//            for rr2 := rr1 to r2 do begin
+//                ans := max(ans, arans[rr1, rr2]);
+//            end;
+//        end;
+        ans := normans[r1, r2];
+        writeln(ans);
+    end;
+  //  pout;
+end.

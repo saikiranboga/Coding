@@ -1,0 +1,136 @@
+/*
+TASK: submarines
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+const int INF = 1000100;
+
+int n, m;
+int d[1 << 20], maxDepth = 0;
+int tree[1 << 23];
+int leaves = 1;
+
+void read()
+{
+    scanf("%d %d", &n, &m);
+    for(int i = 1; i <= n; i ++)
+    {
+        scanf("%d", &d[i]);
+        if(maxDepth < d[i])
+            maxDepth = d[i];
+    }
+}
+
+void query20()
+{
+    int cnt[1024];
+    memset(cnt, 0, sizeof(cnt));
+    for(int i = 1; i <= n; i ++)
+        for(int j = i + 1; j <= n; j ++)
+            if(d[i] < d[j])
+            {
+                cnt[j] ++;
+                break;
+            }
+    int x = 0;
+    for(int i = 1; i <= n; i ++)
+        if(x < cnt[i])
+            x = cnt[i];
+    printf("%d\n", x);
+}
+
+void solve20()
+{
+    int cmd;
+    for(int i = 0; i < m; i ++)
+    {
+        scanf("%d", &cmd);
+        if(cmd != 0) swap(d[cmd], d[cmd + 1]);
+        else query20();
+    }
+}
+
+void update(int idx, int l, int r, int tarl, int tarr, int val)
+{
+    if(r < tarl) return;
+    if(l > tarr) return;
+    
+    if(l <= tarl && tarr <= r)
+        tree[idx] = min(tree[idx], val);
+    else
+    {
+        update(2 * idx, l, (l + r) >> 2, tarl, tarr, val);
+        update(2 * idx + 1, ((l + r) >> 2) + 1, r, tarl, tarr, val);
+        
+        tree[idx] = min(tree[2 * idx], tree[2 * idx + 1]);
+    }
+}
+
+int rmq(int idx, int l, int r, int tarl, int tarr)
+{
+    if(r < tarl) return INF;
+    if(l > tarr) return INF;
+    
+    if(tarl <= l && r <= tarr) return tree[idx];
+    else
+    {
+        int r1 = rmq(2 * idx, l, (l + r) >> 2, tarl, tarr);
+        int r2 = rmq(2 * idx + 1, ((l + r) >> 2) + 1, r, tarl, tarr);
+        
+        return min(r1, r2);
+    }
+}
+
+void doit()
+{
+    for(int i = 1; i < 2 * leaves; i ++)
+        tree[i] = INF;
+    
+    int cnt[1 << 20];
+    memset(cnt, 0, sizeof(cnt));
+    
+    for(int i = n; i >= 1; i --)
+    {
+        int y = rmq(1, 0, leaves - 1, d[i] + 1, maxDepth);
+        if(y != INF) cnt[y] ++;
+        update(1, 0, leaves - 1, d[i], maxDepth, i);
+    }
+    
+    int ans = 0;
+    for(int i = 1; i <= n; i ++)
+        if(ans < cnt[i])
+            ans = cnt[i];
+    
+    printf("%d\n", ans);
+}
+
+void solve50()
+{
+    while(leaves <= maxDepth) leaves <<= 1;
+    
+    cout << leaves << endl;
+    
+    int cmd;
+    for(int i = 0; i < m; i ++)
+    {
+        scanf("%d", &cmd);
+        if(cmd != 0) swap(d[cmd], d[cmd + 1]);
+        else doit();
+    }
+}
+
+int main()
+{
+    read();
+    if(n <= 1000 && m <= 100)
+        solve20();
+    else
+        solve50();
+
+    return 0;
+}

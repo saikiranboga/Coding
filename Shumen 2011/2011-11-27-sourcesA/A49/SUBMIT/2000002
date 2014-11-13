@@ -1,0 +1,46 @@
+program gg;
+{$MODE OBJFPC} {$R+}{$Q+}
+var
+ t, c, n, k, i, j, max: longint;
+ a, h, g, b: array [1..10000] of longint;
+procedure swap(var a, b: longint);
+var
+  p: longint;
+begin
+  p := a;
+  a := b;
+  b := p;
+end;
+begin
+ { assign(input, 'input.txt');
+  reset(input);
+  assign(output, 'output.txt');
+  rewrite(output);}
+  read(n, t);
+  for i := 1 to n do
+    read(a[i]);
+  for i := 1 to t do begin
+    read(c);
+    if c>0 then swap(a[c], a[c+1]) else begin
+      for j := 1 to n do begin
+        b[j] := 99999;
+        g[j] := 1001;
+        h[j] := 0;
+      end;
+
+      for j := 1 to n - 1 do
+        for k := j + 1 to n do
+          if (a[k]-a[j]>0) and (a[k]-a[j]<b[j]) then begin
+            b[j] :=a[k]-a[j];
+            g[j] := k;
+          end;
+      for j := 1 to n do
+        inc(h[g[j]]);
+
+      max := 0;
+      for j := 1 to n do
+        if h[j]>max then max := h[j];
+      writeln(max);
+    end;
+  end;
+end.

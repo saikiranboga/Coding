@@ -1,0 +1,97 @@
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<cmath>
+#include<string>
+using namespace std;
+struct point
+{
+    int h,d;
+};
+vector<point> v;
+int n,m;
+int mb[12400];
+int br[1000024];
+void read()
+{
+    point b;
+    int i,br2=0,a;
+    cin>>n>>m;
+    for(i=1;i<=n;i++)
+    {
+        cin>>a;
+        b.h=br2;
+        b.d=a;
+        v.push_back(b);
+        br2+=5;
+    
+    }
+    
+}
+
+void solve()
+{
+    int i,j,maxbr=0;
+    long long int mini=999999999,a1,a2,l=0,t,md;
+    for(i=0;i<n;i++)
+    {
+        for(j=i+1;j<(min(n,i+5000));j++)
+        {
+            if(v[i].d<v[j].d)
+            {
+                l++;
+                a1=v[j].d-v[i].d;
+                a2=v[j].h-v[i].h;
+                md=sqrt((a1*a1)+(a2*a2));
+                if(mini>md) 
+                {
+                    mini=md;
+                    t=j;
+                }
+            }
+            if(l>100) break;
+        }
+        if(l)
+        {
+            br[t]++;
+            mini=999999999;
+            if(br[t]>maxbr) maxbr=br[t];
+            l=0;
+            
+        }
+        
+    }
+    cout<<maxbr<<endl;
+}
+void change(int x)
+{
+    int a,b;
+    a=v[x].d;
+    b=v[x].h;
+    v[x].d=v[x+1].d;
+    v[x].h=v[x+1].h;
+    v[x+1].d=a;
+    v[x+1].h=b;
+}
+int main()
+{
+    int i,a;
+    read();
+    for(i=0;i<m;i++)
+    {
+       cin>>a;
+       if(a)
+       {
+           change(a-1);
+       } 
+       else 
+       {
+           solve();
+           memset(br,0,sizeof(br));
+       }
+    }
+    
+return 0;
+}
+          

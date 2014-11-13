@@ -1,0 +1,127 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+const int MAXN = 1 << 10;
+
+struct el {
+	double x , y;
+	
+	void read() {
+		scanf ( "%lf%lf" , &x , &y );
+	}
+	
+	el () {}
+	el ( double _x , double _y ) {
+		x = _x; y = _y;
+	}
+};
+
+int n , k;
+el a[MAXN];
+int used[MAXN];
+vector < pair < el , int > > f;
+vector < el > ans;
+
+void read() {
+	int i;
+	
+	scanf ( "%d%d" , &n , &k );
+	for (i = 1; i <= n; i++) {
+		a[i].read();
+	}
+}
+
+double dist ( el a , el b ) {
+	return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+
+int cmp ( pair < el , int > a , pair < el , int > b ) {
+	return a.second > b.second;
+}
+
+int can ( double d1 ) {
+	int i , j , d;
+	int have = 0;
+	int mx = min ( 10000 , 100000000 / 50 / k / n );
+	
+	f.clear();
+	memset ( used , 0 , sizeof used );
+	
+	while ( mx -- ) {
+		i = 1 + rand() % n;
+		j = 1 + rand() % n;
+		
+		f.push_back ( make_pair ( el ( (a[i].x + a[j].x) / 2. , (a[i].y + a[j].y) / 2. ) , 0 ) );
+	}
+	 mx = min ( 10000 , 100000000 / 50 / k / n );
+	 
+	 while ( mx -- ) {
+		i = 1 + rand() % n;
+		j = 1 + rand() % n;
+		d = 1 + rand() % n;
+		
+		f.push_back ( make_pair ( el ( (a[i].x + a[j].x + a[d].x) / 3. , (a[i].y + a[j].y + a[d].y) / 3. ) , 0 ) );
+	}
+	
+	
+	ans.clear();
+	
+	for (i = 0; i < k; i++) {
+		for (j = 0; j < (int)f.size(); j++) {
+			f[j].second = 0;
+			
+			for (d = 1; d <= n; d++) {
+				if ( !used[d] ) {
+					f[j].second += (dist ( f[j].first , a[d] ) <= d1 * d1 + 1e-9);
+				}
+			}
+		}
+		
+		sort ( f.begin() , f.end() , cmp );
+		ans.push_back ( f[0].first );
+		
+		for (d = 1; d <= n; d++) {
+			if ( !used[d] && (dist ( f[0].first , a[d] ) <= d1 * d1 + 1e-9) ) {
+				used[d] = 1;
+				++ have;
+			}
+		}
+// 		printf ( "%d %d\n" , f[0].second , have );
+	}
+	
+	return have == n;
+}
+
+void solve() {
+	double l , r , mid;
+	int iter;
+	
+	l = 0;
+	r = 1e10;
+	
+	for (iter = 0; iter < 50; iter++) {
+		mid = (l + r) / 2;
+		
+		if ( can ( mid ) ) {
+			r = mid;
+		} else {
+			l = mid;
+		}
+	}
+	can ( (l + r) / 2. );
+	
+	for (int i = 0; i < (int)ans.size(); i++) {
+		printf ( "%.6lf %.6lf\n" , ans[i].x , ans[i].y );
+	}
+}
+
+int main() {
+	read();
+	solve();
+	
+	return 0;
+}

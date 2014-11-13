@@ -1,0 +1,132 @@
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <ctime>
+
+#define MAXN 1024
+
+using namespace std;
+
+struct data
+{
+    int zanul,kol;
+};
+
+struct data2
+{
+    int x,y,left,right,all;
+};
+
+int n,m,M,a[MAXN][MAXN],ans[MAXN][MAXN],zero[MAXN][MAXN];
+data2 val[MAXN<<1];
+
+data t[MAXN];
+
+inline void update(const int &kol)
+{
+    int currNode = kol + M - 1,child1,child2;
+    val[currNode].all = val[currNode].left = val[currNode].right = 0;
+
+    currNode = currNode >> 1;
+    while ( currNode )
+    {
+        //if ( val[currNode].left >= kol - val[currNode].x + 1 )
+            //val[currNode].left = kol - val[currNode].x;
+       //if ( val[currNode].right >= val[currNode].y - kol - 1 )
+           // val[currNode].right = val[currNode].y - kol - 1;
+        child1 = currNode<<1;
+        child2 = (currNode<<1) + 1;
+        if ( val[child1].left == val[child1].y - val[child1].x )
+            val[currNode].left = val[child1].left + val[child2].left;
+        else val[currNode].left = val[child1].left;
+        if ( val[child2].right == val[child1].y - val[child1].x )
+            val[currNode].right = val[child1].right + val[child2].right;
+        else val[currNode].right = val[child2].right;
+        val[currNode].all = val[currNode<<1].right + val[(currNode<<1) + 1].left;
+        if ( val[currNode].all < val[currNode<<1].all ) val[currNode].all = val[currNode<<1].all;
+        if ( val[currNode].all < val[(currNode<<1) + 1].all ) val[currNode].all = val[(currNode<<1) + 1].all;
+        currNode = currNode >> 1;
+    }
+}
+
+inline int mini(const int &x, const int &y)
+{
+    if ( x < y ) return x;
+    return y;
+}
+
+bool f(const data &x, const data &y)
+{
+    if ( x.zanul < y.zanul ) return true;
+    return false;
+}
+
+int main()
+{
+    int i,j,k,q,r1,r2,pre=1;
+    scanf ("%d%d",&n,&m);
+
+    M = 1;
+    while ( M < m ) M = (M<<1);
+
+    for ( i=1; i<=n; i++ )
+        for ( j=1; j<=m; j++ )
+            scanf ("%d",&a[i][j]);
+
+    for ( j=1; j<=m; j++ )
+    {
+        zero[n+1][j] = n+1;
+        for ( i=n; i>=1; i-- )
+            if ( !a[i][j] ) zero[i][j] = zero[i+1][j];
+            else zero[i][j] = i;
+    }
+
+    val[1].x = 1; val[1].y = M+1;
+    for ( j=2; j<(M<<1); j++ )
+    {
+        int mid = (val[j>>1].x + val[j>>1].y) >> 1;
+        if ( !(j&1) ) { val[j].x = val[j>>1].x; val[j].y = mid; }
+        else { val[j].x = mid; val[j].y = val[j>>1].y; }
+    }
+
+    for ( i=1; i<=n; i++ )
+    {
+        for ( j=1; j<(M<<1); j++ )
+        {
+            if ( val[j].y <= m+1 ) val[j].all = val[j].left = val[j].right = val[j].y - val[j].x;
+            else if ( m < val[j].x ) val[j].all = val[j].left = val[j].right = 0;
+            else
+            {
+                val[j].right = 0;
+                val[j].left = val[j].all = m + 1 - val[j].x;
+            }
+        }
+        for ( j=1; j<=m; j++ )
+        {
+            t[j].kol = j;
+            t[j].zanul = zero[i][j];
+        }
+        stable_sort (t+1,t+m+1,f);
+        int pointer = 0;
+        for ( j=i; j<=n; j++ )
+        {
+            for ( k=pointer+1; k<=m && t[k].zanul == j; k++ ) update(t[k].kol);
+            pointer = k-1;
+            ans[i][j] = val[1].all*(j+1-i);
+        }
+    }
+
+    for ( int razl=1; razl<n; razl++ )
+        for ( i=1; i+razl<=n; i++ )
+        {
+            if ( ans[i][i+razl] < ans[i][i+razl-1] ) ans[i][i+razl] = ans[i][i+razl-1];
+            if ( ans[i][i+razl] < ans[i+1][i+razl] ) ans[i][i+razl] = ans[i+1][i+razl];
+        }
+
+    scanf ("%d",&q);
+    for ( i=1; i<=q; i++ )
+    {
+        scanf ("%d %d",&r1,&r2);
+        printf ("%d\n",ans[r1][r2]);
+    }
+}

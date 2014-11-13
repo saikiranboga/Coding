@@ -1,0 +1,138 @@
+#include <cstdio>
+
+const int N = 1000015;
+
+int n, m, h[N], hit[N];
+
+void read() {
+    scanf("%d%d", &n, &m);
+
+    for (int i = 1; i <= n; ++i)
+        scanf("%d", &h[i]);
+}
+
+void query_brute() {
+    int rez = 0;
+
+    for (int i = 1; i <= n; ++i)
+        hit[i] = 0;
+
+    for (int i = 1; i <= n; ++i) {
+        double min = 1000000000;
+        int pos = 0;
+
+        for (int j = i + 1; j <= n; ++j)
+            if (h[i] < h[j] && min > ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000) {
+                min =  ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000;
+                pos = j;
+            }
+
+        ++hit[pos];
+
+        if (pos && hit[pos] > rez)
+            rez = hit[pos];
+    }
+
+    printf("%d\n", rez);
+}
+
+void brute() {
+    int op;
+
+    for (int i = 1; i <= m; ++i) {
+        scanf("%d", &op);
+
+        if (op == 0)
+            query_brute();
+        else {
+            int aux = h[op];
+            h[op] = h[op + 1];
+            h[op + 1] = aux;
+        }
+    }
+}
+
+int aib[3 * N];
+
+inline int min(int x, int y) {
+    return x < y ? x : y;
+}
+
+inline int bit(int x) {
+    return (x & (-x));
+}
+
+void insert_aib(int h, int x) {
+    while (h <= 3000000) {
+        aib[h] = min(aib[h], x);
+        h += bit(h);
+    }
+}
+
+int query_aib(int h) {
+    int rez = N;
+
+    while(h) {
+        rez = min(rez, aib[h]);
+        h -= bit(h);
+    }
+
+    return rez;
+}
+
+void query_2() {
+    int rez = -1;
+
+    for (int i = 1; i <= 3000000; ++i)
+        aib[i] = N;
+
+    for (int i = 1; i <= n; ++i)
+        hit[i] = 0;
+
+    for (int i = n; i >= 1; --i) {
+        int poz = query_aib(h[i] - 1);
+
+        if (poz <= n) {
+            ++hit[poz];
+
+            if (hit[poz] > rez)
+                rez = hit[poz];
+        }
+
+        insert_aib(h[i], i);
+    }
+
+    printf("%d\n", rez);
+}
+
+void solve2() {
+    int op;
+
+    for (int i = 1; i <= n; ++i)
+        h[i] = 3000001 - h[i];
+
+    for (int i = 1; i <= m; ++i) {
+        scanf("%d", &op);
+
+        if (op == 0)
+            query_2();
+        else {
+            int aux = h[op];
+            h[op] = h[op + 1];
+            h[op + 1] = aux;
+        }
+    }
+}
+
+int main() {
+    //freopen("test.in", "r", stdin);
+
+    read();
+
+    if (n <= 1000 && m <= 100)
+        brute();
+    else if (n <= 1000000 && m <= 20)
+        solve2();
+
+    return 0;
+}

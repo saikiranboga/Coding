@@ -1,0 +1,103 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+const int MAXN = 1 << 10;
+
+int sum[MAXN][MAXN];
+int down[MAXN][MAXN];
+int ma3x[MAXN][MAXN];
+
+int dp[MAXN][MAXN];
+
+int n , m;
+int q;
+
+void read()
+{
+    scanf ( "%d%d" , &n , &m );
+
+    int i , j;
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= m; ++j)
+            scanf ( "%d" , &ma3x[i][j] );
+}
+
+void init()
+{
+    int i , j;
+
+
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= m; ++j)
+        {
+            sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + ma3x[i][j];
+            if ( ma3x[i][j] )
+                down[i][j] = i;
+
+            else if ( i == 1 )
+                down[i][j] = 1;
+
+            else
+                down[i][j] = down[i - 1][j];
+        }
+}
+
+inline int get_sum ( int x1 , int y1 , int x2 , int y2 )
+{
+    return sum[x2][y2] - sum[x1 - 1][y2] - sum[x2][y1 - 1] + sum[x1 - 1][y1 - 1];
+}
+
+int go ( int r1 , int r2 )
+{
+    int res = 0;
+    //for (int i = r1; i <= r2; ++i)
+      //  for (int j = r1; j <= i; ++j)
+            //res = max ( res , dp[i][j] );
+    res = dp[r2][r2 - r1 + 1];
+    return res;
+
+}
+
+void gen ( int h , int w )
+{
+    int i , j;
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= m; ++j)
+        {
+            if ( get_sum ( i - h + 1 , j - w + 1 , i , j ) == 0 )
+                dp[i][h] = max ( dp[i][h] , h * w );
+            if ( h > 0 )
+                dp[i][h] = max ( dp[i][h] , dp[i][h - 1] );
+        }
+}
+
+void solve()
+{
+    init();
+
+    int i , j;
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= n; ++j)
+            gen ( i , j );
+
+    int q;
+    scanf ( "%d" , &q );
+    while ( q-- )
+    {
+        int r1 , r2;
+        scanf ( "%d%d" , &r1 , &r2 );
+        printf ( "%d\n" , go ( r1 , r2 ) );
+    }
+
+}
+
+int main()
+{
+    read();
+    solve();
+
+    return 0;
+}

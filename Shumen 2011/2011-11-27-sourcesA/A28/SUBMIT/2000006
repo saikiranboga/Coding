@@ -1,0 +1,44 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+int n,m;
+int a[10000001];
+
+int main()
+{
+    int i,j,k,l,x,br,ans,pr,pp;
+    cin>>n>>m;
+    if(m>20) cout<<"ASD";
+    for(i=1;i<=n;i++)
+    {
+        scanf("%d",&a[i]);
+    }
+    for(i=1;i<=m;i++)
+    {
+        cin>>k;
+        if(k!=0)
+        {
+            x=a[k];
+            a[k]=a[k+1];
+            a[k+1]=x;     
+        }
+        else
+        {
+            int ans=0;
+            for(j=n;j>=1;j--)
+            {
+                br=0;
+                int gg=0;
+                int dg=a[j];
+                for(pp=j-1;pp>=1;pp--)
+                {
+                    if(a[pp]<dg&&a[pp]>gg) br++;
+                    if(a[pp]>dg) break;
+                    if(a[pp]>gg) gg=a[pp];
+                }
+                if(br>ans) ans=br;
+            }
+            cout<<ans<<endl;    
+        }
+    }
+}

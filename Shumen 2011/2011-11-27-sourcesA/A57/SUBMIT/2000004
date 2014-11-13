@@ -1,0 +1,61 @@
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+#include<queue>
+#include<stack>
+#include<vector>
+#include<map>
+#include<string>
+#include<cstring>
+using namespace std;
+int n , m , a[1002][1002];
+void read ()
+{
+      cin>>n>>m;
+      int i , j;
+      for(i=1;i<=n;i++)
+      for(j=1;j<=m;j++)
+      cin>>a[i][j];
+}
+int ans (int x , int y)
+{
+    int i , j, p ,g,ret=0,l;
+     for(i=x;i<=y;i++)
+       for(j=1;j<=m;j++)
+         for(p=0;i+p<=y;p++)
+            for(g=0;j+g<=m;g++)
+            {
+                l=0;
+              for(int ii=i;ii-i<=p;ii++)
+              {
+                if(l==1)break;
+                for(int jj=j;jj-j<=g;jj++)
+                 {
+                     //cout<<ii<<' '<<jj<<' '<<a[i][j]<<endl;
+                    if(a[ii][jj]==1){l=1;break;}
+                 }
+               }
+               //cout<<i<<' '<<j<<' '<<p<<' '<<g<<' '<<l<<endl;
+               if(l==0&&(p+1)*(g+1)>ret) ret=(p+1)*(g+1);
+            }
+            return ret;
+}
+void solve()
+{
+      int i;
+      int x , y;
+      int T;
+      cin>>T;
+      for(i=1;i<=T;i++)
+      {
+          cin>>x>>y;
+          cout<<ans(x,y)<<endl;
+      }
+}
+int main ()
+{
+    read();
+    solve();
+    return 0;
+}

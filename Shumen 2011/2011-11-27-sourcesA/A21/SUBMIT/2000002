@@ -1,0 +1,70 @@
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+int n, m;
+int a[1000012];
+int c[100024];
+int br[1000012];
+
+
+
+void read()
+{
+cin>>n>>m;
+for(int i=1; i<=n; i++)
+scanf("%d", &a[i]);
+
+
+for(int i=0; i<m; i++)
+scanf("%d", &c[i]);
+
+}
+
+int signal()
+{
+    double minr=static_cast<unsigned int>(0-1);
+    int mini=0, maxx=0;
+    unsigned int minn=0-1;
+for(int i=1; i<n; i++)
+{
+
+    for(int k=i+1;k<=n; k++)
+    if(a[i]<a[k] && minr>sqrt((a[i]-a[k])*(a[i]-a[k]) + ((k-i)*5)*((k-i)*5))+0.000000000000001)
+       {
+           minr=sqrt((a[i]-a[k])*(a[i]-a[k]) + ((k-i)*5)*((k-i)*5));
+           mini=k;
+       }
+       br[mini]++;
+       if(mini && br[mini]>maxx){maxx=br[mini]; }
+       mini=0;
+       minr=static_cast<unsigned int>(0-1);
+}
+memset(br, 0, sizeof(br));
+return maxx;
+}
+
+void change(int i)
+{
+swap(a[i], a[i+1]);
+}
+
+void solve()
+{
+    for(int i=0; i<m; i++)
+    {
+
+        if(c[i]==0)cout<<signal()<<endl;
+        else change(c[i]);
+    }
+}
+
+int main()
+{
+    read();
+    solve();
+    return 0;
+}

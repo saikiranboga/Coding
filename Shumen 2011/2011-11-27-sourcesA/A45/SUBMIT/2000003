@@ -1,0 +1,84 @@
+#include <cstdio>
+#include <cstring>
+#define NMAX 1005
+int n,m,q,A[NMAX][NMAX],C[NMAX][NMAX],B[NMAX][NMAX],D[NMAX][NMAX],best[NMAX];
+inline int cif(char x)
+{
+    return x=='0' || x=='1';
+}
+void read()
+{
+    scanf("%d%d",&n,&m);
+    int i,j;
+    for (i=1; i<=n; i++)
+        for (j=1; j<=m; j++)
+            scanf("%d",&A[i][j]);
+}
+inline int max(int x,int y)
+{
+    return x>y ? x : y;
+}
+inline int min(int x,int y)
+{
+    return x<y ? x : y;
+}
+void precompute()
+{
+    int i,j,t,act,st,dr;
+    for (i=1; i<=n; i++)
+        for (j=1; j<=m; j++)
+            if (A[i][j])
+                C[i][j]=0;
+            else
+                C[i][j]=C[i][j-1]+1;
+    for (i=1; i<=n; i++)
+    {
+        for (j=1; j<=m; j++)
+            best[j]=NMAX;
+        for (j=1; j<=m; j++)
+        {
+            for (t=i; t>=1; t--)
+            {
+                best[j]=min(best[j],C[t][j]);
+                B[t][i]=max(B[t][i],best[j]*(i-t+1));
+            }
+        }
+    }
+    for (i=1; i<=n; i++)
+    {
+        if (i==1)
+        {
+            for (j=1; j<=n; j++)
+                D[j][j]=B[j][j];
+        }
+        else
+        {
+            for (j=1; j<=n-i+1; j++)
+            {
+                  st=j; dr=j+i-1;
+                  D[st][dr]=B[st][dr];
+                  D[st][dr]=max(D[st][dr],D[st+1][dr]);
+                  D[st][dr]=max(D[st][dr],D[st][dr-1]);
+            }
+        }
+    }
+}
+void solve()
+{
+    int i,x,y;
+    scanf("%d",&q);
+    for (i=1; i<=q; i++)
+    {
+        scanf("%d%d",&x,&y);
+        printf("%d\n",D[x][y]);
+    }
+}
+int main()
+{
+   // freopen("test.in","r",stdin);
+  //  freopen("test.out","w",stdout);
+    read();
+    precompute();
+    solve();
+    return 0;
+}

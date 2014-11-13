@@ -1,0 +1,49 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+using namespace std;
+
+typedef pair<int,long long> par;
+
+vector<int> V[1001];
+
+int x[1001],y[1001];
+int n,k;
+
+int sqr(int x){return x*x;}
+
+par niz[1001];
+
+
+bool cmp(par x, par y){return x.second<y.second;}
+
+int main(void){
+    srand(time(NULL));
+    scanf("%d%d", &n, &k);
+    for (int i=0;i<n;++i){
+        scanf("%d%d",x+i,y+i);
+    }
+    int a=n/k+1;
+    for (int i=0;i<n;++i){
+        for (int j=0;j<n;++j){
+            V[i].push_back(sqr(x[i]-x[j])+sqr(y[i]-y[j]));
+        }
+    }
+
+    for (int i=0;i<n;++i){
+        sort(V[i].begin(),V[i].end());
+        long long sum=0;
+        for (int j=0;j<a;++j)sum+=V[i][j];
+        niz[i]=par(i,sum);
+    }
+
+    sort(niz,niz+n,cmp);
+
+    for (int i=0;i<k;++i){
+        printf("%d.%06d %d.%06d\n", x[niz[i].first], rand()%int(1e6),y[niz[i].first],rand()%int(1e6));
+    }
+
+    return 0;
+}

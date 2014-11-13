@@ -1,0 +1,23 @@
+#include <fstream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+int n, m, q, d;
+
+int main()
+{
+    srand(time(NULL));
+    scanf("%d %d", &n, &m);
+    for(int i = 0;i < n;i++)
+        for(int j = 0;j < m;j++)
+            scanf("%d", &d);
+    scanf("%d", &q);
+    for(int i = 0;i < q;i++)
+    {
+        scanf("%d %d", &d, &d);
+        printf("%d\n", rand()%(m*n));
+    }
+    return 0;
+}

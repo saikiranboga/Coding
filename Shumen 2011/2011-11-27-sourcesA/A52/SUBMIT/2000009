@@ -1,0 +1,268 @@
+#include <set>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int MAXN = 1 << 20;
+const int GSIZE = 1002;//pls change
+const int GROUPS = 1005;
+
+int n , m;
+int ans[MAXN];
+int a[MAXN];
+int gidx[MAXN];
+int pidx[MAXN];
+vector < int > st;
+
+multiset < int > f[GROUPS];
+vector < int > g[GROUPS];
+int maxAns[GROUPS];
+int mxA[GROUPS];
+
+void read() {
+	int i;
+	
+	scanf ( "%d%d" , &n , &m );
+	for (i = 1; i <= n; i++) {
+		scanf ( "%d" , &a[i] );
+	}
+}
+
+void solve() {
+	int answer;
+	int x , t;
+	int cur;
+	int i , j , k;
+	
+	for (i = 1; i <= n; i++) {
+		gidx[i] = (i - 1) / GSIZE;
+		pidx[i] = (int)g[ gidx[i] ].size();
+		g[ gidx[i] ].push_back ( i );
+		
+		mxA[ gidx[i] ] = max ( mxA[ gidx[i] ] , a[i] );
+	}
+	
+	t = gidx[n] + 1;
+	
+	for (i = 0; i < t; i++) {
+		st.clear();
+		
+		if ( i ) {
+			for (multiset < int >::iterator it = f[i - 1].begin(); it != f[i - 1].end(); it++) {
+				st.push_back ( *it );
+			}
+		}
+		reverse ( st.begin() , st.end() );
+		
+		for (j = 0; j < (int)g[i].size(); j++) {
+			while ( (int)st.size() && st.back() < a[ g[i][j] ] ) {
+				++ ans[ g[i][j] ];
+				maxAns[i] = max ( maxAns[i] , ans[ g[i][j] ] );
+				st.pop_back();
+			}
+			
+			st.push_back ( a[ g[i][j] ] );
+		}
+		
+		k = i;
+		for (j = (int)st.size() - 1; j >= 0; j--) {
+			while ( k < t && mxA[k + 1] <= st[j] ) ++ k;
+			
+			if ( k < t ) {
+// 				printf ( "%d   %d\n" , st[j] , k );
+				f[k].insert ( st[j] );
+			}
+		}
+	}
+	
+	while ( m -- ) {
+		scanf ( "%d" , &x );
+		
+// 		printf ( " -- %d\n" , x );
+		
+		if ( !x ) {
+			answer = 0;
+			for (i = 0; i < t; i++) {
+				answer = max ( answer , maxAns[i] );
+			}
+			
+			printf ( "%d\n" , answer );
+		} else {
+			if ( gidx[x] != gidx[x + 1] ) {
+				swap ( a[x] , a[x + 1] );
+				cur = gidx[x];
+				
+				//recalculate mxA for both groups
+				mxA[cur] = 0;
+				mxA[cur + 1] = 0;
+				
+				for (i = 0; i < (int)g[cur].size(); i++) {
+					mxA[cur] = max ( mxA[cur] , a[ g[cur][i] ] );
+				}
+				
+				for (i = 0; i < (int)g[cur + 1].size(); i++) {
+					mxA[cur + 1] = max ( mxA[cur + 1] , a[ g[cur + 1][i] ] );
+				}
+				
+				st.clear();
+				if ( cur ) {
+					for (multiset < int >::iterator it = f[cur - 1].begin(); it != f[cur - 1].end(); it++) {
+						st.push_back ( *it );
+					} 
+				}
+				reverse ( st.begin() , st.end() );
+				
+				maxAns[cur] = 0;
+				for (j = 0; j < (int)g[cur].size(); j++) {
+					ans[ g[cur][j] ] = 0;
+					
+					while ( (int)st.size() && st.back() < a[ g[cur][j] ] ) {
+						++ ans[ g[cur][j] ];
+						maxAns[cur] = max ( maxAns[cur] , ans[ g[cur][j] ] );
+						st.pop_back();
+					}
+					
+					st.push_back ( a[ g[cur][j] ] );
+				}
+				
+				maxAns[cur + 1] = 0;
+				for (j = 0; j < (int)g[cur + 1].size(); j++) {
+					ans[ g[cur + 1][j] ] = 0;
+					
+					while ( (int)st.size() && st.back() < a[ g[cur + 1][j] ] ) {
+						++ ans[ g[cur + 1][j] ];
+						maxAns[cur + 1] = max ( maxAns[cur + 1] , ans[ g[cur + 1][j] ] );
+						st.pop_back();
+					}
+					
+					st.push_back ( a[ g[cur + 1][j] ] );
+				}
+				
+				if ( a[x] > a[x + 1] ) {
+					for (i = x + 2; gidx[i] == gidx[x + 1]; i++) {
+						if ( a[i] > a[x + 1] ) {
+							break;
+						}
+					}
+					
+					if ( gidx[i] != gidx[x + 1] ) {
+						for (i = gidx[x + 1] + 1; i < t; i++) {
+							if ( mxA[i] > a[x + 1] ) {
+								f[i - 1].insert ( a[x + 1] );
+								break;
+							}
+						}
+						
+						if ( i != t ) {
+							for (j = 0; j < (int)g[i].size(); j++) {
+								if ( a[ g[i][j] ] > a[x + 1] ) {
+									++ ans[ g[i][j] ];
+									maxAns[i] = max ( maxAns[i] , ans[ g[i][j] ] );
+									break;
+								}
+							}
+						}
+					}
+				}
+			} else {
+				swap ( a[x] , a[x + 1] );
+				cur = gidx[x];
+				
+				st.clear();
+				if ( cur ) {
+					for (multiset < int >::iterator it = f[cur - 1].begin(); it != f[cur - 1].end(); it++) {
+						st.push_back ( *it );
+					} 
+				}
+				reverse ( st.begin() , st.end() );
+				
+				maxAns[cur] = 0;
+				for (j = 0; j < (int)g[cur].size(); j++) {
+					ans[ g[cur][j] ] = 0;
+					
+					while ( (int)st.size() && st.back() < a[ g[cur][j] ] ) {
+						++ ans[ g[cur][j] ];
+						maxAns[cur] = max ( maxAns[cur] , ans[ g[cur][j] ] );
+						st.pop_back();
+					}
+					
+					st.push_back ( a[ g[cur][j] ] );
+				}
+				/*
+				for (multiset < int >::iterator it = f[cur].begin(); it != f[cur].end(); it++) {
+					printf ( "%d " , *it );
+				}
+				printf ( "\n" );
+				*/
+				
+				if ( a[x] < a[x + 1] ) {
+					for (i = x + 2; gidx[i] == gidx[x]; i++) {
+						if ( a[i] > a[x] ) {
+							break;
+						}
+					}
+					
+					if ( gidx[i] != gidx[x] ) {
+						for (i = gidx[x] + 1; i < t; i++) {
+							if ( mxA[i] > a[x] ) {
+// 								printf ( "%d %d\n" , i - 1 , a[x] );
+// 								return ;
+								f[i - 1].erase ( f[i - 1].lower_bound ( a[x] ) );
+								break;
+							}
+						}
+						
+						if ( i != t ) {
+							maxAns[i] = 0;
+							
+							for (j = 0; j < (int)g[i].size(); j++) {
+								if ( a[ g[i][j] ] > a[x] ) {
+									-- ans[ g[i][j] ];
+									break;
+								}
+							}
+							
+							for (j = 0; j < (int)g[i].size(); j++) {
+								maxAns[i] = max ( maxAns[i] , ans[ g[i][j] ] );
+							}
+						}
+					}
+				} 
+				if ( a[x] > a[x + 1] ) {
+					for (i = x + 2; gidx[i] == gidx[x]; i++) {
+						if ( a[i] > a[x + 1] ) {
+							break;
+						}
+					}
+					
+					if ( gidx[i] != gidx[x] ) {
+						for (i = gidx[x] + 1; i < t; i++) {
+							if ( mxA[i] > a[x + 1] ) {
+								f[i - 1].insert ( a[x + 1] );
+								break;
+							}
+						}
+						
+						if ( i != t ) {
+							for (j = 0; j < (int)g[i].size(); j++) {
+								if ( a[ g[i][j] ] > a[x + 1] ) {
+									++ ans[ g[i][j] ];
+									maxAns[i] = max ( maxAns[i] , ans[ g[i][j] ] );
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	read();
+	solve();
+	
+	return 0;
+}

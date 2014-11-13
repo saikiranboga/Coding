@@ -1,0 +1,124 @@
+#include<cstdio>
+#include<vector>
+
+using namespace std;
+
+struct sub
+{
+    int num,depth;
+};
+
+const int NMAX=1000024;
+const int MMAX=100024;
+int cnt[NMAX];
+int n,m;
+sub a[NMAX];
+int commands[MMAX];
+bool r[NMAX];          // sent and recieved signals
+int BIT[NMAX];
+int max, maxi;
+
+void Init()
+{
+    scanf("%d %d", &n, &m);
+    for (int i=1; i<=n; i++) a[i].num=i;
+    int d;
+    for (int i=1; i<=n; i++)
+    {
+        scanf("%d", &d);
+        a[i].depth=d;
+    }
+    for (int i=1; i<=m; i++)
+        scanf("%d", &commands[i]);
+    for (int i=2; i<=n; i++)
+    {
+        for (int j=i-1; j>0; j--)
+            if (!r[j])
+                if(a[j].depth<a[i].depth)
+                {
+                    r[j]=true;
+                    cnt[i]++;
+                }
+    }
+    /*for (int i=1; i<=n; i++)
+    {
+        if (v[i].size()>BIT[i])
+        {
+            int j=i;
+            int better=v[i].size();
+            while (better>BIT[j] && j<=n)
+            {
+                BIT[j]=better;
+                j+=j&(-j);
+            }
+        }
+    }
+    for (int i=1; i<=n; i++)
+        printf("%d - %d\n", BIT[i], i);*/
+}
+
+/*void updatem(int i, int s)
+{
+    if (BIT[i]!=s+1)
+    {
+        if (i%2!=0) BIT[i]--;
+    }
+    else
+    {
+        int j=i-(i&(-i))+1;
+        while (j<i && v[j].size()!=s+1) j++;
+        if (j==i)
+        {
+            int k=0;
+            while (k<n && v[k].size()<=s) k++;
+            while (i<=k)
+            {
+                BIT[i]--;
+                i+=i&(-i);
+            }
+        }
+    }
+}*/
+
+void sol()
+{
+    for (int i=1; i<=m; i++)
+    {
+        if (commands[i]==0)
+        {
+            int max=0;
+            for (int i=1; i<=n; i++)
+            {
+                if (max<cnt[i]) max=cnt[i];
+            }
+            printf("%d\n", max);
+        }
+        else
+        {
+            int c=commands[i]+1;
+            for (int j=1; j<=n; j++)
+            {
+                cnt[j]=0;
+                r[j]=false;
+            }
+            swap(a[c-1],a[c]);
+            for (int j=2; j<=n; j++)
+            {
+                for (int k=j-1; k>0; k--)
+                if (!r[k])
+                    if(a[k].depth<a[j].depth)
+                    {
+                        r[k]=true;
+                        cnt[j]++;
+                    }
+            }
+        }
+    }
+}
+
+int main()
+{
+    Init();
+    sol();
+    return 0;
+}

@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <algorithm>
+
+using namespace std;
+
+#define inf 2147000000
+#define MAX_N 1010
+#define VMAX 10000
+
+int n, m, k, vmax, vmin = inf;
+int d[MAX_N], ant[MAX_N];
+
+struct punct {
+	int x, y;
+} A[MAX_N], distinct[MAX_N];
+
+double vsol;
+
+struct clusters2 {
+	double x, y;
+} sol[MAX_N], C[MAX_N];
+
+inline double dist(int x, int y, double p, double q) {
+	return (x - p) * (x - p) + (y - q) * (y - q);
+}
+
+void solve() {
+	for (int i = 1; i <= k; i++) {
+        int pos = rand() % m + 1;
+
+		C[i].x = distinct[pos].x;
+		C[i].y = distinct[pos].y;
+	}
+
+	memset(d, 0, sizeof(d));
+
+    int ok = 0;
+
+	while (ok == 0) {
+        ok = 1;
+
+        for (int i = 1; i <= n; i++)
+			ant[i] = d[i];
+
+        for (int i = 1; i <= n; i++) {
+			int ans = 1;
+
+			for (int j = 2; j <= k; j++) {
+				if (dist(A[i].x, A[i].y, C[j].x, C[j].y) < dist(A[i].x, A[i].y, C[ans].x, C[ans].y)) 
+					ans = j;
+			}
+
+			d[i] = ans;
+			if (d[i] != ant[i])
+				ok = 0;
+		}
+
+		for (int i = 1; i <= k; i++) {
+			int sx = 0, sy = 0, nr = 0;
+			for (int j = 1; j <= n; j++)
+				if (d[j] == i) {
+					sx += A[j].x;
+					sy += A[j].y;
+					nr++;
+				}
+
+			if (nr) {
+				C[i].x = 1.0 * sx / nr;
+				C[i].y = 1.0 * sy / nr;
+			}
+		}
+	}
+
+	double ans = 0;
+	for (int i = 1; i <= n; i++)
+		ans += dist(A[i].x, A[i].y, C[d[i]].x, C[d[i]].y);
+	if (ans < vsol) {
+		vsol = ans;
+		for (int i = 1; i <= n; i++)
+			sol[i] = C[i];
+	}
+}
+
+inline int cmp(punct P, punct Q) {
+	if (P.x != Q.x)
+		return P.x < Q.x;
+	return P.y < Q.y;
+}
+
+int main() {
+	srand(time(0));
+
+//    freopen("clustering.in", "r", stdin);
+//	freopen("clustering.out", "w", stdout);
+
+	scanf("%d %d", &n, &k);
+	for (int i = 1; i <= n; i++) 
+		scanf("%d %d", &A[i].x, &A[i].y);
+	sort(A + 1, A + n + 1, cmp);
+
+	for (int i = 1; i <= n; i++)
+		if (i == 0 || !(A[i].x == A[i - 1].x && A[i].y == A[i - 1].y))
+			distinct[++m] = A[i];
+
+    vsol = inf;
+
+	int nr = 2000000 / (n * k);
+	for (int i = 1; i <= nr; i++)
+		solve();
+
+	for (int i = 1; i <= k; i++)
+		printf("%.6lf %.6lf\n", sol[i].x, sol[i].y);
+
+	return 0;
+}

@@ -1,0 +1,11 @@
+#include<iostream>
+using namespace std;
+int n,k,x[1<<10],y[1<<10];
+int main()
+{
+    cin>>n>>k;
+    for(int i=0;i<n;i++) cin>>x[i]>>y[i];
+    for(int i=0;i<k;i++) cout<<((double)((x[i+1]+x[0])/2.0))<<" "<<((double)((y[i+1]+y[0])/2.0))<<endl;
+    //printf("%.6ld %.6ld\n",(double)((x[i+i]+x[i+i+1])/2.0),(double)((y[i+i]+y[i+i+1])/2.0));
+    return 0;
+}

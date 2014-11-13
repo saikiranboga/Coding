@@ -1,0 +1,149 @@
+/**
+TASK: standard
+LANG: C++
+*/
+#include <cstdio>
+#include <cstring>
+#include <cassert>
+#include <cctype>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+#include <ext/hash_map>
+#include <queue>
+#include <string>
+#define foreach( el , c ) for( typeof((c).begin()) el = (c).begin() ; el != (c).end() ; el++ )
+#define eprintf( msg , ... ) //fprintf( stderr , "line %d(%s): " msg "\n" , __LINE__ , __FUNCTION__ , ##__VA_ARGS__ )
+
+typedef long long ll;
+typedef unsigned long long ull;
+
+using namespace std;
+using namespace __gnu_cxx;
+
+const ll LLINF = 1LL << 60;
+const int INF = 1 << 29;
+const double EPS = 1e-9;
+
+const int MAXN = 1 << 10;
+const int MAXQ = 1 << 20;
+
+int N, M, Q;
+int m[MAXN][MAXN];
+int query[MAXQ][2];
+int dp[MAXN][MAXN];
+int best[MAXN][MAXN];
+int maxdy[MAXN][MAXN];
+
+int good[MAXN][MAXN];
+int goodcount[MAXN];
+
+int dp2[MAXN][MAXN];
+
+inline int getnextll(){
+	char c = 0;
+	while( !isdigit(c) )
+		c = getc( stdin );
+	int result = 0;
+	do{
+		result = 10 * result + ( c - '0' );
+		c = getc( stdin );
+	}while( isdigit( c ) );
+	return result;
+}
+
+void read(){
+    //scanf("%d %d", &N, &M);
+    N = getnextll();
+    M = getnextll();
+    for( int i = 1 ; i <= N ; i++ ){
+        for( int j = 1 ; j <= M ; j++ ){
+            //scanf("%d", &m[i][j]);
+            m[i][j] = getnextll();
+        }
+    }
+    scanf("%d", &Q);
+    for( int i = 0 ; i < Q ; i++ ){
+        //scanf("%d %d", &query[i][0], &query[i][1]);
+        query[i][0] = getnextll();
+        query[i][1] = getnextll();
+    }
+}
+
+int cool( int xi , int yi , int xj , int yj ){
+    return dp[xi][yi] - dp[xi][yj-1] - dp[xj-1][yi] + dp[xj-1][yj-1] == 0;
+}
+
+int get( int r1 , int r2 ){
+    if( r1 > r2 )
+        return -INF;
+    int &self = best[r1][r2];
+    
+    if( self != -1 )
+        return self;
+    
+    self = 0;
+    
+    for( int _i = 0 ; _i < goodcount[r1] ; _i++ ){
+        /*
+        for( int j = i ; j <= M ; j++ ){
+            if( cool( r2 , j , r1 , i ) ){
+                int x = (r2 - r1 + 1) * (j - i + 1);
+                self = max( self , x );
+                eprintf(" -> (%d,%d,%d,%d) = %d", r2, j, r1, i, x);
+            }else{
+                break;
+            }
+        }
+        */
+        int i = good[r1][_i];
+        int l = i , r = M;
+        int last = -1;
+        while( l <= r ){
+            int m = ( l + r ) / 2;
+            if( cool( r2 , m , r1 , i ) ){
+                int x = (r2 - r1 + 1) * (m - i + 1);
+                self = max( self , x );
+                last = m;
+                l = m + 1;
+            }else
+                r = m - 1;
+        }
+    }
+    
+    self = max( self , get( r1 + 1 , r2 ) );
+    self = max( self , get( r1 , r2 - 1 ) );
+    
+    return max( self , get( r1 + 1 , r2 ) );
+}
+
+void solve(){
+    for( int i = 1 ; i <= N ; i++ )
+        for( int j = 1 ; j <= M ; j++ ){
+            dp[i][j] = dp[i-1][j] + dp[i][j-1] + m[i][j] - dp[i-1][j-1];
+            eprintf("dp[%d][%d] = %d", i, j, dp[i][j]);
+        }
+    for( int i = 1 ; i <= N ; i++ ){
+        for( int j = 1 ; j <= M ; j++ ){
+            if( m[i][j] == 0 )
+                good[i][ goodcount[i]++ ] = j;
+        }
+    }
+    memset( best , -1 , sizeof( best ) );
+    for( int i = 0 ; i < Q ; i++ ){
+        int a = query[i][0], b = query[i][1];
+        printf("%d\n", get( a , b ));
+    }
+}
+
+int main(){
+	//freopen( "standard.in" , "r" , stdin );
+	///freopen( "standard.out" , "w" , stdout );
+	
+	read();
+	///init();
+	solve();
+	
+	return 0;
+}

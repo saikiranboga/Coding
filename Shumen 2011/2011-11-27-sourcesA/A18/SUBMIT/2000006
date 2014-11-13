@@ -1,0 +1,82 @@
+#include<cstdio>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+struct point {
+    
+    int x, y;
+};
+struct dists {
+    
+    int dst;
+    int i, j;
+    
+    bool operator < ( const dists &a ) const {
+        
+        return dst>a.dst;
+    }
+};
+
+int n, k, used[1000];
+vector<dists> dist;
+
+point sheeps[1000];
+
+void read() {
+    
+    int i;
+    scanf("%d%d", &n, &k);
+    
+    for( i=0; i<n; ++i ) 
+        scanf("%d%d", &sheeps[i].x, &sheeps[i].y);
+        
+}
+
+int _distance ( int i, int j ) {
+    
+    return ( sheeps[i].x - sheeps[j].x )*( sheeps[i].x - sheeps[j].x ) + ( sheeps[i].y - sheeps[j].y )*( sheeps[i].y - sheeps[j].y );
+}
+
+void solve () {
+    
+    int i, j;
+    
+    for( i=0; i<n; ++i ) {
+        for( j=i+1; j<n; ++j ) {
+            
+            dists q;
+            q.i=i;
+            q.j=j;
+            q.dst=_distance( i, j );
+            //printf("%d\n", ( sheeps[i].x - sheeps[j].x )*( sheeps[i].x - sheeps[j].x ) + ( sheeps[i].y - sheeps[j].y )*( sheeps[i].y - sheeps[j].y ) );
+            dist.push_back( q );
+        }
+    }
+    sort( dist.begin(), dist.end() );
+    
+    for( i=0; i<dist.size() && k > 0 ; ++i ) {
+        
+        if( !used[dist[i].i] ) {
+            
+            used[dist[i].i]=1;
+            printf("%.6lf %.6lf\n", double(sheeps[dist[i].i].x), double(sheeps[dist[i].i].y));
+            k--;
+        }
+        if(!k) continue;
+        
+        if( !used[dist[i].j] ) {
+            
+            used[dist[i].j]=1;
+            printf("%.6lf %.6lf\n", double(sheeps[dist[i].j].x), double(sheeps[dist[i].j].y));
+            k--;
+        }
+    }
+}
+
+int main () {
+    
+    read();
+    solve();
+    return 0;
+}

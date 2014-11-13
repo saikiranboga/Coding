@@ -1,0 +1,111 @@
+/*
+TASK: clustering
+LANG: C++
+*/
+
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+
+#define S(X) ((X)*(X))
+
+using namespace std;
+
+struct el {
+	double x, y;
+	el () {}
+	el ( double _x, double _y ) :
+		x(_x), y(_y) {}
+	
+	inline bool operator< ( const el& t ) const {
+		return x * x + y * y == t.x * t.x + t.y * t.y ? x < t.x : x * x + y * y < t.x * t.x + t.y * t.y;
+		}
+} a[1024];
+
+struct dog {
+	double d, X, Y;
+	dog () {}
+	dog ( double _d, double _X, double _Y ) :
+		d(_d), X(_X), Y(_Y) {}
+} D[1024][1024];
+
+int N, K;
+
+void calc ( int i, int j ) {
+	double X, Y; X = Y = 0.;
+	for ( int q=i; q<=j; ++q )
+		X += a[q].x, Y += a[q].y;
+	
+	
+	X /= double (j-i+1);
+	Y /= double (j-i+1);
+	double ret = 0.;
+	for ( int q=i; q<=j; ++q )
+		ret += S(a[q].x-X) + S(a[q].y-Y);
+	
+	D[i][j] = dog ( ret, X, Y );
+	
+}
+
+struct Answer {
+	int prev;
+	double res;
+	Answer () {}
+	Answer ( int _prev, double _res ) :
+		prev(_prev), res(_res) {}
+	
+	inline bool operator< ( const Answer &t ) const {
+		return res < t.res;
+		}
+} f[128][1024];
+
+bool cache[128][1024];
+Answer go ( int k, int i ) {
+	
+	if ( cache[k][i] ) return f[k][i];
+	cache[k][i] = true;
+	Answer &ref = f[k][i];
+	ref.res = 1e100;
+	
+	if ( !k ) return ref = Answer ( 0, D[1][i].d );
+	
+	double T;
+	for ( int j=k; j<i; ++j ) {
+		
+		T = go ( k-1, j ).res + D[j+1][i].d;
+		if ( T < ref.res ) ref = Answer ( j, T );
+		
+		}
+	
+	return ref;	
+	
+}
+
+int main (void) {
+	
+	scanf ( "%d%d", &N, &K );
+	for ( int i=1; i<=N; ++i ) {
+		scanf ( "%lf%lf", &a[i].x, &a[i].y );		
+		}
+	
+	sort ( a+1, a+1+N );
+//	for ( int i=1; i<=N; ++i ) printf ( "%d = [%.0lf;%.0lf]\n", i, a[i].x, a[i].y );
+	
+	for ( int i=1; i<=N; ++i ) for ( int j=i; j<=N; ++j ) {
+		calc ( i, j );
+//		printf ( "from %d to %d = %.6lf [%.6lf;%.6lf]\n", i, j, D[i][j].d , D[i][j].X, D[i][j].Y );
+		}
+	
+	memset ( cache, 0, sizeof cache );
+	int p = N; -- K;
+//	printf ( "\n" );
+	while ( p ) {
+		
+//		printf ( "from %d to %d >>>", go ( K, p ).prev+1, p );
+		printf ( "%.6lf %.6lf\n", D[ go ( K, p ).prev+1 ][ p ].X, D[ go ( K, p ).prev+1 ][ p ].Y );
+		
+		p = go ( K, p ).prev, -- K;
+		}
+	
+}

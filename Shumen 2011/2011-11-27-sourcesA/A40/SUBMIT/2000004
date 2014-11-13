@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <algorithm>
+
+using namespace std;
+
+#define MAXN 1000010
+
+int A[MAXN], F[MAXN], Nr[MAXN], St[MAXN];
+int maxim, M, N, i, x, nr;
+
+int main()
+{
+//    freopen("submarine.in","r",stdin);
+//    freopen("submarine.out","w",stdout);
+
+    scanf("%d %d",&N, &M);
+
+    for (i=1; i<=N; ++i)
+        scanf("%d",&A[i]);
+
+    for (; M; --M){
+        scanf("%d",&x);
+        if (x == 0){
+            nr = 0; St[0] = 0;
+            for (i=N; i>=1; --i){
+                while (nr > 0 && A[St[nr]] < A[i]) --nr;
+                F[i] = St[nr];
+                St[++nr] = i;
+                Nr[i] = 0;
+            }
+            for (i=1; i<=N; ++i)
+                ++Nr[F[i]];
+            maxim = Nr[1];
+            for (i=1; i<=N; ++i)
+                maxim = max(maxim, Nr[i]);
+            printf("%d\n", maxim);
+        }
+        else
+            swap(A[x], A[x+1]);
+    }
+
+    return 0;
+}

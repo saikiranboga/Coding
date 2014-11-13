@@ -1,0 +1,60 @@
+#include<iostream>
+using namespace std;
+int a[1000024],b[1000024],c[1000024]; int n,m;
+int ans[150];  int br=0;int br1=0;int maxx=-1,maxi;
+
+int maxxx()
+{   for(int i=0;i<n;i++)
+    if(b[i]>maxx){maxx=b[i];maxi=i;}}
+
+int check(int nach,int kr)
+{   
+    
+    for(int i=0;i<n;i++)
+    b[i]=0;
+    
+     for(int i=nach;i<kr;i++)
+ {br=i+1;br1=0;
+ while(br1==0){if(a[i]>a[br])br++;
+               else {br1=1;b[br]++;}}}              
+}
+
+int main()
+{   
+    cin>>n>>m;
+    
+    for(int i=0;i<n;i++)
+    cin>>a[i];
+ a[n+5]=3122312;
+   
+
+ 
+ check(0,n);
+ maxxx();
+ int brans=0;int xa;
+ for(int i=0;i<m;i++)
+ {cin>>xa;
+         if(xa==0){maxxx();ans[brans]=maxx;brans++;}
+         else if(xa!=0){xa--;int swapp; swapp=a[xa];a[xa]=a[xa+1];a[xa+1]=swapp;check(0,n);}
+              
+              
+              
+              
+}         
+ 
+   for(int i=0;i<brans;i++)
+   cout<<ans[i]<<"\n";
+ 
+    
+    /*
+    for(int i=0;i<n;i++)
+    cout<<b[i]<<" ";
+    */
+ 
+
+    
+    
+    
+    
+
+    return 0;}

@@ -1,0 +1,57 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+#define maxn 1000010
+
+int n, m, st0, k, dmax;
+int v[maxn], d[maxn], st[maxn];
+int a1[3*maxn], a2[3*maxn];
+
+int stiva()
+{
+    int sol=0, rez;
+
+    st0=0;
+    st[st0]=5000000;
+
+    for(int i=1; i<=n; ++i)
+    {
+        rez=0;
+        while(st[st0]<v[i])
+        {
+            --st0;
+            ++rez;
+        }
+        sol=max(sol, rez);
+        st[++st0]=v[i];
+    }
+
+    return sol;
+}
+
+int main()
+{
+ //   freopen("submarines.in", "r", stdin);
+ //   freopen("submarines.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &v[i]);
+
+    dmax=stiva();
+    for(int i=1; i<=m; ++i)
+    {
+        scanf("%d", &k);
+        if(k==0)
+            printf("%d\n", dmax);
+        else
+        {
+            swap(v[k], v[k+1]);
+            dmax=stiva();
+        }
+    }
+
+    return 0;
+}

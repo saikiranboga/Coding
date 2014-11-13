@@ -1,0 +1,41 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int MaxN = ( 1 << 20 );
+
+int n, m;
+int v[ MaxN ];
+int c[ MaxN ];
+int s[ MaxN ];
+int e;
+
+int solve(){
+ int ans = 0;
+ e = 0;
+ for( int i = n-1; i >= 0; --i ){
+    c[i] = 0;
+
+    while( e > 0 && v[s[e-1]] < v[i] ) --e;
+    if( e > 0 ) ++c[s[e-1]];
+    s[e++] = i;
+ }
+
+ return *max_element( c, c+n );
+}
+
+int main( void ) {
+ scanf( "%d%d", &n, &m );
+
+ for( int i = 0; i < n; ++i ) scanf( "%d", &v[i] );
+
+ for( int i = 0; i < m; ++i ) {
+  int x; scanf( "%d", &x );
+
+  if( x == 0 ) printf( "%d\n", solve() );
+  else swap( v[x-1], v[x] );
+ }
+
+ return 0;
+}

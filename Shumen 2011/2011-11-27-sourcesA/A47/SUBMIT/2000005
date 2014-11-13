@@ -1,0 +1,76 @@
+#include <cstdio>
+
+const int N = 300;
+
+int n, m, a[N][N], down[N][N], d[N][N][N], surf[N][N];
+
+void read() {
+    char s[3000];
+
+    scanf("%d%d\n", &n, &m);
+
+    for (int i = 1; i <= n; ++i) {
+        gets(s);
+        for (int j = 0; j < 2 * m; j += 2)
+            a[i][j / 2 + 1] = s[j] - '0';
+    }
+}
+
+inline int min(int x, int y) {
+    return x < y ? x : y;
+}
+
+inline int max(int x, int y) {
+    return x > y ? x : y;
+}
+
+void solve() {
+    for (int i = n; i >= 1; --i)
+        for (int j = m; j >= 1; --j)
+            if (!a[i][j]) {
+                d[i][j][1] = d[i][j + 1][1] + 1;
+                down[i][j] = down[i + 1][j] + 1;
+            }
+
+    for (int l = 2; l <= n; ++l)
+        for (int i = 1; i <= n; ++i)
+            for (int j = 1; j <= m; ++j)
+                if (!a[i][j] && l <= down[i][j])
+                    d[i][j][l] = max(d[i][j][l - 1], d[i + l - 1][j][1]);
+
+    for (int l = 1; l <= n; ++l)
+        for (int i = 1; i <= n; ++i)
+            for (int j = 1; j <= m; ++j)
+                surf[i][l] = max(surf[i][l], d[i][j][l] * l);
+
+    for (int l = 1; l <= n; ++l)
+        for (int i = 1; i <= n; ++i)
+            surf[i][l] = max(surf[i][l], surf[i][l - 1]);
+}
+
+void print() {
+    int l1, l2, q;
+
+    scanf("%d", &q);
+
+    for (int i = 1; i <= q; ++i) {
+        scanf("%d%d", &l1, &l2);
+
+        int rez = 0;
+
+        for (int lc = l1; lc <= l2; ++lc)
+            rez = max(rez, surf[lc][l2 - lc + 1]);
+
+        printf("%d\n", rez);
+    }
+}
+
+int main() {
+    read();
+
+    solve();
+
+    print();
+
+    return 0;
+}

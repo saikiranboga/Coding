@@ -1,0 +1,132 @@
+#include <cstdio>
+#include <queue>
+#include <cmath>
+#include <set>
+using namespace std;
+
+typedef long long ll;
+typedef double db;
+const int N = 1000010;
+const double EPS = 1e-9;
+
+int n, k, uk, imam;
+int broj[N];
+ll sumx[N], sumy[N];
+db dist;
+
+struct cmp {
+       bool operator() ( const int &a, const int &b ) {
+            if( sumx[a]*broj[b] == sumx[b]*broj[a] ) {
+                if( sumy[a]*broj[b] == sumy[b]*broj[a] ) return a < b;
+                return sumy[a]*broj[b] < sumy[b]*broj[a];
+            }
+            
+            return sumx[a]*broj[b] < sumx[b]*broj[a];
+       }
+};
+
+struct cmp1 {
+       bool operator() ( const int &a, const int &b ) {
+            if( sumy[a]*broj[b] == sumy[b]*broj[a] ) {
+                if( sumx[a]*broj[b] == sumx[b]*broj[a] ) return a < b;
+                return sumx[a]*broj[b] < sumx[b]*broj[a];
+            }
+            
+            return sumy[a]*broj[b] < sumy[b]*broj[a];
+       }
+};
+
+set <int,cmp> S;
+set <int,cmp1> M;
+deque <int> Q;
+
+set <int, cmp>::iterator it, it2, it3, pr, dr;
+
+int manjix( int id1, int id2 ) {
+    if( sumx[id1]/(db)broj[id1]+dist+EPS < sumx[id2]/(db)broj[id2] ) return 1;
+    return 0;
+}
+
+int manjiy( int id1, int id2 ) {
+    if( sumy[id1]/(db)broj[id1]+dist+EPS < sumy[id2]/(db)broj[id2] ) return 1;
+    return 0;
+}
+
+double udaljen( int id1, int id2 ) {
+       double x1 = sumx[id1]/(db)broj[id1];
+       double y1 = sumy[id1]/(db)broj[id1];
+       double x2 = sumx[id2]/(db)broj[id2];
+       double y2 = sumy[id2]/(db)broj[id2];
+       return sqrt( ( x1-x2 )*( x1-x2 )+( y1-y2 )*( y1-y2 ) );
+} 
+
+int main( void ) {
+    scanf( "%d %d", &n, &k );
+    for( int i = 0; i < n; ++i ) {
+         int a, b;
+         scanf( "%d %d", &a, &b );
+         broj[uk] = 1;
+         sumx[uk] = a;
+         sumy[uk] = b;
+         S.insert( uk );
+         ++uk;
+    }
+    
+    imam = n;
+    while( imam > k ) {
+         dist = 10000000.;
+         
+         set <int,cmp1> M;
+
+         Q.clear();
+         for( it = S.begin(); it != S.end(); ++it ) {
+              while( Q.size() && manjix( Q.front(), *it ) ) { M.erase( Q.front() ); Q.pop_front(); }
+              M.insert( *it );
+              it2 = M.find( *it );
+              it3 = it2;
+              ++it2; 
+              while( it2 != M.end() ) {
+                     if( manjiy( *it, *it2 ) ) break;
+                     
+                     double ud = udaljen( *it, *it2 );
+                     if( ud < dist+EPS ) {
+                         dist = ud;
+                         pr = it; dr = it2;
+                     }
+                     ++it2;
+              }
+              while( it3 != M.begin() ) {
+                     --it3;
+                     if( manjiy( *it3, *it ) ) break;
+                     
+                     double ud = udaljen( *it3, *it );
+                     if( ud < dist+EPS ) {
+                         dist = ud;
+                         pr = it; dr = it3;
+                     }
+              }
+              
+              Q.push_back( *it );
+         }
+         
+         int id1 = *pr;
+         int id2 = *dr;
+         S.erase( id1 );
+         S.erase( id2 );
+
+         sumx[uk] = sumx[id1]+sumx[id2];
+         sumy[uk] = sumy[id1]+sumy[id2];
+         broj[uk] = broj[id1]+broj[id2];
+
+         S.insert( uk );
+         ++uk;
+         --imam;
+    }
+    
+    for( it = S.begin(); it != S.end(); ++it ) {
+         int id = *it;
+         printf( "%.6lf %.6lf\n", sumx[id]/(db)broj[id], sumy[id]/(db)broj[id] );
+    }
+    
+    return 0;
+}

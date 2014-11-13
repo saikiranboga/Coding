@@ -1,0 +1,68 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <cstdio>
+
+using namespace std;
+
+const int maxn = 1005;
+
+int a[maxn][maxn], col[maxn][maxn], width[maxn][maxn], stive[maxn];
+int answer[maxn][maxn];
+
+int main() {
+	//ifstream cin("standard.in");
+	//ofstream cout("standard.out");
+	int N, M; scanf("%d%d", &N, &M);
+
+	for (int i = 1; i <= N; ++i)
+		for (int j = 1; j <= M; ++j)
+			scanf("%d", &a[j][i]);
+
+	swap(N, M);
+	++M;
+	for (int i = 1; i <= N; ++i)
+		a[i][M] = 1;
+	
+	for (int i = 1; i <= N; ++i)
+		for (int j = 1; j <= M; ++j) {
+			if (a[i][j])
+				col[i][j] = 0;
+			else
+				col[i][j] = col[i - 1][j] + 1;
+		}
+	
+	for (int i = 1; i <= N; ++i) {
+		int p = 1, q = 0;
+
+		for (int j = 1; j <= M; ++j) {
+			while (p <= q && col[i][stive[q]] >= col[i][j]) {
+				width[stive[q - 1] + 1][j - 1] = max(width[stive[q - 1] + 1][j - 1], col[i][stive[q]]);
+				--q;
+			}
+
+			stive[++q] = j;
+		}
+	}
+
+	for (int i = M - 2; i >= 0; --i)
+		for (int j = M - i; j > 0; --j)
+			width[j][j + i] = max(width[j][j + i], max(width[j][j + i + 1], width[j - 1][j + i]));
+
+	for (int i = 1; i <= M; ++i)
+		answer[i][i] = width[i][i];
+
+	for (int i = 1; i < M; ++i)
+		for (int j = M - i; j > 0; --j)
+			answer[j][j + i] = max(width[j][j + i] * (i + 1), max(answer[j][j + i - 1], answer[j + 1][j + i]));
+	
+	int Q; cin >> Q;
+	while (Q--) {
+		int x, y;
+		scanf("%d%d", &x, &y);
+		printf("%d\n", answer[x][y]);
+	}
+
+}
+

@@ -1,0 +1,62 @@
+#include <cstdio>
+
+const int N = 1000005;
+
+int n, m, h[N], hit[N];
+
+void read() {
+    scanf("%d%d", &n, &m);
+
+    for (int i = 1; i <= n; ++i)
+        scanf("%d", &h[i]);
+}
+
+void query_brute() {
+    int rez = 0;
+
+    for (int i = 1; i <= n; ++i)
+        hit[i] = 0;
+
+    for (int i = 1; i <= n; ++i) {
+        double min = 1000000000;
+        int pos = 0;
+
+        for (int j = i + 1; j <= n; ++j)
+            if (h[i] < h[j] && min > ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000) {
+                min =  ((i - j) * 5) * ((i - j) * 5) + (double)(h[i] - h[j]) * (h[i] - h[j]) / 1000000 / 1000000;
+                pos = j;
+            }
+
+        ++hit[pos];
+
+        if (pos && hit[pos] > rez)
+            rez = hit[pos];
+    }
+
+    printf("%d\n", rez);
+}
+
+void brute() {
+    int op;
+
+    for (int i = 1; i <= m; ++i) {
+        scanf("%d", &op);
+
+        if (op == 0)
+            query_brute();
+        else {
+            int aux = h[op];
+            h[op] = h[op + 1];
+            h[op + 1] = aux;
+        }
+    }
+}
+
+int main() {
+    read();
+
+    if (n <= 1000 && m <= 100)
+        brute();
+
+    return 0;
+}

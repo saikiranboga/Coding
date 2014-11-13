@@ -1,0 +1,86 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using std::vector;
+using std::sort;
+
+double x[1024], y[1024];
+
+vector <int> cl[1024];
+double cmx[1024], cmy[1024], vl[1024];
+
+vector <double> xs, ys;
+void bark (int c) // print dog coordinates
+{
+	//printf ("barking %d\n", c);
+	//for (int i = 0; i  <cl[c].size (); ++i) printf ("%d ", cl[c][i]); printf ("\n");
+	xs.clear (); ys.clear ();
+	for (int i = 0; i < cl[c].size (); ++i) { xs.push_back(x[cl[c][i]]); ys.push_back(y[cl[c][i]]); }
+
+	sort (xs.begin(), xs.end());
+	//for (int i = 0; i  <xs.size (); ++i) printf ("%lf ", xs[i]); printf ("\n");
+	sort (ys.begin(), ys.end());
+	//for (int i = 0; i  <ys.size (); ++i) printf ("%lf ", ys[i]); printf ("\n");
+
+	double dogx = (xs[xs.size () / 2] + xs[(1+xs.size ()) / 2]) / 2.0;
+	double dogy = (ys[ys.size () / 2] + ys[(1+ys.size ()) / 2]) / 2.0;
+	printf ("%0.6lf %0.6lf\n", dogx, dogy);
+}
+
+int clcmp (int a, int b) { if (cl[a].size () == 0) return 0; return cmy[a] < cmy[b]; }
+
+int main ()
+{
+	int n, k; scanf ("%d%d", &n, &k);
+	for (int i = 0; i < n; ++i)
+	{
+		//printf ("%d\n", i);
+		cl[i].push_back (i);
+		vl[i] = 0;
+		scanf ("%lf%lf", x+i, y+i);
+		cmx[i] = x[i]; cmy[i] = y[i];
+	}
+	//printf ("inp done\n");
+
+	vector <int> cls;
+	for (int i = 0; i < n; ++i) cls.push_back (i);
+	int cln = n;
+	while (cln > k)
+	{
+		//printf ("%d\n", cln);
+		double mind=100000, cd;
+		int mini, minj;
+		sort (cls.begin(), cls.end(), clcmp);
+		//for (int i = 0; i < n; ++i) printf ("%d ", cls[i]); printf ("\n");
+
+		for (int ii = 0; ii < n; ++ii)
+		{
+			//printf ("ii: %d\n", ii);
+			int i = cls[ii];
+			if (cl[i].size () > 0) for (int jj = ii + 1; jj < ii + 5; ++jj)
+			{
+				//printf ("jj: %d\n", jj);
+				if (jj > cls.size ()) continue;
+				int j = cls[jj];
+				if (i != j && cl[j].size () > 0)
+				{
+					cd = hypot (cmx[i]-cmx[j], cmy[i]-cmy[j]);
+					//printf ("(%d, %d) -> %lf\n", i, j, cd);
+					if (cd < mind) { cd = mind; mini = i; minj = j; }
+				}
+			}
+		}
+
+		//printf ("%d %d\n", mini, minj);
+		cmx[mini] = (cl[mini].size () * cmx[mini] + cl[minj].size () * cmx[minj]) / (cl[mini].size () + cl[minj].size ());
+		cmy[mini] = (cl[mini].size () * cmy[mini] + cl[minj].size () * cmy[minj]) / (cl[mini].size () + cl[minj].size ());
+		for (int i = 0; i < cl[minj].size (); ++i) cl[mini].push_back(cl[minj][i]);
+		cl[minj].clear ();
+		--cln;
+	}
+
+	for (int i = 0; i < n; ++i) if (cl[i].size () > 0) bark (i);
+	return 0;
+}
+

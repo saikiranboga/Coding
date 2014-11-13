@@ -1,0 +1,139 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int MAXN = 1 << 10;
+
+int n , m;
+int a[MAXN][MAXN];
+int b[MAXN][MAXN];
+
+vector < pair < int , int > > st;
+vector < pair < int , int > > f[MAXN] , t[MAXN];
+
+int pre[MAXN][MAXN];
+
+void read() {
+	int i , j;
+	
+	scanf ( "%d%d" , &n , &m );
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= m; j++) {
+			scanf ( "%d" , &a[i][j] );
+		}
+	}
+}
+
+int get ( int x , int mx ) {
+	if ( !(int)t[x].size() ) return 0;
+	int l , r , mid;
+	int ans = 0;
+	
+	l = -1;
+	r = (int)t[x].size() - 1;
+	
+	while ( l < r ) {
+		mid = l + (r - l + 1) / 2;
+		
+		if ( t[x][mid].first <= mx ) {
+			l = mid;
+		} else {
+			r = mid - 1;
+		}
+	}
+	
+// 	printf ( "%d %d   %d %d\n" , x , mx , (int)t[x].size() , l );
+	
+	if ( l != -1 ) {
+		ans = max ( ans , t[x][l].first * t[x][l].second );
+	}
+	if ( l + 1 != (int)t[x].size() ) {
+		ans = max ( ans , min ( t[x][l + 1].first , mx ) * t[x][l + 1].second );
+	}
+	
+	return ans;
+}
+
+void solve() {
+	int i , j;
+	
+	for (i = n; i >= 1; i--) {
+		for (j = 1; j <= m; j++) {
+			b[i][j] = b[i + 1][j] + 1;
+			
+			if ( a[i][j] ) b[i][j] = 0;
+		}
+	}
+	
+	for (i = 1; i <= n; i++) {
+		st.clear();
+		st.push_back ( make_pair ( 0 , 0 ) );
+		
+		for (j = 1; j <= m + 1; j++) {
+			while ( st.back().first > b[i][j] ) {
+				f[i].push_back ( make_pair ( st.back().first , j - st[ (int)st.size() - 2 ].second - 1 ) );
+				st.pop_back();
+			}
+			
+			if ( st.back().first != b[i][j] ) {
+				st.push_back ( make_pair ( b[i][j] , j ) );
+			} else {
+				st.back().second = j;
+			}
+		}
+		
+		sort ( f[i].begin() , f[i].end() );
+		
+		if ( (int)f[i].size() ) {
+			t[i].push_back ( f[i][0] );
+			
+			for (j = 1; j < (int)f[i].size(); j++) {
+				while ( (int)t[i].size() && t[i].back().second <= f[i][j].second ) {
+					t[i].pop_back();
+				}
+				
+				if ( (int)t[i].size() && f[i][j].first * f[i][j].second < t[i].back().first * t[i].back().second ) continue;
+				t[i].push_back ( f[i][j] );
+			}
+		}
+		
+		/*
+		for (j = 0; j < (int)f[i].size(); j++) {
+			printf ( "%d %d\n" , f[i][j].first , f[i][j].second );
+		}
+		printf ( " --\n" );
+		for (j = 0; j < (int)t[i].size(); j++) {
+			printf ( "%d %d\n" , t[i][j].first , t[i][j].second );
+		}
+		printf ( "\n" );
+		*/
+	}
+	
+// 	printf ( "%d\n" , get ( 1 , 2 ) );
+	
+// 	return ;
+	
+	for (i = n; i >= 1; i--) {
+		pre[i][i] = get ( i , 1 );
+		
+		for (j = i - 1; j >= 1; j--) {
+			pre[j][i] = max ( pre[j + 1][i] , get ( j , i - j + 1 ) );
+			
+// 			printf ( " %d %d  ==  %d\n" , j , i , pre[j][i] );
+		}
+	}
+	
+	scanf ( "%d" , &m );
+	while ( m -- ) {
+		scanf ( "%d%d" , &i , &j );
+		printf ( "%d\n" , pre[i][j] );
+	}
+}
+
+int main() {
+	read();
+	solve();
+	
+	return 0;
+}

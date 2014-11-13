@@ -1,0 +1,117 @@
+//Georgi Gaidarov
+// No_ReSponSe
+// Esenen shumen s katmi
+// 26.11.2011
+
+// Task : clustering
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <queue>
+#include <stack>
+#include <cstdlib>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+int n, k;
+
+struct point
+{
+    double x, y;
+
+};
+point makep(double x, double y)
+            {
+                point xx;
+                xx.x = x;
+                xx.y = y;
+                return xx;
+            }
+int compare(const void* aa, const void* bb)
+{
+    point* a = (point*) aa;
+    point* b = (point*) bb;
+    if(a->x - b->x) return a->x-b->x;
+    else return a->y-b->y;
+}
+
+point p[10000];
+
+
+double dist(point a, point b)
+{
+    return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+}
+
+int main()
+{
+    //freopen("clustering.txt", "r", stdin);
+
+    cin>>n>>k;
+    double maxx=0, maxy=0;
+    for(int i=0; i<n; i++)
+    {
+        cin>>p[i].x>>p[i].y;
+        if(maxx<p[i].x) maxx = p[i].x;
+        if(maxy<p[i].y) maxy = p[i].y;
+    }
+
+    //cout<<"maxx and maxy are "<<maxx<<" , "<<maxy<<endl;
+
+    point dogs[k];
+    //qsort(p, n, sizeof(point), compare);
+
+    int xsi = maxx/k;
+    for(int i=0; i<k; i++)
+    {
+        dogs[i].x = xsi*i + xsi/2.0;
+        dogs[i].y = maxy/2.0;
+    }
+
+    int dog[n];
+    int dogus[k];
+    memset(dogus, 0, sizeof(int)*k);
+    for(int i=0; i<n; i++)
+    {
+        double sh=9999999;
+        double th;
+        int d=0;
+        for(int j=0; j<k; j++)
+        if(sh > dist(p[i], dogs[j]))
+        {
+            sh = dist(p[i], dogs[j]);
+            d=j;
+        }
+        dogus[d]++;
+        dog[i] = d;
+        //cout<<"point "<<p[i].x<<' '<<p[i].y<<" is now assigned to dog "<<d<<endl;
+    }
+
+
+
+    for(int i=0; i<n; i++)
+    {
+        int dogtm = dog[i];
+        int dogu = dogus[dogtm];
+        double xr = p[i].x - dogs[dogtm].x;
+        double yr = p[i].y - dogs[dogtm].y;
+        dogs[dogtm].x += xr/dogu;
+        dogs[dogtm].y += yr/dogu;
+
+    }
+
+
+/*
+    cout<<p[0].x<<' '<<p[0].y<<endl;
+    cout<<p[1].x<<' '<<p[1].y<<endl;
+    cout<<p[2].x<<' '<<p[2].y<<endl;
+    */
+
+
+
+    for(int i=0; i<k; i++)
+        printf("%.6f %.6f\n", dogs[i].x, dogs[i].y);
+
+    return 0;
+}

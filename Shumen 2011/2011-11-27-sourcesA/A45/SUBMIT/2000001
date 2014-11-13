@@ -1,0 +1,111 @@
+#include <cstdio>
+#include <cmath>
+#include <algorithm>
+#define NMAX 1005
+#define KMAX 105
+#define VMAX (1<<13)
+#define INF 1000000000
+#define prec 0.000001
+#define pdd pair<double,double>
+#define x first
+#define y second
+using namespace std;
+int n,k,ant[NMAX][KMAX];
+pdd A[NMAX],C[NMAX][NMAX],pct,pct2,bestpct;
+double B[NMAX][NMAX],best[NMAX][KMAX];
+int dx[]={0,0,-1,1};
+int dy[]={1,-1,0,0};
+void read()
+{
+    int i;
+    scanf("%d%d",&n,&k);
+    for (i=1; i<=n; i++)
+        scanf("%lf%lf",&A[i].x,&A[i].y);
+}
+inline double modul(double x)
+{
+    return x<0 ? -x : x;
+}
+inline double dist(pdd a,pdd b)
+{
+    return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+}
+inline double d(pdd act,int st,int dr)
+{
+    double rez=0;
+    int i;
+    for (i=st; i<=dr; i++)
+        rez+=dist(act,A[i]);
+    return rez;
+}
+void prepare()
+{
+    int i,j,t;
+    double step,act,act2;
+    for (i=1; i<=n; i++)
+    {
+        C[i][i]=A[i];
+        for (j=i+1; j<=n; j++)
+        {
+            pct.x=0; pct.y=0;
+            step=VMAX;
+            act=d(pct,i,j);
+            while (modul(step)>prec)
+            {
+                bestpct=pct;
+                for (t=0; t<4; t++)
+                {
+                    pct2.x=pct.x+dx[t]*step;
+                    pct2.y=pct.y+dy[t]*step;
+                    act2=d(pct2,i,j);
+                    if (act2<act)
+                        bestpct=pct2,act=act2;
+                }
+                pct=bestpct;
+                step/=2;
+            }
+            B[i][j]=act;
+            C[i][j]=pct;
+        }
+    }
+    for (i=0; i<=n; i++)
+        for (j=0; j<=k; j++)
+            best[i][j]=INF;
+    best[0][0]=0;
+}
+inline double min(double x,double y)
+{
+    return x<y ? x : y;
+}
+void solve()
+{
+    prepare();
+    int i,j,t;
+    for (i=1; i<=n; i++)
+        for (j=1; j<=k && j<=i; j++)
+            for (t=1; t<=i; t++)
+            {
+                if (best[i][j]>best[t-1][j-1]+B[t][i])
+                {
+                    best[i][j]=best[t-1][j-1]+B[t][i];
+                    ant[i][j]=t-1;
+                }
+            }
+}
+void recons(int n,int k)
+{
+    if (k==0)
+        return ;
+    int where=ant[n][k];
+    recons(where,k-1);
+    printf("%lf %lf\n",C[where+1][n].x,C[where+1][n].y);
+}
+int main()
+{
+    //freopen("test.in","r",stdin);
+    //freopen("test.out","w",stdout);
+    read();
+    solve();
+    recons(n,k);
+    return 0;
+}

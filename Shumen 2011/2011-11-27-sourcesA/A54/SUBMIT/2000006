@@ -1,0 +1,115 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+typedef pair<int,int> pii;
+
+int max( int a, int b )
+{
+	if ( a > b ) return a;
+	return b;
+}
+
+int min( int a, int b )
+{
+	if ( a < b ) return a;
+	return b;
+}
+
+int ste[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048};
+
+int n, m, q;
+int t[1024][1024];
+int sol[1024][1024];
+int h[1024][1024];
+int le[1024][1024], ri[1024][1024];
+
+int mx[1024][2048];
+
+int mh[1024][2048];
+
+int main()
+{
+	int i, j, k;
+	int row, mdep;
+	
+	scanf( "%d %d", &n, &m );
+	for ( i = 1; i <= n; i++ )
+	{
+		for ( j = 1; j <= m; j++ )
+		{
+			scanf( "%d", &t[i][j] );
+		}
+	}
+	
+	memset( h, 0, sizeof( h ) );
+	memset( le, 0, sizeof( le ) );
+	memset( ri, 0, sizeof( ri ) );
+	memset( sol, 0, sizeof( sol ) );
+	memset( mx, 0, sizeof( mx ) );
+	memset( mh, 0, sizeof( mh ) );
+	
+	for ( i = n; i > 0; i-- )
+	{
+		for ( j = 1; j <= m; j++ )
+		{
+			if ( t[i][j] == 0 )
+				h[i][j] = h[i+1][j] + 1;
+			else h[i][j] = 0;
+		}
+	}
+	
+	for ( i = 1; i <= n; i++ )
+	{
+		for ( j = 1; j <= m; j++ )
+		{
+			if ( h[i][j-1] >= h[i][j] )
+				le[i][j] = le[i][j-1] + 1;
+			else le[i][j] = 0;
+		}
+		for ( j = m; j > 0; j-- )
+		{
+			if ( h[i][j+1] >= h[i][j] )
+				ri[i][j] = ri[i][j+1] + 1;
+			else ri[i][j] = 0;
+		}
+		for ( j = 1; j <= m; j++ )
+		{
+//			printf( "LR %d %d %d %d %d\n", i, j, h[i][j], le[i][j], ri[i][j] );
+			mx[i][ h[i][j] ] = max( mx[i][ h[i][j] ],  h[i][j]*(le[i][j]+ri[i][j]+1) );
+			mh[i][ h[i][j] ] = max( mh[i][ h[i][j] ], (le[i][j]+ri[i][j]+1) );
+		}
+	}
+	
+	for ( i = 1; i <= n; i++ )
+	{
+		for ( j = 1; j <= n; j++ )
+		{
+			mx[i][j] = max( mx[i][j], mx[i][j-1] );
+		}
+		for ( j = n; j > 0; j-- )
+		{
+			mh[i][j] = max( mh[i][j], mh[i][j+1] );
+		}
+	}
+	
+	for ( row = n; row > 0; row-- )
+	{
+		for ( mdep = 1; mdep + row <= n+1; mdep++ )
+		{
+			sol[row][mdep] = sol[row+1][mdep-1];
+			sol[row][mdep] = max( sol[row][mdep], mx[row][mdep] );
+			sol[row][mdep] = max( sol[row][mdep], mdep*mh[row][mdep] );
+//			printf( "SOL %d %d __ %d : %d %d %d\n", row, mdep, sol[row][mdep], sol[row+1][mdep-1], mx[row][mdep], mh[row][mdep] );
+		}
+	}
+	
+	scanf( "%d", &q );
+	for ( i = 1; i <= q; i++ )
+	{
+		scanf( "%d %d", &j, &k );
+		printf( "%d\n", sol[j][k-j+1] );
+	}
+	return 0;
+}

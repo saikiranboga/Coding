@@ -1,0 +1,66 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <cmath>
+#define EPS (1e-10)
+#define MAXN (1 << 10)
+using namespace std;
+
+int n, k;
+
+double x[MAXN], y[MAXN];
+double d[MAXN];
+
+inline double getDist(int i, double xx, double yy) {
+	return sqrt((x[i]-xx)*(x[i]-xx) + (y[i]-yy)*(y[i]-yy));
+}
+
+inline void solve() {
+	double tx = 0., ty = 0.;
+
+	for (int i=0; i < n; ++i)
+		tx += x[i],
+		ty += y[i];
+
+	printf("%lf %lf\n", tx/(double)n, ty/(double)n);
+	for (int i=0; i < n; ++i) {
+		d[i] = getDist(i, tx, ty);
+	}
+	for (int step=1; step < k; ++ step) {
+		double ansx=0., ansy=0.;
+		double total = 0.;
+		for (int i=0; i < n; ++i)
+			total += d[i];
+
+		double q = total/(double)n;
+
+		vector<int> vec; vec.clear();
+
+		for (int i=0; i < n; ++i)
+			if (d[i]+EPS > q)
+				vec.push_back(i);
+
+		tx = 0.; ty = 0.;
+		for (int i=0; i < vec.size(); ++i)
+			tx += x[vec[i]],
+			ty += y[vec[i]];
+
+		ansx = tx / (double)(vec.size());
+		ansy = ty / (double)(vec.size());
+		printf("%lf %lf\n", ansx, ansy);
+	}
+}
+
+inline void read() {
+	scanf("%d%d", &n, &k);
+
+	for (int i=0; i < n; ++i) {
+		scanf("%lf%lf", &x[i], &y[i]);
+	}
+}
+
+int main() {
+	read();
+	solve();
+	return 0;
+}

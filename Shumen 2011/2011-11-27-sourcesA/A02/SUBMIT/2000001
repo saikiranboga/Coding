@@ -1,0 +1,65 @@
+#include<cstdio>
+#include<iostream>
+using namespace std;
+long long int submarines[1000010][5], br[1000010];
+long long int n, m, z=0;
+long long int signals[100010];
+void swap(int q)//shema za razmqna
+{
+    long long int z;
+    z=submarines[q][1];
+    submarines[q][1]=submarines[q+1][1];
+    submarines[q+1][1]=z;
+}
+void signal()//shema za signal
+{
+  bool stoper=0;
+  long long int max=0;
+  for(int i=1;i<n+1;i++)
+  {
+     for(int j=i+1;j<n+1;j++)
+     {
+          if(submarines[i][1]<submarines[j][1] && stoper==0)
+          {
+            br[j]++;
+            stoper=1;
+          }
+          //break;
+     }
+     stoper=0;
+  }
+  for(int k=1;k<n+1;k++)
+    if(br[k]>max)max=br[k];
+  signals[z]=max;
+  max=0;
+  z++;
+  for(int zm=1;zm<n+1;zm++)
+    br[zm]=0;
+}
+int main ()
+{
+  long long int p;
+  cin>>n>>m;
+  //scanf("%d %d", &n, &m);
+  for(int i=1;i<n+1;i++)
+  {
+    cin>>submarines[i][1];
+  }
+    //scanf("%d", &submarines[i][1]);
+  //for(int j=1;j<n+1;j++)
+    //cout<<submarines[j][1]<<endl;
+    //printf("%d ", submarines[j][1]);
+  for(int js=0;js<m;js++)
+    {
+        cin>>p;
+        //scanf("%d", p);
+        if(p>0)swap(p);
+          else signal();
+    }
+  //for(int jm=1;jm<n+1;jm++)
+    //cout<<submarines[jm][1]<<endl;
+    //printf("%d ", submarines[jm][1]);
+  for(int sad=0;sad<z;sad++)
+    cout<<signals[sad]<<endl;
+
+}

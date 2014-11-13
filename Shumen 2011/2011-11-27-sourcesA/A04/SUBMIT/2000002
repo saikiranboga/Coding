@@ -1,0 +1,43 @@
+#include<cstdio>
+#define max(x,y) (x>y?x:y)
+#define swap(x,y) {int t=x; x=y; y=t;}
+using namespace std;
+int n,m,x[1<<10],rx[1<<10],q,t;
+void findRec()
+{
+    for(int i=0;i<n;i++) rx[i]=0;
+    //int br=1;
+    for(int i=0;i<n;i++)
+    {
+        //cout<<5<<endl;
+        int j=i+1;
+        while(x[i]>=x[j] && j<n) j++;
+        rx[j]++;
+    }
+    //cout<<"RX:\n";
+    //for(int i=0;i<n;i++) cout<<rx[i]<<" "; cout<<endl;
+    return;
+}
+int findMaxRec()
+{
+    int ans=rx[0];
+    for(int i=1;i<n;i++) ans=max(rx[i],ans);
+    return ans;
+}
+int main()
+{
+    scanf("%d%d",&n,&m);//cin>>n>>m;
+    for(int i=0;i<n;i++) scanf("%d",&x[i]);//cin>>x[i];
+    findRec();
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d",&q);//cin>>q;
+        if(q==0) printf("%d\n",findMaxRec());//cout<<findMaxRec()<<endl;
+        else
+        {
+            swap(x[i],x[i-1]);
+            findRec();
+        }
+    }
+    return 0;
+}

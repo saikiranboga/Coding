@@ -1,0 +1,73 @@
+#include <cstdio>
+#include <queue>
+#include <cassert>
+#include <cstring>
+
+#define MAXN 1000000
+
+std::priority_queue <int> pq;
+
+struct line
+{
+    int dpt, s;
+}subs[MAXN], swsub;
+
+int N, M, ans;
+
+int main()
+{
+    scanf("%d %d", &N, &M);
+    
+    for(int i = 0;i < N;i++)
+    {
+        scanf("%d", &subs[i].dpt);
+        subs[i].s = 0;
+        
+        while(!pq.empty() && pq.top() < subs[i].dpt)
+        {
+            pq.pop();
+            subs[i].s++;
+        }
+        pq.push(subs[i].dpt);
+        
+        if(ans < subs[i].s)
+            ans = subs[i].s;
+    }
+    
+    int cmd;
+    for(int q = 0;q < M;q++)
+    {
+        scanf("%d", &cmd);
+        
+        if(cmd == 0)
+        {
+            printf("%d\n", ans);
+            continue;
+        }
+        
+        ans = 0;
+        swsub = subs[cmd-1];
+        subs[cmd-1] = subs[cmd];
+        subs[cmd] = swsub;
+        
+        while(!pq.empty())
+            pq.pop();
+        
+        for(int i = 0;i < N;i++)
+        {
+            subs[i].s = 0;
+            
+            while(!pq.empty() && pq.top() < subs[i].dpt)
+            {
+                pq.pop();
+                subs[i].s++;
+            }
+            pq.push(subs[i].dpt);
+            
+            if(ans < subs[i].s)
+                ans = subs[i].s;
+        }
+    }
+
+    return 0;
+}

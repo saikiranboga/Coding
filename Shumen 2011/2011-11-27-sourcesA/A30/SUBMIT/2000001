@@ -1,0 +1,116 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+const int MaxN = 1005;
+
+int n, m, q;
+int v[ MaxN ][ MaxN ];
+int dp[ MaxN ][ MaxN ];
+
+int A[ 1<<20 ], B[ 1<<20 ];
+
+int l[ MaxN ][ MaxN ];
+int r[ MaxN ][ MaxN ];
+int w[ MaxN ][ MaxN ];
+
+int s[ MaxN ], e;
+int Q[ 1<<20 ];
+
+bool cmp( int x, int y ){
+ if( A[x] != A[y] ) return A[x] < A[y];
+ return B[x] < B[y];
+}
+
+int best[ MaxN ][ MaxN ];
+int msuf[ MaxN ];
+int sol[ 1<<20 ];
+
+void solve(){
+ int ptr = 0;
+
+ for( int i = 0; i < n; ++i ){
+    vector< pair< int, int > > V;
+    for( int j = 0; j < m; ++j ) V.push_back( make_pair( dp[i][j], w[i][j] ) );
+    sort( V.begin(), V.end() );
+
+    for( int j = m-1; j >= 0; --j ) msuf[j] = max( msuf[j+1], V[j].second );
+
+    int maks = 0;
+    int ptr = 0;
+    for( int j = i; j >= 0; --j ){
+     while( ptr < V.size() && i-V[ptr].first+1 >= j ){ maks = max( maks, V[ptr].first*V[ptr].second ); ++ptr; }
+     best[j][i] = max( maks, msuf[ptr]*(i-j+1) );
+    }
+ }
+
+ for( int i = 0; i < q; ){
+    int ptr = i;
+    int curr = A[Q[i]];
+    int ans = 0;
+
+    for( int j = 0; j < n; ++j ){
+     ans = max( ans, best[curr][j] );
+     while( curr == A[Q[ptr]] && B[Q[ptr]] == j ) sol[Q[ptr++]] = ans;
+    }
+
+    i = ptr;
+ }
+
+ for( int i = 0; i < q; ++i ) printf( "%d\n", sol[i] );
+}
+
+int main( void ){
+ scanf( "%d%d", &n, &m );
+ for( int i = 0; i < n; ++i )
+    for( int j = 0; j < m; ++j ){
+     scanf( "%d", &v[i][j] );
+     if( i > 0 ) dp[i][j] += dp[i-1][j];
+     if( v[i][j] ) dp[i][j] = 0;
+     else ++dp[i][j];
+    }
+
+ for( int i = 0; i < n; ++i ) {
+    e = 0;
+    for( int j = 0; j < m; ++j ){
+
+        if( v[i][j] == 0 ){
+            while( e > 0 && dp[i][s[e-1]] >= dp[i][j] ) --e;
+            if( e == 0 ) l[i][j] = j;
+            else l[i][j] = j-s[e-1]-1;
+        }
+
+        s[e++] = j;
+    }
+ }
+
+ for( int i = 0; i < n; ++i ) {
+    e = 0;
+    for( int j = m-1; j >= 0; --j ){
+
+        if( v[i][j] == 0 ){
+            while( e > 0 && dp[i][s[e-1]] >= dp[i][j] ) --e;
+            if( e == 0 ) r[i][j] = m-j-1;
+            else r[i][j] = s[e-1]-j-1;
+        }
+
+        s[e++] = j;
+    }
+ }
+
+ for( int i = 0; i < n; ++i )
+    for( int j = 0; j < m; ++j ) if( v[i][j] == 0 ) w[i][j] = l[i][j]+r[i][j]+1;
+
+ scanf( "%d", &q );
+ for( int i = 0; i < q; ++i ){
+  scanf( "%d%d", &A[i], &B[i] ); --A[i]; --B[i];
+  Q[i] = i;
+ }
+
+ sort( Q, Q+q, cmp );
+ solve();
+
+ return 0;
+}

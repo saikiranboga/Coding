@@ -1,0 +1,55 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int maxN = 1010;
+
+int mat[maxN][maxN], N, M, Q, a, b;
+int rez[maxN][maxN], sum[maxN][maxN];
+
+int main() {
+	int i, j, k;
+//	freopen("data.in", "r", stdin);
+//	freopen("data.ok", "w", stdout);
+
+	scanf("%d%d", &N, &M);
+	for (i = 1; i <= N; i++)
+		for (j = 1; j <= M; j++) {
+			scanf("%d", &mat[i][j]);
+			sum[i][j] = mat[i][j] + sum[i - 1][j];
+		}
+
+	for (i = 1; i <= N; i++)
+		for (j = i; j <= N; j++) {
+			int curr = 0;
+			for (k = 1; k <= M; k++) {
+				if (sum[j][k] - sum[i - 1][k] == 0)
+					curr++;
+				else {
+					rez[i][j] = max(rez[i][j], curr * (j - i + 1));
+					curr = 0;
+				}
+			}
+			rez[i][j] = max(rez[i][j], curr * (j - i + 1));
+		}
+
+	for (i = 1; i <= N; i++)
+		for (j = i; j <= M; j++) 
+			rez[i][j] = max(rez[i][j], rez[i][j - 1]);
+		
+	for (i = N; i > 0; i--)
+		for (j = 1; j <= M; j++)
+			rez[i][j] = max(rez[i][j], rez[i + 1][j]);
+
+	scanf("%d", &Q);
+
+	for (i = 1; i <= Q; i++) {
+		scanf("%d%d", &a, &b);
+		if (a > b)
+			while (1);
+		printf("%d\n", rez[a][b]);
+	}
+
+	return 0;
+}

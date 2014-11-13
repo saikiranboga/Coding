@@ -1,0 +1,107 @@
+#include<stdio.h>
+#include<vector>
+using namespace std;
+
+#define pb push_back
+#define maxim(a,b) (a>b ? a : b)
+
+int n,m,q,s,pmax;
+int vec[1005][1005];
+int d[1005][1005];
+int poz[1006],sf,p[1006];
+int st[1006],dr[1006];
+vector<int> v[1006];
+
+int main ()
+{
+        int i,j,k,lim,ind,a,b;
+        
+        //freopen("stan.in","r",stdin);
+        //freopen("stan.out","w",stdout);
+        
+        scanf("%d%d",&n,&m);
+        for(i=1;i<=n;i++)
+                for(j=1;j<=m;j++)
+                        scanf("%d",&vec[i][j]);
+        for(i=1;i<=n;i++)
+        {
+                for(j=1;j<=m;j++)
+                        if(vec[i][j])
+                                p[j]=0;
+                        else
+                                p[j]++;
+                                
+                /*printf("Pentru linia %d:\n",i);                
+                for(j=1;j<=m;j++)
+                        printf("%d ",p[j]);
+                printf("\n");        */
+                sf=0;
+                poz[0]=0;                
+                for(j=1;j<=m;j++)
+                {
+                        while(sf>0 && p[j]<=p[poz[sf]])
+                                sf--;
+                        st[j]=poz[sf]+1;                
+                        poz[++sf]=j;        
+                }
+                sf=0;    
+                poz[0]=m+1;            
+                for(j=m;j>=1;j--)
+                {
+                        while(sf>0 && p[j]<=p[poz[sf]])
+                                sf--;
+                        dr[j]=poz[sf]-1;                
+                        poz[++sf]=j;        
+                }      
+                pmax=0;
+                        
+                for(j=1;j<=m;j++)
+                {
+                        pmax=maxim(pmax,p[j]);
+                        if(p[j])
+                                v[i-p[j]+1].pb(j);
+                }
+
+                sf=0;
+                s=0;        
+                for(j=i-pmax+1;j<=i;j++)
+                {
+                        lim=v[j].size();
+                        for(k=0;k<lim;k++)        
+                        {
+                                ind=v[j][k];
+                                s=maxim(s,dr[ind]-st[ind]+1);
+                                
+                        }
+                        d[j][i]=(i-j+1)*s;        
+                }                        
+  
+                for(j=1;j<=m;j++)   
+                        if(p[j])
+                                v[i-p[j]+1].pop_back();
+        }             
+        for(i=2;i<=n;i++)
+                for(j=1;j<=n-i+1;j++)
+                {
+                        k=i+j-1;
+                        d[j][k]=maxim(d[j][k],d[j+1][k]);             
+                        d[j][k]=maxim(d[j][k],d[j][k-1]);
+                }      
+        scanf("%d",&q);         
+        for(i=1;i<=q;i++)
+        {
+                scanf("%d%d",&a,&b);
+                printf("%d\n",d[a][b]);
+        }        
+        return 0;
+}
+
+
+
+
+
+
+
+
+
+

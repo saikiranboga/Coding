@@ -1,0 +1,162 @@
+#include<stdio.h>
+#include<vector>
+using namespace std;
+
+#define maxim(a,b) (a>b ? a : b)
+#define minim(a,b) (a<b ? a : b)
+#define pb push_back
+#define INF 1000000005
+#define NMAX 1000005
+
+vector<int> v[3*NMAX];
+int n,m,A[5*NMAX],sol,vec[NMAX];
+int tata[NMAX],f[NMAX],nr,valm;
+
+void update(int n,int st,int dr,int poz,int val)
+{
+        if(st==dr)
+        {
+                if(!A[n])
+                        A[n]=INF;
+                A[n]=minim(A[n],val);
+                return ;
+        }
+        int mij=(st+dr)/2;
+        if(poz<=mij)
+                update(2*n,st,mij,poz,val);
+        else
+                update(2*n+1,mij+1,dr,poz,val);        
+        A[n]=INF;        
+        if(A[2*n])
+                A[n]=minim(A[n],A[2*n]);                
+        if(A[2*n+1])        
+                A[n]=minim(A[n],A[2*n+1]);
+}
+
+int query(int n,int st,int dr,int a,int b)
+{
+        if(a>b)
+                return INF;
+        if(a<=st && dr<=b)
+        {
+                if(A[n])
+                        return A[n];
+                return INF;        
+        }
+        int mij=(st+dr)/2;
+        sol=INF;
+        if(a<=mij)
+        {
+                int r=query(2*n,st,mij,a,b);
+                sol=minim(sol,r);
+        }
+        
+        if(b>mij)
+        {
+                int r=query(2*n+1,mij+1,dr,a,b);
+                sol=minim(sol,r);
+        }                
+        return sol;
+}
+
+int check()
+{
+        int sol=0;
+        for(int i=1;i<=n;i++)
+                sol=maxim(sol,f[i]);
+        return sol;        
+}
+
+int main ()
+{
+        int i,j,val,tip,aux,lim;
+        
+        //freopen("subm.in","r",stdin);
+        //freopen("subm.out","w",stdout);
+        scanf("%d%d",&n,&m);
+        for(i=1;i<=n;i++)
+        {
+                scanf("%d",&val);
+                v[val].pb(i);
+                valm=maxim(valm,val);
+        } 
+        
+        for(i=1;i<=valm;i++)
+        {
+                lim=v[i].size();
+                if(lim)
+                        ++nr;
+                for(j=0;j<lim;j++)
+                        vec[v[i][j]]=nr;
+        }
+       
+        for(i=n;i>=1;i--)
+        {
+                tata[i]=query(1,1,nr,vec[i]+1,nr);
+
+                update(1,1,nr,vec[i],i);
+        }      
+
+        for(i=1;i<=n;i++)
+                if(tata[i]!=INF)                
+                        f[tata[i]]++;
+
+        sol=check(); 
+        for(i=1;i<=m;i++)
+        {
+                scanf("%d",&tip);        
+                if(!tip)
+                {
+                        /*for(j=1;j<=n;j++)
+                                printf("%d ",vec[j]);
+                        printf("\n");        
+                        for(j=1;j<=n;j++)
+                                printf("%d ",tata[j]);*/
+                        printf("%d\n",sol);
+                        continue;
+                }       
+                f[tata[tip]]--;
+                f[tata[tip+1]]--;
+                //printf("///////////// vec[1]=%d si vec[2]=%d\n",vec[1],vec[2]);        
+                aux=vec[tip];
+                vec[tip]=vec[tip+1];
+                vec[tip+1]=aux;
+                for(j=1;j<tip;j++)
+                        if(tata[j]==tip+1)
+                        {
+                                tata[j]=tip;        
+                                f[tip+1]--;
+                                f[tip]++;
+                        }        
+                        else
+                        if(tata[j]==tip)
+                        {
+                                if(vec[j]<vec[tip])
+                                        continue;
+                                tata[j]=tip+1;
+                                f[tip+1]++;
+                                f[tip]--;        
+                        }
+                 for(j=tip+1;j<=n;j++)
+                        if(vec[j]>vec[tip])       
+                        {
+                                tata[tip]=j;
+                                f[j]++;
+                                break;
+                        }
+                 for(j=tip+2;j<=n;j++)
+                        if(vec[j]>vec[tip+1])       
+                        {
+                                tata[tip+1]=j;
+                                f[j]++;
+                                break;
+                        }      
+                sol=check();                        
+        }        
+                                
+        return 0;
+}
+
+
+
+

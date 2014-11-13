@@ -1,0 +1,142 @@
+#include <cstdio>
+#include <cstring>
+#include <queue>
+#include <utility>
+#define MAXN (3000000 + 10)
+#define MAXT (8000000 + 10)
+using namespace std;
+
+int n, q;
+int h[MAXN];
+int to[MAXN];
+int ans[MAXN];
+//int lastUpdate[MAXN];
+int rmq[MAXT], ADD;
+
+priority_queue< pair<int, int> > pq;
+
+inline int myMax(const int &a, const int &b) { return (a > b)? a : b; }
+
+inline void update(int pos) {
+	int idx = pos+ADD;
+	rmq[idx] = pos;
+	while (idx != 1) {
+		idx >>= 1;
+		if (h[rmq[idx<<1]] > h[rmq[(idx<<1) + 1]]) {
+			rmq[idx] = rmq[idx << 1];
+		} else {
+			rmq[idx] = rmq[(idx << 1) + 1];
+		}
+	}
+}
+
+int getMax(int from, int to) {
+	int ans = myMax(h[from], h[to]);
+	int l = from+ADD, r = to+ADD;
+	while (l <= r) {
+		ans = myMax(h[rmq[l]], h[rmq[r]]);
+		l = (l+1) >> 1;
+		r = (r-1) >> 1;
+	}
+	return ans;
+}
+
+inline int can(int from, int to) {
+	int height = getMax(from, to);
+	return (height > h[from]);
+}
+
+int solve(int pos) {
+	int l = pos, r = n+1, mid;
+
+	while (r-l > 1) {
+		mid = (l+r)/2;
+		if (can(pos, mid)) {
+			r = mid;
+		} else {
+			l = mid;
+		}
+	}
+	if (!can(pos, l+1)) return -1;
+	return l+1;
+}
+
+inline void mySwap(int &a, int &b) { a = a^b; b = a^b; a = a^b; }
+
+inline void go() {
+
+	for (int i=0; i < q; ++i) {
+		int type;
+		scanf("%d", &type);
+
+		if (!type) {
+			int fir, sec;
+			for (;;) {
+				fir = pq.top().first;
+				sec = pq.top().second;
+				if (ans[sec] == fir)
+					break;
+				pq.pop();
+			}
+			printf("%d\n", fir);
+		} else {
+			mySwap(h[type], h[type+1]);
+			update(type);
+			update(type+1);
+			int id1 = solve(type), id2 = solve(type+1);
+			if (id1 != -1) {
+				if (to[type] != id1) {
+					ans[to[type]] --;
+					ans[id1] ++;
+					to[type] = id1;
+					pq.push(make_pair(ans[to[type]], to[type]));
+					pq.push(make_pair(ans[id1], id1));
+				}
+			}
+
+			if (id2 != -1) {
+				if (to[type+1] != id2) {
+					ans[to[type+1]] --;
+					ans[id2] ++;
+					to[type+1] = id2;
+					pq.push(make_pair(ans[to[type+1]], to[type+1]));
+					pq.push(make_pair(ans[id2], id2));
+				}
+			}
+		}
+	}
+}
+
+inline void getSet() {
+	ADD = 1;
+	while (ADD < n) {
+		ADD <<= 1;
+	}
+	for (int i=n; i >= 1; --i) {
+		int id = solve(i);
+		if (id != -1) {
+			if (to[i] != id) {
+				ans[id] ++;
+				to[i] = id;
+			}
+		}
+		update(i);
+	}
+	for (int i=1; i <= n; ++i) {
+		pq.push(make_pair(ans[i], i));
+	}
+}
+
+inline void readY() {
+	scanf("%d%d", &n, &q);
+	for (int i=1; i <= n; ++i) {
+		scanf("%d", &h[i]);
+	}
+}
+
+int main() {
+	readY();
+	getSet();
+	go();
+	return 0;
+}

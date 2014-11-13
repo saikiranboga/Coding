@@ -1,0 +1,25 @@
+#include<iostream>
+using namespace std;
+int m,n,q,x,y;
+bool t[1<<10][1<<10],acc[1<<10];
+
+bool isallzero(int a, int b, int c, int d)
+{
+    for(int i=a;i<=b;i++) for(int j=c;j<=d;j++) if(t[i][j]) return 0;
+    return 1;
+}
+int main()
+{
+    cin>>n>>m;
+    for(int i=0;i<n;i++) for(int j=0;j<m;j++) cin>>t[i][j];
+    cin>>q;
+    for(int w=0;w<q;w++)
+    {
+        cin>>x>>y;
+        x--; y--;
+        int ans=0;
+        for(int i=0;i<m;i++) for(int j=i;j<m;j++) if(isallzero(x,y,i,j)) ans=max(ans,(j-i+1)*(y-x+1));
+        cout<<ans<<endl;
+    }
+    return 0;
+}

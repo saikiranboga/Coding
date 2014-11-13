@@ -1,0 +1,58 @@
+#include <cstdio>
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
+using namespace std;
+
+struct sheep
+{
+	int x,y,z;
+};
+
+bool sortsheep(sheep a, sheep b)
+{
+	if(a.z>b.z) return false;
+	return true;
+}
+
+sheep sh[1010];
+
+int N,K;
+int field[1010][1010];
+int i,j;
+
+void solve()
+{
+	int del=N/K;
+	double dx, dy;
+	for(i=1; i<=K; i++)
+	{	
+		dx=sh[i].x+0.00001;
+		dy=sh[i].y+0.00001;	
+		if(dx<10) cout<<setw(7)<<dx<<" ";
+		else if(dx<100) cout<<setw(8)<<dx<<" ";
+		else if(dx<1000) cout<<setw(9)<<dx<<" ";
+		else if(dx<10000) cout<<setw(10)<<dx<<" ";
+		
+		if(dy<10) cout<<setw(7)<<dy<<" ";
+		else if(dy<100) cout<<setw(8)<<dy<<" ";
+		else if(dy<1000) cout<<setw(9)<<dy<<" ";
+		else if(dy<10000) cout<<setw(10)<<dy<<" ";
+		cout<<endl;
+	}
+}
+
+int main()
+{
+	scanf("%d %d", &N, &K);
+	for(i=1; i<=N; i++)
+	{
+		scanf("%d %d", &sh[i].x, &sh[i].y);
+		sh[i].z=sh[i].x+sh[i].y;
+	}
+	sort(sh+1, sh+N+1, sortsheep);
+	solve();
+	
+	
+	return 0;
+}

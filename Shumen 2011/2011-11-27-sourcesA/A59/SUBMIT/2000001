@@ -1,0 +1,96 @@
+#include<cstdio>
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+int n,m;
+vector<int>v[1024];
+int a[1024][1024],it[1024][1024];
+
+void update(int num,int x,int idx) {
+
+    while(x<=1024) {
+        it[idx][x]+=num;
+        x+=x&(-x);
+    }
+
+}
+
+void read() {
+
+    int i,j,b;
+
+    scanf("%d%d",&n,&m);
+
+    for(i=1;i<=n;i++)
+    for(j=1;j<=m;j++) {
+        scanf("%d",&a[i][j]);
+    }
+
+}
+
+int ask(int i,int j,int idx) {
+
+    int sum=0,prev=-1;
+    i=1;
+
+    while(i<=j) {
+        sum+=it[idx][i];
+        i+=i&(-i);
+    }
+
+    while(j>=1) {
+        sum-=it[idx][j];
+        j-=j&(-j);
+    }
+
+    return sum;
+
+}
+
+bool check(int x,int y,int k) {
+
+    for(x;x<=y;x++) {
+        if(!a[k][x]) return 0;
+    }
+
+    return 1;
+
+}
+
+void solve(int x,int y) {
+
+    int i,j,ans=0,sum=0,sum1=0;
+
+    for(j=1;j<=m;j++) {
+        if(a[x][j]) sum=0;
+        if(a[x][j]==0) {
+            for(i=x;i<=y;i++) {
+                if(a[x][j]==0) sum++;
+                else break;
+            }
+        }
+        ans=max(ans,sum);
+    }
+
+    printf("%d\n",ans);
+
+}
+
+int main() {
+
+    read();
+
+    int k,x,y;
+
+    scanf("%d",&k);
+
+    for(int i=0;i<k;i++) {
+        scanf("%d%d",&x,&y);
+        solve(x,y);
+    }
+
+    return 0;
+
+}

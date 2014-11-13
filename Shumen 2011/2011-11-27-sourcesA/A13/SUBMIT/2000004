@@ -1,0 +1,105 @@
+#include <cstdio>
+#include <cstring>
+#include <queue>
+#include <utility>
+#define MAXN (3000000 + 10)
+#define MAXT (8000000 + 10)
+using namespace std;
+
+int n, q;
+int h[MAXN];
+int to[MAXN];
+int ans[MAXN];
+//int lastUpdate[MAXN];
+int rmq[MAXT], ADD;
+
+priority_queue< pair<int, int> > pq;
+
+inline int myMax(const int &a, const int &b) { return (a > b)? a : b; }
+
+inline void update(int pos) {
+	int idx = pos+ADD;
+	rmq[idx] = pos;
+	while (idx != 1) {
+		idx >>= 1;
+		if (h[rmq[idx<<1]] > h[rmq[(idx<<1) + 1]]) {
+			rmq[idx] = rmq[idx << 1];
+		} else {
+			rmq[idx] = rmq[(idx << 1) + 1];
+		}
+	}
+}
+
+int getMax(int from, int to) {
+	int ans = myMax(h[from], h[to]);
+	int l = from+ADD, r = to+ADD;
+	while (l <= r) {
+		ans = myMax(ans, myMax(h[rmq[l]], h[rmq[r]]));
+		l = (l+1) >> 1;
+		r = (r-1) >> 1;
+	}
+	return ans;
+}
+
+inline int can(int from, int to) {
+	int height = getMax(from, to);
+	return (height > h[from]);
+}
+
+int solve(int pos) {
+	int l = pos, r = n+1, mid;
+
+	while (r-l > 1) {
+		mid = (l+r)/2;
+		if (can(pos, mid)) {
+			r = mid;
+		} else {
+			l = mid;
+		}
+	}
+	if (!can(pos, l+1)) return -1;
+	return l+1;
+}
+
+inline void mySwap(int &a, int &b) { a = a^b; b = a^b; a = a^b; }
+
+inline void go() {
+
+	for (int i=0; i < q; ++i) {
+		int type;
+		scanf("%d", &type);
+
+		if (!type) {
+			int sol;
+			memset(ans, 0, sizeof(ans));
+			for (int j=1; j <= n; ++j) {
+				for (int k=j+1; k <= n; ++k) {
+					if (h[j] < h[k]) {
+						ans[k] ++;
+						break;
+					}
+				}
+			}
+			sol = ans[1];
+			for (int j=1; j <= n; ++j)
+				sol = myMax(sol, ans[j]);
+			printf("%d\n", sol);
+		} else {
+			mySwap(h[type], h[type+1]);
+		}
+	}
+}
+
+inline void readY() {
+	scanf("%d%d", &n, &q);
+	for (int i=1; i <= n; ++i) {
+		scanf("%d", &h[i]);
+	}
+}
+
+int main() {
+	readY();
+	//getSet();
+	go();
+	return 0;
+}

@@ -1,0 +1,27 @@
+void testcase() {
+	int n = io.sc(), k = io.sc();
+	int ans = 1,cur = 0,nc;
+	ll best,c;
+	rep(i,n) rep(j,k) points[i][j] = io.sc();
+	rep(i,n) done[i] = 0, mac[i] = 0;
+	while(1) {
+		done[cur] = 1;
+		best = -1;
+		rep(i,n) if(done[i]==0) {
+			c = 0;
+			rep(kk,k) c += sq(points[cur][kk] - points[i][kk]);
+			if(c > mac[i]) {
+				mac[i] = c;
+			}
+			if(mac[i] > best) {
+				best = mac[i];
+				nc = i;
+			}
+		}
+		if(best == -1) break;
+		cur = nc;
+		if(best != 0) 
+			make(ans, best); //make updates ans as ans = (ans*(best%MOD))%MOD;
+	}
+	printf("%d\n",ans);
+}

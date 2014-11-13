@@ -1,0 +1,129 @@
+#include<algorithm>
+#include<iostream>
+#include<cstring>
+#include<iomanip>
+#include<cstdio>
+#include<vector>
+#include<string>
+#include<queue>
+#include<stack>
+#include<ctime>
+#include<cmath>
+#include<set>
+
+#define INF 1000000000
+#define NC -1
+
+#define f(i,beg,end) for(int i=beg; i<=end; i++)
+#define F(i,beg,end) for(int i=beg; i>=end; i--)
+#define Min(a,b) ((a<b)?a:b)
+#define Max(a,b) ((a>b)?a:b)
+#define Mod(a)   ((a>-a)?a:-a)
+#define input(file)  freopen(file,"r",stdin)
+#define output(file) freopen(file,"w",stdout)
+#define fill(arr,val) memset(arr,val,sizeof(arr))
+#define iread(var) scanf("%d",&var)
+#define MAXN 1000001
+
+using namespace std;
+
+int n, m, d[MAXN], depth[MAXN];
+
+inline int max_depth()
+{
+    int mmax=d[1];
+    f(i,2,n)
+        mmax=Max(mmax,d[i]);
+    return mmax;
+}
+
+void print()
+{
+    f(i,1,n)
+        cout<<setw(6)<<depth[i];
+    cout<<endl;
+    
+    f(i,1,n)
+        cout<<setw(6)<<d[i];
+    cout<<endl;
+}
+
+inline void precompute(int query)
+{
+    int q=query;
+    if (depth[q]<depth[q+1])
+    {
+        swap(depth[q],depth[q+1]);
+        d[q]+=d[q+1]-1;
+        d[q+1]=0;
+        f(i,q+2,n)
+            if (depth[i]>depth[q])
+            {
+                d[i]++;
+                break;
+            }
+        return;
+    }
+    if (depth[q]==depth[q+1])   return;
+    if (depth[q]>depth[q+1])
+    {   
+        int all=d[q];
+        swap(depth[q],depth[q+1]);
+        int lower_bound=depth[q], upper_bound=depth[q+1];
+        F(i,q,1)
+            if (depth[i]>=lower_bound && depth[i]<upper_bound)
+            {
+                lower_bound=depth[i];
+                d[q+1]++;
+            }
+        d[q]=all-d[q+1]+1;
+        f(i,q+2,n)
+            if (depth[i]>depth[q+1])
+            {
+                d[i]++;
+                break;
+            }
+        return;
+    }
+}
+
+inline void initalize(int query)
+{
+    {
+        //swap(depth[q],depth[q+1]);
+        int q=query, lower_bound=depth[q-1], upper_bound=depth[q];
+        F(i,q-1,1)
+            if (depth[i]>=lower_bound && depth[i]<upper_bound)
+            {
+                lower_bound=depth[i];
+                d[q]++;
+            }
+        return;
+    }
+}
+
+void init()
+{
+    int q;
+    iread(n); iread(m);
+    f(i,1,n) iread(depth[i]);
+    
+    f(i,1,n) initalize(i);
+    
+    f(i,1,m)
+    {
+        //print();
+        iread(q);
+        if (q==0) cout<<max_depth()<<endl;
+        else precompute(q);
+    }
+    //print();
+}
+
+int main()
+{
+    //input("test.txt");
+    init();
+    
+    return 0;
+}

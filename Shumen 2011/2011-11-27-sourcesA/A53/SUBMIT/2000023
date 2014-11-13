@@ -1,0 +1,91 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+struct point{
+  double x, y;
+};
+int N, K;
+
+point a[1024];
+vector < point > ans;
+
+void scan(){
+  cin >> N >> K;
+  
+  for ( int i = 0; i < N; ++i )
+    cin >> a[i].x >> a[i].y;
+}
+
+bool ff ( point t1, point t2 ){
+  if ( t1.x == t2.x ) return t2.y < t2.y;
+  return t1.x < t2.x;
+}
+bool f1 ( point t2, point t1 ){
+  if ( t1.x == t2.x ) return t2.y < t2.y;
+  return t1.x < t2.x;
+}
+
+vector < point > solve(){
+  int tmp = N / K;
+  
+  vector < point > res;
+  
+  int tt = K;
+  
+  for ( int i = 0; i < N; i += tmp ){
+    res.push_back ( a[i] );
+    --tt;
+    if ( tt == 0 ) break;
+  }
+  
+  return res;
+}
+
+double dist ( point t1, point t2 ){
+  return sqrt ( ( t1.x - t2.x ) * ( t1.x - t2.x ) + ( t1.y - t2.y ) * ( t1.y - t2.y ) );
+}
+
+double f ( vector < point > t1 ){
+  double res = 0;
+  
+  for ( int i = 0; i < N; ++i ){
+    double mn = 1e9;
+    
+    for ( int j = 0; j < t1.size(); ++j )
+      mn = min ( mn, dist ( t1[j], a[i] ) );
+    
+    res += mn;
+  }
+  
+  return res;
+}
+void solve1(){
+  sort ( a + 0, a + N, ff );
+  ans = solve ();
+  sort ( a + 0, a + N, f1 );
+  vector < point > tmp = solve();
+  if ( f ( ans ) > f ( tmp ) )
+    ans = tmp;
+  
+  for ( int i = 0; i < 50; ++i ){
+    random_shuffle ( a, a + N );
+    
+    if ( f ( ans ) > f ( tmp ) )
+    ans = tmp;
+  
+  }
+  for ( int i = 0; i < ans.size(); ++i )
+    printf ( "%.6f %.6f\n", ans[i].x, ans[i].y );
+  
+}
+
+int main(){
+  scan();
+  solve1();
+}

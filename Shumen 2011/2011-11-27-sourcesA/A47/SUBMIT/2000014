@@ -1,0 +1,96 @@
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
+#include <cmath>
+#include <ctime>
+
+using namespace std;
+
+struct punct {
+    int x, y;
+};
+
+const int N = 1005;
+
+punct a[N];
+
+int n, k, poz[N], sc[N], vr[N], rem[N];
+
+double rez = 2000000000;
+
+void read() {
+    scanf("%d%d", &n, &k);
+
+    for (int i = 1; i <= n; ++i)
+        scanf("%d%d", &a[i].x, &a[i].y);
+}
+
+double dist[N];
+
+double min(double x, double y) {
+    return x < y ? x : y;
+}
+
+double compute() {
+    for (int i = 1; i <= n; ++i)
+        dist[i] = 0;
+
+    for (int i = 1; i <= k; ++i)
+        for (int j = 1; j <= n; ++j)
+            if (dist[j] == -1)
+                dist[j] = sqrt((a[i].x - a[j].x) * (a[i].x - a[j].x) + (a[i].y - a[j].y) * (a[i].y - a[j].y));
+            else
+                dist[j] = min(dist[j], sqrt((a[i].x - a[j].x) * (a[i].x - a[j].x) + (a[i].y - a[j].y) * (a[i].y - a[j].y)));
+
+    double sc = 0;
+
+    for (int i = 1; i <= n; ++i)
+        sc += dist[i];
+
+    return sc;
+}
+
+void copy(int d[N], int s[N]) {
+    for (int i = 1; i <= k; ++i)
+        d[i] = s[i];
+}
+
+int main() {
+    srand(time(0));
+
+    read();
+
+    for (int i = 1; i <= k; ++i)
+        sc[++sc[0]] = i;
+
+    for (int i = k + 1; i <= n; ++i)
+        rem[++rem[0]] = i;
+
+    int nrp = 0;
+
+    while(nrp <= 101) {
+        ++nrp;
+
+        int rc = compute();
+
+        if (rc <= rez) {
+            rez = rc;
+            copy(vr, sc);
+        }
+
+        int p = rand() % sc[0] + 1;
+
+        int aux = sc[p];
+
+        int inl = rand() % rem[0] + 1;
+
+        sc[p] = rem[inl];
+
+        rem[inl] = aux;
+    }
+
+    for (int i = 1; i <= k; ++i)
+        printf("%d %d\n", a[vr[i]].x, a[vr[i]].y);
+
+    return 0;
+}

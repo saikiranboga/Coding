@@ -1,0 +1,85 @@
+program shablon;
+
+{$MODE OBJFPC}{$H+}
+{$COperators ON}
+
+uses SysUtils, Math;
+
+type qword = int64;
+
+const nmax = 1000 * 1000;
+      sdh = sqr(5);
+
+var n, m, i, j, c, k : longint;
+    d, sig, ans : array[1 .. nmax] of qword;
+    dd : qword;
+    bestk, count : longint;
+    bestd, ed : qword;
+
+procedure pinit;
+begin
+    assign(input, 'input.txt');
+    reset(input);
+    assign(output, 'output.txt');
+    rewrite(output);
+ end;
+
+procedure pout;
+begin
+    close(input);
+    close(output);
+end;
+
+function sqr(x : qword) : qword;
+begin
+    result := x * x;
+end;
+
+begin
+   // pinit;
+    read(n, m);
+    for i := 1 to n do begin
+        read(d[i]);
+    end;
+    count := 0;
+    for i := 1 to m do begin
+        read(c);
+        if c > 0 then begin
+            dd := d[i];
+            d[i] := d[i + 1];
+            d[i + 1] := dd;
+        end
+        else begin
+            fillchar(sig, sizeof(sig), 0);
+            for j := 1 to n - 1 do begin
+                bestk := j + 1;
+                bestd := sdh + sqr(d[j + 1] - d[j]);
+                for k := j + 2 to n do begin
+                    ed := sqr(qword(k - j)) *  sdh;
+                    ed += (d[j] - d[k]) * (d[j] - d[k]);
+                    if ed < bestd then begin
+                        bestk := k;
+                        bestd := ed;
+                    end;
+                end;
+                inc(sig[bestk]);
+            end;
+          //  for j := 1 to n do begin
+          //      write(sig[j], ' ');
+          //  end;
+           // writeln;
+            bestd := 0;
+            for j := 1 to n do begin
+                if bestd < sig[j] then begin
+                    bestd := sig[j];
+                end;
+            end;
+            inc(count);
+            ans[count] := bestd;
+        end;
+    end;
+    for i := count downto 1 do begin
+        writeln(ans[i]);
+    end;
+   // pout;
+end.

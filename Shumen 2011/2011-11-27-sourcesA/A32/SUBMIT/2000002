@@ -1,0 +1,153 @@
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
+#include <algorithm>
+#include <vector>
+
+#define random(a, b) ((a) + (RAND_MAX * rand() + rand()) % ((b) - (a)))
+
+using namespace std;
+
+const int MAXN = 2000, MAXC = 10000;
+const double LIM = .9;
+
+struct point {
+    int x, y;
+};
+
+struct spoint {
+    spoint() {}
+    spoint(point _p, int _w) : p(_p), w(_w) {}
+
+    point p;
+    int w;
+};
+
+struct cluster {
+    cluster() : d(0), r(0) {}
+
+    void add(point);
+    double dist(point);
+
+    vector <point> p;
+    double d, r;
+};
+
+int n, k, ci[MAXN];
+spoint sp[MAXN];
+cluster t;
+vector <cluster> v;
+
+bool cmp(const spoint& a, const spoint& b) { return a.w < b.w; }
+bool cmp2(int a, int b) { return v[a].r > v[b].r; }
+bool cmp3(const point& a, const point& b) { return a.x < b.x; }
+bool cmp4(const point& a, const point& b) { return a.y < b.y; }
+
+int main() {
+    srand(time(0));
+
+    scanf("%d%d", &n, &k);
+
+    for(int i = 0; i < n; ++i) {
+        point a;
+        scanf("%d%d", &a.x, &a.y);
+
+        sp[i] = spoint(a, random(0, 1 << 30));
+    }
+
+    sort(sp, sp + n, cmp);
+
+    for(int i = 0; i < n; ++i)
+        t.add(sp[i].p);
+
+    for(int i = 1; i < n; ++i) {
+        point c = t.p[i];
+        int o = 0;
+        double b = 0;
+        for(int j = 0; j < v.size(); ++j) {
+            double cs = 1 - pow(v[j].dist(c) / t.d, 2);
+            if(cs > b) {
+                b = cs;
+                o = j;
+            }
+        }
+
+        if(b > LIM || v.size() == k)
+            v[o].add(c);
+        else {
+            v.push_back(cluster());
+            v.back().add(c);
+        }
+    }
+
+    while(v.size() < k) {
+        for(int i = 0; i < v.size(); ++i)
+            ci[i] = i;
+
+        sort(ci, ci + v.size(), cmp2);
+
+        int br = min((int)v.size(), k);
+        for(int i = 0; i < br; ++i) {
+            int lx = MAXC, rx = 0, ly = MAXC, ry = 0;
+            for(int j = 0; j < v[i].p.size(); ++j) {
+                point c = v[i].p[j];
+                lx = min(lx, c.x);
+                rx = max(rx, c.x);
+                ly = min(ly, c.y);
+                ry = max(ry, c.y);
+            }
+
+            if(rx - lx > ry - ly)
+                sort(v[i].p.begin(), v[i].p.end(), cmp3);
+            else
+                sort(v[i].p.begin(), v[i].p.end(), cmp4);
+
+            cluster a, b;
+            int sz1 = v[i].p.size() / 2, sz2 = v[i].p.size();
+            for(int j = 0; j < sz1; ++j)
+                a.add(v[i].p[j]);
+
+            for(int j = sz1; j < sz2; ++j)
+                b.add(v[i].p[j]);
+
+            v[i] = a;
+            v.push_back(b);
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i) {
+        double xp = 0, yp = 0;
+
+        int br = v[i].p.size();
+        for(int j = 0; j < br; ++j) {
+            point c = v[i].p[j];
+            xp += c.x * c.x;
+            yp += c.y * c.y;
+        }
+
+        printf("%f %f\n", sqrt(xp / br), sqrt(yp / br));
+    }
+
+    return 0;
+}
+
+void cluster::add(point x) {
+    for(int i = 0; i < p.size(); ++i) {
+        double dx = x.x - p[i].x, dy = x.y - p[i].y, dst = dx * dx + dy + dy;
+        r += dst;
+        d = max(d, dst);
+    }
+
+    p.push_back(x);
+}
+
+double cluster::dist(point x) {
+    double mx = d;
+    for(int i = 0; i < p.size(); ++i) {
+        double dx = x.x - p[i].x, dy = x.y - p[i].y;
+        mx = max(mx, dx * dx + dy + dy);
+    }
+
+    return mx;
+}

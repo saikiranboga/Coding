@@ -1,0 +1,146 @@
+#include <cstdio>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+const int x=5;
+int N,M;
+int subd[1000010]; // dulbo4ini
+int subsigs[1000010]; // broi polu4eni signali
+int maxrec;
+int i,j,k;
+
+void swaper(int p)
+{
+	int sw=subd[p];
+	subd[p]=subd[p+1];
+	subd[p+1]=sw;
+	if(p==1)
+	{
+		if(subd[p]<subd[p+1])
+		{
+			subd[p+1]=1;
+		}
+		else if(subd[p]>subd[p+1])
+		{
+			subd[p]--;
+			for(j=p+2; j<=N; j++)
+			{
+				if(subd[p]<subd[j]) 
+				{
+					subsigs[j]=j-1;
+					if(maxrec<subsigs[j]) maxrec=subsigs[j];
+					break; 
+				}
+			}
+		}
+	}
+	else
+	{
+		if(subd[p-1]>subd[p] && subd[p-1]>subd[p+1])
+		{
+			if(subd[p]<subd[p+1]) 
+			{
+				subsigs[p+1]=1;
+			}
+			else if(subd[p]>subd[p+1])
+			{
+				subsigs[p]=0;
+				subsigs[p+1]=0;
+				for(j=p+2; j<=N; j++)
+				{
+					if(subd[p+1]<subd[j])
+					{
+						subsigs[j]++;
+						break;
+					}
+				}
+			}
+		}
+		else if(subd[p-1]>subd[p] && subd[p-1]<subd[p+1])
+		{
+			swap(subsigs[p],subsigs[p+1]);
+			subsigs[p+1]++;
+			for(j=p+2; j<=N; j++)
+			{
+				if(subd[p+1]<subd[j])
+				{
+					subsigs[j]--;
+					break;
+				}
+			}
+			if(maxrec<subsigs[p+1])maxrec=subsigs[p+1];
+		}
+		else if(subd[p-1]<subd[p] && subd[p-1]>subd[p+1])
+		{
+			swap(subsigs[p],subsigs[p+1]);
+			subsigs[p]--;
+			for(j=p+2; j<=N; j++)
+			{
+				if(subd[p+1]<subd[j])
+				{
+					subsigs[j]++;
+					break;
+				}
+			}
+		}
+		else if(subd[p-1]<subd[p] && subd[p-1]<subd[p+1])
+		{
+			if(subd[p]>subd[p+1])
+			{
+				swap(subsigs[p], subsigs[p+1]);
+				subsigs[p+1]=0;
+			}
+			else if(subd[p]<subd[p+1]) 
+			{
+				swap(subsigs[p], subsigs[p+1]);
+				subsigs[p+1]++;
+				if(maxrec<subsigs[p+1])maxrec=subsigs[p+1];
+			}
+		}
+	}
+}
+
+void findtar()
+{
+	//maxrec=0;
+	//for(j=2; j<=N; j++) subsigs[j]=0;
+	for(j=1; j<=N; j++)
+	{
+		for(k=j+1; k<=N; k++)
+		{
+			if(subd[j]<subd[k])
+			{
+				subsigs[k]++;
+				if(maxrec<subsigs[k]) maxrec=subsigs[k];
+				break;
+			}
+		}
+	}
+	//for(i=1; i<=N; i++)printf("%d ", subsigs[i]);
+	//printf("\n");
+}
+
+int main()
+{
+	scanf("%d %d", &N, &M);
+	for(i=1; i<=N; i++)
+	{
+		scanf("%d", &subd[i]);
+	}
+	findtar();
+	int c;
+	for(i=1; i<=M; i++)
+	{
+		scanf("%d", &c);
+		if(c>0) swaper(c);
+		else 
+		{
+			printf("%d\n", maxrec);
+		}
+	}
+	//for(i=1; i<=N; i++)printf("%d ", subsigs[i]);
+	//printf("\n");
+	
+	return 0;
+}

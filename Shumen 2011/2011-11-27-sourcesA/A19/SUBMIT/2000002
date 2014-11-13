@@ -1,0 +1,60 @@
+#include<iostream>
+using namespace std;
+int a[1024][1024],m,n,k,ans1,ans;
+void read()
+{
+    int i,j;
+    cin>>m>>n;
+    for(i=1;i<=m;i++)
+    for(j=1;j<=n;j++)
+    cin>>a[i][j];
+}
+void find(int x,int y,int b,int c)
+{
+    //cout<<b<<" "<<c<<endl;
+    int i,j,r,l,lamp=0;
+    for(i=b;i<=y;i++)
+    if(a[i][c]==1) break;
+    for(j=c;j<=n;j++)
+    if(a[b][j]==1) break;
+    //cout<<i<<" "<<j<<endl;
+    //for(r=b+1;r<i;r++)
+    //for(l=c+1;l<j;l++)
+    //{
+        //if(a[r][l]==1)
+       // {
+       //     lamp=1;
+       // }
+    //}
+
+    //if(lamp==0)
+    ans1=(i-b)*(j-c);
+    if(ans1>ans) ans=ans1;
+}
+void solve()
+{
+    int i,j,b,x,y;
+    cin>>k;
+    for(b=0;b<k;b++)
+    {
+        cin>>x>>y;
+        for(i=x;i<=y;i++)
+        for(j=1;j<=n;j++)
+        {
+            if(a[i][j]==0)
+            {
+                if(a[i+1][j]==1&&a[i][j+1]==1) ans1=1;
+                else
+                find(x,y,i,j);
+            }
+        }
+        cout<<ans<<endl;
+    }
+    //cout<<ans1<<endl;
+}
+int main()
+{
+    read();
+    solve();
+    return 0;
+}

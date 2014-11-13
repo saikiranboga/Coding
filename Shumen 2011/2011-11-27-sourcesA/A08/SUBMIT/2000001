@@ -1,0 +1,83 @@
+/*
+TASK: submarine
+LANG: C++
+*/
+
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+#define S(X) ((X)*(X))
+
+using namespace std;
+
+const int MAXN = 1000005;
+const int MAXM = 25;
+const long long L = 5000000LL;
+
+int N, M;
+long long a[MAXN];
+
+inline long long dist ( int i, int j ) {
+	return L*S(j-i) + S(a[j]-a[i]);
+}
+
+int st;
+int closest ( int i, int j ) {
+	
+//	printf ( "[%d;%d]\n", i, j );
+	
+//	if ( i > j ) return MAXN;
+	if ( i == j ) return a[i] < a[st] ? MAXN : i;
+	if ( i+1==j ) {
+		if ( a[i] < a[st] && a[j] < a[st] ) return MAXN;
+		if ( a[i] < a[st] && a[j] >=a[st] ) return j;
+		return i;
+		}
+	int mid = ( i+j ) >> 1;
+	
+	int c1 = closest ( i, mid );
+	int c2 = closest ( mid+1, j );
+	if ( c1 == MAXN ) return c2;
+	if ( c2 == MAXN ) return c1;
+	return dist ( st, c1 ) <= dist ( st, c2 ) ? c1 : c2;
+	
+}
+
+int cnt[MAXN];
+
+int main (void) {
+	
+	scanf ( "%d%d", &N, &M );
+	for ( int i=1; i<=N; ++i ) scanf ( "%lld", a+i );
+	a[N+1] = -1;
+	/*
+	for ( int i=1; i<=N; ++i ) {
+		st = i;
+		printf ( "%d => %d\n", i, closest ( i+1, N ) );
+		}
+	*/
+	
+	int comm, ans = 0, cl;
+	while ( M -- ) {
+		
+		scanf ( "%d", &comm );
+		if ( comm ) swap ( a[comm], a[comm+1] );
+		else {
+			
+			memset ( cnt, 0, sizeof cnt );
+			for ( int i=1; i<N; ++i ) {
+				
+				st = i;
+				cl = closest ( i+1, N );
+				++ cnt[cl];
+				if ( cnt[ans] < cnt[cl] && cl != MAXN ) ans = cl;
+				
+				}
+			printf ( "%d\n", cnt[ans] );
+			
+			}
+		
+		}
+	
+}

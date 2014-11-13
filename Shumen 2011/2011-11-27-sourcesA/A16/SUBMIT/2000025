@@ -1,0 +1,76 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+struct fly
+{
+    int a;
+    int count;
+    int nr;
+};
+
+vector <fly> v_def,v;
+int n, m, mx;
+
+int muha ( int x )
+{
+
+    int i, j;
+    if ( x ) {
+        swap (v[x-1].a, v[x].a);
+        swap (v[x-1].count, v[x].count);
+        for (int  i=0; i<n; i++ ){
+         //   printf ( "%d %d\n",v[i].a, v[i].count );
+            v[i].count=0;}
+
+    }
+    else if ( !x ) {
+        for ( i=0; i<n; i++ ) {
+            j=i+1;
+            while ( j<=n ) {
+                if ( v[i].a <= v[j].a && v[i].nr< v[j].nr) {
+                        v[j].count+=1;
+                        break;
+                }
+                j++;
+            }
+            if ( mx < v[j].count )
+                mx = v[j].count;
+        }
+        printf ( "%d\n", mx );
+        for (int  i=0; i<n; i++ ){
+         //   printf ( "%d %d\n",v[i].a, v[i].count );
+            v[i].count=0;}
+            mx=0;
+        }
+    }
+
+void read()
+{
+    int i, j, p,t;
+    fly w;
+    scanf ( "%d%d", &n,&m );
+    for ( i=0; i<n; i++ )
+    {
+        scanf ( "%d", &p );
+        w.a=p;
+        w.count=0;
+        w.nr=i+1;
+        v.push_back(w);
+    }
+    for ( j=0; j<m; j++ )
+    {
+        scanf ( "%d", &t );
+        muha (t);
+    }
+}
+
+int main ()
+{
+    read ();
+
+    return 0;
+}

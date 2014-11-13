@@ -1,0 +1,119 @@
+#include <cstdio>
+
+int a[1024][1024]; // table
+int b[1024][1024]; // best
+
+int v1[4096], v2[4096];
+int f=1024;
+inline int minint (int a, int b) { return a < b ? a : b; }
+inline int maxint (int a, int b) { return a > b ? a : b; }
+void inc (int ind, int val)
+{
+	ind += f;
+	v1[ind] = v1[ind] + val;
+	v2[ind] = v2[ind] + val;
+	while (ind > 0) { ind /= 2; v1[ind] = minint (v1[2*ind], v1[2*ind+1]); v2[ind] = maxint (v2[2*ind], v2[2*ind+1]); }
+}
+void set (int ind, int val)
+{
+	ind += f;
+	v1[ind] = v2[ind] = val;
+	while (ind > 0) { ind /= 2; v1[ind] = minint (v1[2*ind], v1[2*ind+1]); v2[ind] = maxint (v2[2*ind], v2[2*ind+1]); }
+}
+int minv (int l, int r)
+{
+	l += f; r += f;
+	int res = 2048;
+	while (l < r)
+	{
+		if (l % 2 == 1) { if (res > v1[l]) res = v1[l]; ++l; }
+		if (r % 2 == 0) { if (res > v1[r]) res = v1[r]; --r; }
+		if (l > r) break;
+		l /= 2; r /= 2;
+	}
+	if (l == r && res > v1[l]) res = v1[l];
+	return res;
+}
+int maxv (int l, int r)
+{
+	l += f; r += f;
+	int res = -1;
+	while (l < r)
+	{
+		if (l % 2 == 1) { if (res < v2[l]) res = v2[l]; ++l; }
+		if (r % 2 == 0) { if (res < v2[r]) res = v2[r]; --r; }
+		if (l > r) break;
+		l /= 2; r /= 2;
+	}
+	if (l == r && res < v2[l]) res = v2[l];
+	return res;
+}
+int ub (int left, int bound)
+{
+	if (minv(left, left) <= bound) return left;
+	int l = left, r = 1024, m;
+	while (r - l > 1)
+	{
+		m = (l + r) / 2;
+		if (minv (l, m) > bound) l = m;
+		else r = m;
+	}
+	return r;
+}
+int lb (int left, int bound)
+{
+	if (maxv(left, left) >= bound) return left;
+	int l = left, r = 1024, m;
+  while (r - l > 1)
+  { 
+    m = (l + r) / 2;
+    if (maxv (l, m) < bound) l = m;
+    else r = m;
+  }
+  return r;
+}
+
+
+int main ()
+{
+	int n, m; scanf ("%d%d", &n, &m);
+
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < m; ++j) scanf ("%d", a[i]+j);
+
+	for (int i = 0; i < m; ++i) inc (i, 1 - a[0][i]);
+
+	for (int i = 0; i < n; ++i)
+	{
+		//printf ("%d: ", i); for (int j = 0; j < m; ++j) printf ("%d ", minv(j, j)); printf ("\n");
+		int bestarea = 0;
+		for (int h = 1; h <= i + 1; ++h)
+		{
+			//printf ("h -> %d: ", h);
+			int bw = 0, prev = lb(0, h), j = ub(prev, h - 1);
+			//printf ("(%d, %d) ", prev, j);
+			while (j <= m) { if (bw < j - prev) bw = j - prev; prev = lb (j, h); j = ub(prev, h - 1);  /*printf ("(%d, %d) ", prev, j);*/ }
+			if (bestarea < bw * h) bestarea = bw * h;
+			//printf ("bw = %d\n", bw);
+			if (bestarea > b[i-h+1][i]) b[i-h+1][i] = bestarea;
+		}
+		for (int j = 0; j < m; ++j)
+		{
+			if (a[i + 1][j]) set(j, 0);
+			else inc (j, 1);
+		}
+	}
+
+	for (int i = 0; i < n - 1; ++i)
+		for (int j = i; j < n - 1; ++j)
+			if (b[i][j] > b[i][j + 1]) b[i][j + 1] = b[i][j];
+
+	int q;
+	scanf ("%d", &q);
+	for (int i = 0; i < q; ++i)
+	{
+		int p, q; scanf ("%d%d", &p, &q);
+		printf ("%d\n", b[p - 1][q - 1]);
+	}
+	return 0;
+}

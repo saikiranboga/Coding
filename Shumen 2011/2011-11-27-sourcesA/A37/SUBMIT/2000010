@@ -1,0 +1,125 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+#define maxn 1010
+
+int n, i, j, k, nc, nr;
+int t[maxn], a[maxn], b[maxn], dx[maxn], dy[maxn], sum[maxn];
+pair<int, pair<int, int> > mc[maxn*maxn];
+double sum1;
+vector<int> v[maxn];
+
+int tata(int nod)
+{
+    if(t[nod]==nod)
+        return nod;
+
+    int aux=tata(t[nod]);
+    t[nod]=aux;
+    return aux;
+}
+
+double distanta(double cx, double cy, int p)
+{
+    double sol=0;
+    for(int i=0; i<v[p].size(); ++i)
+    {
+        int x = v[p][i];
+        sol+=sqrt((a[x]-cx)*(a[x]-cx)+(b[x]-cy)*(b[x]-cy));
+    }
+
+   // printf("%.4lf\n", sol);
+
+    return sol;
+}
+
+
+int main()
+{
+  //  freopen("clustering.in", "r", stdin);
+  //  freopen("clustering.out", "w", stdout);
+
+    scanf("%d%d", &n, &k);
+    for(int i=1; i<=n; ++i)
+    {
+        t[i]=i;
+        scanf("%d%d", &a[i], &b[i]);
+    }
+
+    nc=n;
+
+    for(int i=1; i<=n; ++i)
+        for(int j=1; j<i; ++j)
+            mc[++nr]=make_pair((a[i]-a[j])*(a[i]-a[j])+(b[i]-b[j])*(b[i]-b[j]), make_pair(i, j));
+
+    sort(mc+1, mc+nr+1);
+
+    for(int i=1; i<=nr; ++i)
+    {
+        if(tata(mc[i].second.first)!=tata(mc[i].second.second))
+        {
+        //    printf("%d %d\n", mc[i].second.first, mc[i].second.second);
+            t[tata(mc[i].second.first)]=tata(mc[i].second.second);
+            nc--;
+            if(nc==k)
+                break;
+        }
+    }
+
+    for(int i=1; i<=n; ++i)
+    {
+        int z=tata(i);
+
+     //   printf("%d %d\n", i, z);
+        dx[z]+=a[i];
+        dy[z]+=b[i];
+        sum[z]++;
+        v[z].push_back(i);
+    }
+
+    for(int i=1; i<=n; ++i)
+    {
+        if(sum[i]==0)
+            continue;
+
+        double sx = 1.0*dx[i]/sum[i], sy = 1.0*dy[i]/sum[i];
+        double pas = 5000;
+
+        double dist = distanta(sx, sy, i);
+
+        for(int j=0; j<=40; ++j)
+        {
+            if(distanta(sx+pas, sy, i)<dist)
+            {
+                dist=distanta(sx+pas, sy, i);
+                sx+=pas;
+            }
+            if(distanta(sx-pas, sy, i)<dist)
+            {
+                dist=distanta(sx-pas, sy, i);
+                sx-=pas;
+            }
+            if(distanta(sx, sy+pas, i)<dist)
+            {
+                dist=distanta(sx, sy+pas, i);
+                sy+=pas;
+            }
+            if(distanta(sx, sy-pas, i)<dist)
+            {
+                dist=distanta(sx, sy-pas, i);
+                sy-=pas;
+            }
+
+            pas=pas/2.0;
+
+        }
+
+        printf("%.6lf %.6lf\n", sx, sy);
+    }
+
+    return 0;
+}

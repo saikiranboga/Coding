@@ -1,0 +1,88 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+pair < int, int > x[1 << 20];
+int N, M;
+
+void scan(){
+  scanf ( "%d%d", &N, &M );
+
+  for ( int i = 0; i < N; ++i ){
+    x[i].first = i * 5000000LL;
+    cin >> x[i].second;
+  }
+}
+
+int br[1 << 20];
+pair< int, int > st[1 << 20];
+
+bool f ( pair < int, int > t1, pair < int, int > t2 ){
+  return t1.first > t2.first;
+}
+
+void print(){
+  for ( int i = 0; i < N; ++i )
+    br[i] = 0;
+    
+  int sz =0;
+  
+  for ( int i = N - 1; i >= 0; --i ){
+    
+  //  for ( int j = 0; j < sz; ++j )
+//	cout <<  st[j].first << " ";
+ //   cout << endl;
+   
+    pair < int, int > tmp = make_pair ( x[i].second, x[i].first );
+    
+    int it = upper_bound ( st, st + sz, tmp, f ) - st;
+    --it;
+    if ( it > 0 )
+    if ( it < sz && st[it].first > tmp.first ){
+   // cout << tmp.first << "-" << it << endl;
+    
+    
+    if ( sz )br[st[it].second]++;}
+    if ( sz )
+    while ( tmp.first > st[ sz - 1].first ){
+      --sz;
+      if ( sz == 0 ) break;
+    }
+    st[sz++] = make_pair ( x[i].second, i );
+    
+  }
+  
+  int mx = 0;
+  
+  for ( int i = 0; i < N; ++i )
+      mx = max ( mx, br[i] );
+  
+  printf ( "%d\n", mx );
+}
+
+void change ( int i ){
+  swap ( x[i].second, x[i + 1].second );
+}
+void solve(){
+  
+  
+  for ( int i = 0; i < M; ++i ){
+    int x;
+    
+    scanf ( "%d", &x );
+    --x;
+    
+    if ( x == -1 )
+      print();
+    else
+      change(x);
+  }
+}
+
+int main(){
+  scan();
+  solve();
+}

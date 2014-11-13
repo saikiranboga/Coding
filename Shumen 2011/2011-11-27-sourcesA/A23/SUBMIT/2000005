@@ -1,0 +1,89 @@
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+struct submarine
+{
+    int x;
+    unsigned long long y;
+    int number;
+};
+submarine a[1000002];
+int n,m,br[1000002],otg;
+int cmp(submarine aa, submarine bb)
+{
+    return aa.x<bb.x;
+}
+void read()
+{
+    unsigned long long j=0;
+    cin>>n>>m;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>a[i].x;
+        a[i].y=j;
+        j+=5000000;
+        a[i].number=i;
+    }
+    sort(a+1,a+n+1,cmp);
+}
+void smqna(int z)
+{
+    int p,l=0;
+   /*/ for(int i=1;i<=n;i++)
+    {
+        cout<<a[i].x<<" "<<a[i].number<<endl;
+    }/*/
+    for(int i=1;i<=n;i++)
+    {
+        if(a[i].number==z||a[i].number==z+1)
+        {
+            if(l)
+            {
+                a[l].number=a[i].number;
+                a[i].number=p;
+            }
+            if(!l) { p=a[i].number; l=i; }
+        }
+    }
+  /*/  for(int i=1;i<=n;i++)
+    {
+        cout<<a[i].x<<" "<<a[i].number<<endl;
+    }/*/
+}
+void signal()
+{
+    unsigned long long j=2,mn=999999999,pr;
+    for(int i=1;i<=n;i++)
+    { //cout<<1<<endl;
+        while(1)
+        {
+            if(sqrt((a[i].x-a[i+1].x)*(a[i].x-a[i+1].x)+(a[i].y-a[i+1].y)*(a[i].y-a[i+1].y))>=mn) break;
+            else {mn=sqrt((a[i].x-a[i+1].x)*(a[i].x-a[i+1].x)+(a[i].y-a[i+1].y)*(a[i].y-a[i+1].y));
+            pr=a[i].number; }
+        }
+        br[pr]++;
+        mn=999999999;
+    }
+    for(int i=1;i<=n;i++)
+    {
+        if(br[i]>otg) otg=br[i];
+    }
+    cout<<otg+1<<endl;
+}
+void solve()
+{
+    int z;
+    for(int i=1;i<=m;i++)
+    {
+        cin>>z;
+        if(z) smqna(z);
+        else signal();
+    }
+}
+int main()
+{
+    read();
+    solve();
+    return 0;
+}

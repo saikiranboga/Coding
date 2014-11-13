@@ -1,0 +1,60 @@
+#include <cstdio>
+
+#define MAXN 1024
+
+using namespace std;
+
+struct data
+{
+    int mini,value;
+};
+
+int a[MAXN][MAXN],longest[MAXN][MAXN],ans[MAXN][MAXN],dp[2][MAXN][MAXN];
+
+inline int mini(const int &x, const int &y)
+{
+    if ( x < y ) return x;
+    return y;
+}
+
+int main()
+{
+    int n,m,i,j,k,q,r1,r2,t=0,pre=1;
+    scanf ("%d%d",&n,&m);
+    for ( i=1; i<=n; i++ )
+        for ( j=1; j<=m; j++ )
+        {
+            scanf ("%d",&a[i][j]);
+            if ( a[i][j] ) longest[i][j] = 0;
+            else longest[i][j] = longest[i][j-1] + 1;
+        }
+
+    for ( i=1; i<=n; i++ )
+    {
+        for ( j=1; j<=m; j++ )
+        {
+            dp[t][j][i] = longest[i][j];
+            if ( longest[i][j] > ans[i][i] ) ans[i][i] = longest[i][j];
+        }
+
+        for ( k=i-1; k>=1; k-- )
+        {
+            ans[k][i] = ans[k][i-1];
+            if ( ans[k+1][i] > ans[k][i] ) ans[k][i] = ans[k+1][i];
+            for ( j=1; j<=m; j++ )
+            {
+               dp[t][j][k] = mini(dp[pre][j][k],longest[i][j]);
+               if ( dp[t][j][k]*( i + 1 - k ) > ans[k][i] ) ans[k][i] = dp[t][j][k]*( i + 1 - k );
+            }
+        }
+
+        t^=1; pre^=1;
+    }
+
+    scanf ("%d",&q);
+    for ( i=1; i<=q; i++ )
+    {
+        scanf ("%d %d",&r1,&r2);
+        printf ("%d\n",ans[r1][r2]);
+    }
+}

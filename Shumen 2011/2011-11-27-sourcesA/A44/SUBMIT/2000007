@@ -1,0 +1,105 @@
+#include <stdio.h>
+
+#include <vector>
+
+using namespace std;
+
+int n, m;
+int ok[1005][1005], sol[1005][1005];
+int t[1005], nr[1005], sus[1005];
+
+int find (int x)
+{
+    if (t[x] != x)
+        t[x] = find (t[x]);
+    return t[x];
+}
+
+inline void unite (int x, int y)
+{
+    if (nr[x] > nr[y])
+    {
+        nr[x] += nr[y];
+        t[y] = x;
+    }
+    else
+    {
+        nr[y] += nr[x];
+        t[x] = y;
+    }
+}
+
+inline int maxim (int a, int b) {return a > b ? a : b;}
+
+void rez ()
+{
+    int i, j, k, max;
+    vector <int> v[1005];
+    vector <int> :: iterator it;
+
+
+    for (i = 1; i <= n; i ++)
+    {
+        for (j = 1; j <= m; j ++)
+        {
+            v[j].clear();
+            nr[j] = 1;
+        }
+        for (j = 1; j <= m; j ++)
+        {
+            //sus[j] = v[i][j] ? 0 : sus[j] + 1;
+            if (ok[i][j])
+                sus[j] = 0;
+            else
+                sus[j] ++;
+            v[sus[j]].push_back (j);
+            t[j] = j;
+        }
+        max = 0;
+        for (j = i; j >= 1; j --)
+        {
+            for (it = v[j].begin(); it != v[j].end(); it ++)
+            {
+                k = *it;
+                if (sus[k - 1] >= j && find (k - 1) != find (k))
+                    unite (find (k - 1), find (k));
+                if (sus[k + 1] >= j && find (k + 1) != find (k))
+                    unite (find (k + 1), find (k));
+                k = find (k);
+                if (nr[k] > max)
+                    max = nr[k];
+            }
+            sol[i - j + 1][i] = max * j;
+        }
+    }
+    for (k = 1; k <= n; k ++)
+        for (i = 1; i <= n - k + 1; i ++)
+        {
+            j = i + k - 1;
+            sol[i][j] = maxim (sol[i][j], maxim (sol[i + 1][j], sol[i][j - 1]));
+        }
+}
+
+int main ()
+{
+//    freopen ("standard.in", "r", stdin);
+//    freopen ("standard.out", "w", stdout);
+
+    scanf ("%d %d", &n, &m);
+
+    int i, j, t, l1, l2;
+
+    for (i = 1; i <= n; i ++)
+        for (j = 1; j <= m; j ++)
+            scanf ("%d", &ok[i][j]);
+
+    rez ();
+
+    scanf ("%d", &t);
+    while (t --)
+    {
+        scanf ("%d %d", &l1, &l2);
+        printf ("%d\n", sol[l1][l2]);
+    }
+    return 0;
+}

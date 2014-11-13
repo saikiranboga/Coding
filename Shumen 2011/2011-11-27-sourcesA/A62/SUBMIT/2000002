@@ -1,0 +1,111 @@
+//Georgi Gaidarov
+// No_ReSponSe
+// A62
+// Esenen shumen s katmi
+// 26.11.2011
+//
+
+// Task : standard
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <queue>
+#include <stack>
+#include <cstdlib>
+#include <fstream>
+
+using namespace std;
+
+
+int n, m;
+int a[1000][1000];
+struct p
+{
+    int r;
+    int d;
+    p()
+    {
+        r=0;
+        d=0;
+    }
+};
+p dist[1000][1000];
+void calcD()
+{
+    for(int i2=0; i2<m; i2++)
+        for(int i=n-1; i>=0; i--)
+        {
+            if(!a[i][i2])
+                if(i!=n-1 && !a[i+1][i2]) dist[i][i2].d = dist[i+1][i2].d+1;
+                else dist[i][i2].d = 1;
+        }
+    for(int i2=0; i2<n; i2++)
+        for(int i=m-1; i>=0; i--)
+        {
+            if(!a[i2][i])
+                if(i!=m-1 && !a[i2][i+1]) dist[i2][i].r = dist[i2][i+1].r+1;
+                else dist[i2][i].r = 1;
+        }
+
+}
+
+int solve(int t, int b)
+{
+    int maxd = abs(t-b)+1;
+    t--, b--;
+    //cout<<"solving for range "<<t<<" to "<<b<<endl;
+    int maxed = 0;
+    bool cchecked[m];
+    memset(cchecked, 0, m);
+
+    for(int j=t; j<=b; j++)
+    for(int i=0; i<m; i++)
+    {
+        if(cchecked[i]) continue;
+        int tmin = b-j+1;
+        if(dist[j][i].d * tmin <= maxed ) continue;
+        if(dist[j][i].d * dist[j][i].r <= maxed) continue;
+        int m=1;
+        for(int h = i; h<i+dist[j][i].r; h++, m++)
+        {
+
+            if(dist[j][h].d<tmin) tmin = dist[j][h].d;
+            if(m*tmin > maxed) maxed = m*tmin;
+
+        }
+        if(maxed < tmin * dist[j][i].r) maxed = tmin*dist[j][i].r;
+        //cout<<"new max found, down "<<tmin<<", right "<<dist[j][i].r<<endl;
+    }
+
+    return maxed;
+}
+
+int main()
+{
+    //freopen("standard2.txt", "r", stdin);
+    cin>>n>>m;
+    for(int i=0; i<n; i++)
+        for(int j=0; j<m; j++)
+            scanf("%d", &a[i][j]);
+
+    calcD(); // =]
+
+    /*
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<m; j++)
+            cout<<dist[i][j].d<<"."<<dist[i][j].r<<" ";
+        cout<<endl;
+    }*/
+
+    int rq;
+    cin>>rq;
+    int r1, r2;
+    for(int i=0; i<rq; i++)
+    {
+        scanf("%d %d", &r1, &r2);
+        printf("%d\n", solve(r1, r2));
+    }
+
+    return 0;
+}

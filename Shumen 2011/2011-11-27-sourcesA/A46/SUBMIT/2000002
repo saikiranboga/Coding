@@ -1,0 +1,112 @@
+#include <iostream>
+//#include <cstdio>
+
+using namespace std;
+
+const int N = 1001;
+
+int n, m;
+int r[N][N];
+int b[N][N];
+int d[N][N];
+
+inline int mx(int x, int y)
+{
+    return (x>y ? x:y);
+}
+
+inline int mn(int x, int y)
+{
+    return (x<y ? x:y);
+}
+
+void Read()
+{
+    cin >> n >> m;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m; ++j)
+            cin >> r[i][j];
+}
+
+void GetDowns()
+{
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m; ++j)
+            if (!d[i-1][j] && !r[i][j])
+            {
+                int k;
+                for (k = i; k+1 <= n && r[k+1][j] != 1; ++k);
+                d[i][j] = k - i + 1;
+            }
+            else
+                d[i][j] = mx(0, d[i-1][j] - 1);
+}
+
+int Solve(int x, int y)
+{
+    int dw, best = 0, dtm = y - x + 1;
+    int q[N];
+    dw = q[1] = 1;
+
+    for (int i = 2; i <= m; ++i)
+    {
+        while (dw && mn(dtm, d[x][q[dw]]) >= mn(dtm, d[x][i]))
+            dw--;
+        q[++dw] = i;
+
+        for (int j = dw; j; --j)
+        {
+            int rAct = mn(dtm, d[x][q[j]]) * (i - q[j-1]);
+            if (rAct > best)
+                best = rAct;
+        }
+    }
+
+    return best;
+}
+
+void GetBests()
+{
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j)
+            b[i][j] = Solve(i, j);
+}
+
+void Remake()
+{
+    for (int dist = 1; dist < n; ++dist)
+        for (int i = 1; i + dist <= n; ++i)
+        {
+            int j = i + dist;
+            b[i][j] = mx(b[i][j], b[i+1][j-1]);
+            b[i][j] = mx(b[i][j], b[i+1][j]);
+            b[i][j] = mx(b[i][j], b[i][j-1]);
+        }
+}
+
+void Print()
+{
+    int q;
+    cin >> q;
+
+    while (q--)
+    {
+        int x, y;
+        cin >> x >> y;
+        cout << b[x][y] << "\n";
+    }
+}
+
+int main()
+{
+//    freopen("standard.in", "r", stdin);
+//    freopen("standard.out", "w", stdout);
+
+    Read();
+    GetDowns();
+    GetBests();
+    Remake();
+    Print();
+
+    return 0;
+}

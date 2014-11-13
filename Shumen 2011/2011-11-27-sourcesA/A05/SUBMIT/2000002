@@ -1,0 +1,124 @@
+#include <cstdio>
+#include <queue>
+
+#define MAXN 1000000
+
+std::priority_queue <int> pq;
+
+struct line
+{
+    int dpt, s;
+}subs[MAXN], swsub;
+
+int N, M, len[MAXN], ans;
+
+void chans(int s);//maintain ans and len[]
+
+int main()
+{
+    scanf("%d %d", &N, &M);
+    
+    for(int i = 0;i < N;i++)
+    {
+        scanf("%d", &subs[i].dpt);
+        
+        while(!pq.empty() && pq.top() < subs[i].dpt)
+        {
+            pq.pop();
+            subs[i].s++;
+        }
+        pq.push(subs[i].dpt);
+        
+        len[subs[i].s]++;
+        if(ans < subs[i].s)
+            ans = subs[i].s;
+    }
+    
+    int cmd;
+    for(int q = 0;q < M;q++)
+    {
+        scanf("%d", &cmd);
+        
+        if(cmd == 0)
+        {
+            printf("%d\n", ans);
+            continue;
+        }
+        
+        if(subs[cmd-1].dpt < subs[cmd].dpt)
+        {
+            swsub = subs[cmd-1];
+            subs[cmd-1] = subs[cmd];
+            subs[cmd] = swsub;
+            
+            chans(subs[cmd-1].s);
+            chans(subs[cmd].s);
+            subs[cmd-1].s += subs[cmd].s-1;
+            subs[cmd].s = 0;
+            
+            len[0]++;
+            len[subs[cmd-1].s]++;
+            if(ans < subs[cmd-1].s)
+                ans = subs[cmd-1].s;
+            
+            for(int i = cmd+1;i < N;i++)
+                if(subs[i].dpt > subs[cmd].dpt)
+                {
+                    len[subs[i].s]--;//no need to call chans
+                    subs[i].s++;
+                    len[subs[i].s]++;
+                    if(ans < subs[i].s)
+                        ans = subs[i].s;
+                    break;
+                }
+        }
+        else
+        {
+            swsub = subs[cmd-1];
+            subs[cmd-1] = subs[cmd];
+            subs[cmd] = swsub;
+            
+            subs[cmd-1].s = 0;
+            for(int i = cmd-2;i >= 0;i--)
+            {
+                if(subs[i].dpt < subs[cmd-1].dpt)
+                    subs[cmd-1].s++;
+                else
+                    break;
+            }
+            chans(subs[cmd].s);
+            subs[cmd].s -= subs[cmd-1].s-1;
+            len[subs[cmd].s]++;
+            if(ans < subs[cmd].s)
+                ans = subs[cmd].s;
+            
+            for(int i = cmd+2;i < N;i++)
+            {
+                if(subs[i].dpt > subs[cmd-1].dpt)
+                {
+                    chans(subs[i].s);
+                    subs[i].s--;
+                    len[subs[i].s]++;
+                    if(ans < subs[i].s)
+                        ans = subs[i].s;
+                    break;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+void chans(int s)
+{
+    len[s]--;
+    
+    if(ans == s)
+        for(int i = s;i >= 0;i--)
+            if(len[i] != 0)
+            {
+                ans = i;
+                return;
+            }
+}

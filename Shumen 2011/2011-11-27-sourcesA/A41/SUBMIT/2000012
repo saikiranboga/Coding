@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+
+using namespace std;
+
+#define MAX_N 1000010
+
+int n, q;
+
+int d[MAX_N], t[MAX_N];
+
+inline long long sqr(int x) {
+	return 1LL * x * x;
+}
+
+inline long long dist(int x1, int y1, int x2, int y2) {
+	return 1LL * (x1 - x2) * (x1 - x2) + 1LL * (y1 - y2) * (y1 - y2);
+}
+
+void get_trans() {
+//    printf("%lld\n", dist(2 * 5, d[2], 8 * 5, d[8]));
+//	printf("%lld\n", dist(2 * 5, d[2], 4 * 5, d[4]));
+
+	memset(t, 0, sizeof(t));
+
+	for (int i = 1; i <= n; i++) {
+		int pos = n + 1;
+		for (int j = i + 1; j <= n; j++)
+			if (d[j] > d[i]) {
+				pos = j;
+				break;
+			}
+
+		for (int j = i + 1; j <= n; j++)
+			if (d[j] > d[i] && sqr(i - pos) - sqr(i - j) > 0.04 * (sqr(d[i] - d[j]) - sqr(d[i] - d[pos]))) 
+				pos = j;
+
+//        printf("%d -> %d     %d %d\n", i, pos, d[i], d[pos]);
+
+		t[pos]++;
+	}
+
+//	for (int i = 1; i <= n; i++)
+//        printf("%d ", t[i]);
+//    printf("\n");
+}
+
+int main() {
+
+//	freopen("submarines.in", "r", stdin);
+//	freopen("submarines.out", "w", stdout);
+
+	scanf("%d %d", &n, &q);
+	for (int i = 1; i <= n; i++)
+		scanf("%d", &d[i]);
+
+    get_trans();
+
+	for (int i = 1; i <= q; i++) {
+		int k;
+		scanf("%d", &k);
+
+		if (k == 0) {
+			int vmax = 0;
+			for (int j = 1; j <= n; j++)
+				vmax = max(vmax, t[j]);
+			printf("%d\n", vmax);
+		}
+		else {
+			swap(d[k], d[k + 1]);
+			get_trans();
+		}
+	}
+
+	return 0;
+}

@@ -1,0 +1,60 @@
+#include <algorithm>
+#include <stdio.h>
+#include <climits>
+
+#define MAX 1000010
+
+using namespace std;
+
+int n, q, nr;
+int a[MAX], sol[MAX], stv[MAX];
+char strCit[8 * MAX];
+
+int main()
+{
+    //freopen("submarines.in", "r", stdin);
+    //freopen("submarines.out", "w", stdout);
+
+    scanf("%d %d\n", &n, &q);
+
+    fgets(strCit, 8 * MAX, stdin);
+
+    n = 0;
+    for (int i = 0, l = strlen(strCit); i < l; i++)
+        if (isalnum(strCit[i]))
+            nr = nr * 10 + strCit[i] - '0';
+        else a[++n] = -nr, nr = 0;
+
+    for (; q; q--)
+    {
+        int i;
+        scanf("%d", &i);
+        stv[0] = -LONG_MAX;
+
+        if (!i)
+        {
+            int maxGs = 0;
+            int msStv = 0;
+
+            for (int i = 1; i <= n; i++)
+            {
+                sol[i] = 0;
+                stv[++msStv] = a[i];
+
+                for (; stv[msStv] < stv[msStv - 1]; msStv--)
+                {
+                    swap(stv[msStv],stv[msStv - 1]);
+
+                    sol[i]++;
+                }
+
+                maxGs = max(maxGs, sol[i]);
+            }
+
+            printf("%d\n", maxGs);
+        }
+        else swap(a[i], a[i + 1]);
+    }
+
+    return 0;
+}

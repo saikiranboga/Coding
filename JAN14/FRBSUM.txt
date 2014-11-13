@@ -1,0 +1,8 @@
+http://stackoverflow.com/questions/20979225/number-that-cant-be-returned-by-an-algorithm
+http://stackoverflow.com/questions/21013409/least-impossible-subset-sum
+http://math.stackexchange.com/questions/630523/find-minimum-sum-of-set
+
+http://stackoverflow.com/questions/21060727/minimum-number-that-cannot-be-formed-by-any-subset-of-an-array?lq=1
+http://stackoverflow.com/questions/21060873/minimum-sum-that-cant-be-obtained-from-a-set
+
+http://stackoverflow.com/questions/21077763/smallest-number-that-can-not-be-formed-from-sum-of-numbers-from-array

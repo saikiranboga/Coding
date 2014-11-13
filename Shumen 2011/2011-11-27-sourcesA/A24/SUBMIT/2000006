@@ -1,0 +1,133 @@
+#include <cstdio>
+using namespace std;
+
+int N,M,Q;
+int field[1010][1010];
+int ans[1010][1010];
+int maxsurh=0, maxsurv=0;
+int i,j,k,l;
+
+void solvefirst(int up, int down)
+{
+	if(field[up][1]==0) ans[up][1]=1;
+	for(j=2; j<=M; j++)
+	{
+		if(field[up][j]==0)
+		{
+			if(field[up][j-1]==0)
+			{
+				ans[up][j]=ans[up][j-1]+1;
+				if(maxsurh<ans[up][j]) maxsurh=ans[up][j];
+			}
+			else ans[up][j]=1;
+		}
+	}
+	for(i=up+1; i<=down; i++)
+	{
+		if(field[i][1]==0 && field[i-1][1]==0 && ans[i-1][1]>1) 
+		{
+			ans[i][1]=ans[i-1][1]+1;
+			if(maxsurh<ans[i][1]) maxsurh=ans[i][1];
+		}
+		for(j=2; j<=M; j++)
+		{
+			if(field[i][j]==0 && field[i-1][j]==0 && field[i][j-1]==0)
+			{
+				if(ans[i][j-1]>1) 
+				{
+					ans[i][j]=ans[i][j-1]+1;
+					if(maxsurh<ans[i][j]) maxsurh=ans[i][j];
+				}
+				else 
+				{
+					maxsurh++;
+					ans[i][j]=maxsurh;
+				}
+			}
+		}
+	}
+	printf("%d\n", maxsurh);
+}
+
+void solve(int up, int down)
+{
+	maxsurh=0;
+	for(i=up; i<=down; i++)
+	{
+		for(j=1; j<=M; j++)
+		{
+			if(field[i][j]==0) ans[i][j]=1;
+		} 
+	}
+	
+	if(field[up][1]==0) ans[up][1]=1;
+	for(j=2; j<=M; j++)
+	{
+		if(field[up][j]==0)
+		{
+			if(field[up][j-1]==0)
+			{
+				ans[up][j]=ans[up][j-1]+1;
+				if(maxsurh<ans[up][j]) maxsurh=ans[up][j];
+			}
+			else ans[up][j]=1;
+		}
+	}
+	for(i=up+1; i<=down; i++)
+	{
+		if(field[i][1]==0 && field[i-1][1]==0 && ans[i-1][1]>1) 
+		{
+			ans[i][1]=ans[i-1][1]+1;
+			if(maxsurh<ans[i][1]) maxsurh=ans[i][1];
+		}
+		for(j=2; j<=M; j++)
+		{
+			if(field[i][j]==0 && field[i-1][j]==0 && field[i][j-1]==0)
+			{
+				if(ans[i][j-1]>1) 
+				{
+					ans[i][j]=ans[i][j-1]+1;
+					if(maxsurh<ans[i][j]) maxsurh=ans[i][j];
+				}
+				else
+				{
+					maxsurh++;
+					ans[i][j]=maxsurh;
+				}
+			}
+		}
+	}
+	if(down-up<2)printf("%d\n", maxsurh);
+	else printf("%d\n", maxsurh-(down-up-1));
+	//printf("Ot red %d do red %d e: %d\n", up, down, maxsurh);
+	//for(i=up; i<=down; i++)
+	//{
+	//	for(j=1; j<=M; j++) printf("%d ", ans[i][j]);
+	//	printf("\n");
+	//}
+}
+
+int main()
+{
+	scanf("%d %d", &N, &M);
+	for(i=1; i<=N; i++)
+	{
+		for(j=1; j<=M; j++) scanf("%d", &field[i][j]);
+	}
+	scanf("%d", &Q);
+	int x,y;
+	scanf("%d %d", &x, &y);
+	solvefirst(x,y);
+	for(l=2; l<=Q; l++) 
+	{
+		scanf("%d %d", &x, &y);
+		solve(x,y);
+	}		
+	//for(i=1; i<=N; i++)
+//	{
+	//	for(j=1; j<=M; j++) printf("%d ", field[i][j]);
+	//	printf("\n");
+//	}
+	
+	return 0;
+}

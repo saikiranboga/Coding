@@ -1,0 +1,125 @@
+#include<algorithm>
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<vector>
+#include<string>
+#include<queue>
+#include<stack>
+#include<ctime>
+#include<cmath>
+#include<ctime>
+#include<cstdlib>
+#include<set>
+
+#define INF 1000000000
+#define NC -1
+
+#define f(i,beg,end) for(int i=beg; i<=end; i++)
+#define F(i,beg,end) for(int i=beg; i>=end; i--)
+#define Min(a,b) ((a<b)?a:b)
+#define Max(a,b) ((a>b)?a:b)
+#define Mod(a)   ((a>-a)?a:-a)
+#define input(file)  freopen(file,"r",stdin)
+#define output(file) freopen(file,"w",stdout)
+#define fill(arr,val) memset(arr,val,sizeof(arr))
+#define iread(var) scanf("%d",&var)
+
+using namespace std;
+struct point_
+{
+    int x,y;
+} pp[1010], convex[1010] ;
+int n,k,top=1, minind, minx, miny, maxx, maxy;
+
+int poww(int a, int x)
+{
+    return a*a;
+}
+
+double dist(point_ a, point_ b)
+{
+    return sqrt( poww(a.x-b.x,2)+poww(a.y-b.y,2) );
+}
+
+bool cmp(point_ a, point_ b)
+{
+    return ( (minx-a.x)/dist(a,pp[minind]) < (minx-b.x)/dist(b,pp[minind]) );
+}
+
+int S(point_ i1, point_ i2, point_ i3)
+{
+    int A=i2.y-i1.y, B=i1.x-i2.x, C=-A*i1.x-B*i1.y;
+    return (A*i3.x+B*i3.y+C);
+}
+
+void find_convex()
+{
+    minind=1; minx=pp[1].x; miny=pp[1].y;
+    f(i,2,n)
+        if (pp[i].y<miny)
+        {
+            minind=i;
+            minx=pp[i].x;
+            miny=pp[i].y;
+        }
+        else if(pp[i].y==miny && pp[i].x<minx)
+             {
+                 minind=i;
+                 minx=pp[i].x;
+                 miny=pp[i].y;
+             }
+    sort(pp+1,pp+n+1,cmp);
+    
+    //f(i,1,n)
+    //    cout<<pp[i].x<<" "<<pp[i].y<<endl;
+    convex[1]=pp[1];
+    convex[2]=pp[2];
+    convex[3]=pp[3];
+    top=4;
+    
+    f(i,4,n)
+    {
+        convex[top]=pp[i];
+        while (S(convex[top-1],convex[top-2],pp[i])<0) top--;
+        convex[top]=pp[i];
+    }
+    
+    //f(i,1,top)
+    //    cout<<convex[i].x<<" "<<convex[i].y<<endl;
+        
+    double solx[110], soly[110];
+    srand(time(NULL));
+    f(i,1,k)
+    {
+        solx[i]=rand()%(maxx+minx);
+        soly[i]=rand()%(maxy+miny);
+    }
+    
+    f(i,1,k)
+        //cout<<setprecision(6) <<solx[i]<<" "<<soly[i]<<endl;
+        printf("%.6f %.6f\n",solx[i],soly[i]);
+}
+
+void init()
+{
+    cin>>n>>k;
+    f(i,1,n) 
+    {
+        cin>>pp[i].x>>pp[i].y;
+        if (pp[i].x<minx) minx=pp[i].x;
+        if (pp[i].x>maxx) maxx=pp[i].x;
+        if (pp[i].y<miny) miny=pp[i].y;
+        if (pp[i].y>maxy) maxy=pp[i].y;
+    }
+    
+    find_convex();
+}
+
+int main()
+{
+    //input("test.txt");
+    init();
+    
+    return 0;
+}

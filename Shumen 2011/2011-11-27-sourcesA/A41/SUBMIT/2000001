@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <set>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+#define MAX_N 1010
+
+#define mp make_pair
+
+int n, m, q;
+
+int A[MAX_N][MAX_N], next[MAX_N][MAX_N], sol[MAX_N][MAX_N];
+
+vector <int> event[MAX_N];
+
+set <int> sin, sout;
+
+typedef set <pair <int, int> > MYSET; //pair dupa lungime, pozitie
+MYSET s;
+
+void solve() {
+	for (int i = 1; i <= n; i++) {
+		set <int> ().swap(sin);
+		set <int> ().swap(sout);
+		MYSET ().swap(s);
+		for (int j = 0; j < MAX_N; j++)
+			vector <int> ().swap(event[j]);
+
+		sout.insert(0); sout.insert(m + 1);
+		for (int j = 1; j <= m; j++) {
+			sin.insert(j);
+			event[next[i][j]].push_back(j);
+		}
+		s.insert(mp(m, m));
+
+		for (int i2 = i; i2 <= n; i2++) {
+            if (i2 != i)
+				sol[i][i2] = sol[i][i2 - 1];
+
+			if (sin.empty() == 0) {
+				for (vector <int>::iterator it = event[i2].begin(); it != event[i2].end(); ++it) {
+					int col = *it; //dispare coloana col
+
+					set <int>::iterator it_dr = sout.upper_bound(col);
+					set <int>::iterator it_st = sout.upper_bound(col); --it_st;
+
+					int l = *it_dr - *it_st - 1;
+					MYSET::iterator p = s.find(mp(l, *it_dr - 1));
+					s.erase(p);
+
+					//inserez coloana curenta in folosite si o sterg din nefolosite
+					sout.insert(col);
+					set <int>::iterator current_col = sin.find(col);
+					sin.erase(current_col);
+
+					//updatez solutiile
+					if (col - *it_st - 1 > 0)
+						s.insert(mp(col - *it_st - 1, col - 1));
+					if (*it_dr - col - 1 > 0)
+						s.insert(mp(*it_dr - col - 1, *it_dr - 1));
+				}
+
+/*				printf("-> %d %d\n", i, i2);
+				for (MYSET::iterator it = s.begin(); it != s.end(); ++it)
+					printf("%d %d\n", it->first, it->second);
+				printf("\n");*/
+			
+				if (s.empty() == 0) {
+					MYSET::iterator get_sol = s.end(); --get_sol;
+					sol[i][i2] = max(sol[i][i2], get_sol->first * (i2 - i + 1));
+				}
+			}
+		}
+	}
+}
+
+int main() {
+
+//	freopen("standard.in", "r", stdin);
+//	freopen("standard.out", "w", stdout);
+	
+	scanf("%d %d", &n, &m);
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++) {
+			scanf("%d", &A[i][j]);
+        	if (A[i][j] == 1)
+				next[i][j] = i;
+		}
+
+	for (int i = n; i >= 1; i--)
+		for (int j = 1; j <= m; j++)
+			if (next[i][j] == 0)
+				next[i][j] = next[i + 1][j];
+
+    solve();
+
+	scanf("%d", &q);
+	for (int i = 1; i <= q; i++) {
+		int l1, l2;
+		scanf("%d %d", &l1, &l2);
+		printf("%d\n", sol[l1][l2]);
+	}
+
+	return 0;
+}

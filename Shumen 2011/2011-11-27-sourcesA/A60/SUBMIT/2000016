@@ -1,0 +1,161 @@
+/**
+TASK: clustering
+LANG: C++
+*/
+#include <cstdio>
+#include <cstring>
+#include <cassert>
+#include <cctype>
+#include <cstdlib>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+#include <ext/hash_map>
+#include <iomanip>
+#include <queue>
+#include <cmath>
+#include <ctime>
+#include <string>
+#define foreach( el , c ) for( typeof((c).begin()) el = (c).begin() ; el != (c).end() ; el++ )
+#define eprintf( msg , ... ) fprintf( stderr , "line %d(%s): " msg "\n" , __LINE__ , __FUNCTION__ , ##__VA_ARGS__ )
+#define getnow() (( (double) clock() ) / (double) CLOCKS_PER_SEC)
+
+typedef long long ll;
+typedef unsigned long long ull;
+
+using namespace std;
+using namespace __gnu_cxx;
+
+const ll LLINF = 1LL << 60;
+const int INF = 1 << 29;
+const double EPS = 1e-9;
+
+const int MAXN = 1 << 10;
+
+struct point{
+    double x, y;
+    point( double x = 0 , double y = 0 ) : x(x) , y(y) {}
+};
+
+inline double dist( const point &a , const point &b ){
+    return ( (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) );
+}
+
+int N, K;
+point p[MAXN];
+
+void read(){
+    ///scanf("%d %d", &N, &K);
+    ios::sync_with_stdio( false );
+    cin >> N >> K;
+    for( int i = 0 ; i < N ; i++ ){
+        cin >> p[i].x >> p[i].y;
+        ///scanf("%lf %lf", &p[i].x, &p[i].y);
+        ///cout << p[i].x << " " << p[i].y << endl;
+        ///eprintf("point #%d at (%lf, %lf)", i+1, p[i].x, p[i].y);
+    }
+}
+
+double get( const vector<point> &sol ){
+    double result = 0;
+    for( int i = 0 ; i < N ; i++ ){
+        double mindist = 1e100;
+        for( int j = 0 ; j < K ; j++ )
+            mindist = min( mindist , dist( p[i] , sol[j] ) );
+        result += mindist;
+    }
+    return result;
+}
+
+void generate( int n , int k ){
+    FILE *in = fopen( "clustering.in" , "w" );
+    
+    fprintf( in , "%d %d\n", n , k );
+    for( int i = 0 ; i < n ; i++ )
+        fprintf( in , "%d.%d %d.%d\n", rand(), rand() , rand(), rand() );
+    
+    fclose(in);
+}
+
+void smart( double &best , vector<point> &bestpts ){
+    for( int i = 0 ; i < N ; i++ )
+        for( int j = 0 ; j < N ; j++ )
+            break;
+}
+
+void solve(){
+    if( 0 ){
+        generate( 1000 , 10 );
+        return; 
+    }
+    double best = 1e100;
+    vector<point> bestpts;
+    
+    ///smart( best , bestpts );
+    
+    double mylast = 0;
+    int run = 0;
+    
+    srand( time(NULL) );
+    
+    vector<point> now(K);
+    
+    do{
+        random_shuffle( p , p + N );
+        int step = (N)/K;
+        
+        for( int i = 0 ; i < K ; i++ ){
+            double x = 0, y = 0;
+            int l = i * step;
+            int r = l + step - 1;
+            if( i == K - 1 ) r = N - 1;
+            int cnt = r - l + 1;
+            ///eprintf("from %d to %d (%d)", l, r, cnt);
+            for( int j = l ; j <= r ; j++ )
+                x += p[i].x, y += p[j].y;
+            ///eprintf("x is %.6lf, y is %.6lf", x, y);
+            now[i] = point( x / cnt , y / cnt );
+        }
+        
+        double cur = get( now );
+        if( cur < best ){
+            best = cur;
+            bestpts = now;
+        }
+        
+        ++run;
+        
+        ///cerr << CLOCKS_PER_SEC << " --> " << clock() << endl;
+        
+        ///eprintf("Average time at run #%d -> %f", run, (float) time );
+        ///cerr << "time at run#" << run << " -> " << fixed << setw(10) << time << endl;
+        
+        ///cerr << "Predicted for the next --> " << mytime << " / " << mytime + ( mytime / run ) << endl;
+        
+        double curtime = clock() / (double) CLOCKS_PER_SEC;
+        double expected = curtime + (curtime - mylast) / run;
+        
+        mylast = curtime;
+        
+        if( expected > 0.725 )
+            break;
+        
+        ///cerr << "clock --> " << fixed << setw(10) << curtime << " next at --> " << fixed << setw(10) << expected << endl;
+    }while( true );
+    cerr << "Best distance is " << best << " tries --> " << run << endl;
+    for( int i = 0 ; i < K ; i++ )
+        ///printf("%.6lf %.6lf\n", bestpts[i].x, bestpts[i].y);
+        cout << fixed << setw(6) << bestpts[i].x << " " << fixed << setw(6) << bestpts[i].y << endl;
+}
+
+int main(){
+	///freopen( "clustering.in" , "r" , stdin );
+	///freopen( "clustering.out" , "w" , stdout );
+	
+	read();
+	///init();
+	solve();
+	
+	return 0;
+}

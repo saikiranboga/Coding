@@ -1,0 +1,109 @@
+#include<cstdio>
+#include<vector>
+#include<iostream>
+
+using namespace std;
+
+const int NMAX=1024;
+const int QMAX=10000024;
+
+int n,m;
+int a[NMAX][NMAX];
+int q;
+int rows[QMAX][2];
+int s[NMAX][NMAX];
+vector<int> v[NMAX];
+int f[NMAX][NMAX];
+
+void Init()
+{
+    scanf("%d %d", &n, &m);
+
+    int i=0,j=0;
+    for (i=0; i<n; i++)
+        for (j=0; j<m; j++)
+        {
+            scanf("%d", &a[i][j]);
+            if (a[i][j]==1) v[i].push_back(j);
+        }
+    scanf("%d", &q);
+    for (int i=0; i<q; i++)
+        scanf("%d %d", &rows[i][0], &rows[i][1]);
+    for (int i=0; i<n; i++)
+        for (int j=0; j<m; j++) f[i][j]=-1;
+}
+
+int sol(int i, int j)
+{
+    if (i!=j)
+    {
+        int b[NMAX];
+        for (int k=0; k<m; k++)
+        {
+            b[k]=0;
+        }
+        for (int k=i; k<=j; k++)
+        {
+            for (int l=0; l<v[k].size(); l++)
+                b[v[k][l]]=1;
+        }
+        int cur=0;
+        int max=0;
+        for (int k=0;k<m; k++)
+        {
+            if (b[k]==0) cur++;
+            else
+            {
+                if (cur>max) max=cur;
+                cur=0;
+            }
+        }
+        if (max==0) max=cur;
+        return max;
+    }
+    else
+    {
+        int cur=0;
+        int max=0;
+        for (int k=0;k<m; k++)
+        {
+            if (a[i][k]==0) cur++;
+            else
+            {
+                if (cur>max) max=cur;
+                cur=0;
+            }
+        }
+        if (max==0) max=cur;
+        return max;
+    }
+}
+
+int main()
+{
+    Init();
+    for (int i=0; i<q; i++)
+    {
+        int max=0;
+        int r1=rows[i][0]-1, r2=rows[i][1];
+        for (int j=r1; j<r2; j++)
+        {
+            for (int k=j; k<r2; k++)
+            {
+                int m;
+                if (f[j][k]==-1)
+                {
+                    m=sol(j,k);
+                    f[j][k]=m;
+                }
+                else
+                {
+                    m=f[j][k];
+                }
+                    if (m*(k-j+1)>max) max=m*(k-j+1);
+            }
+        }
+        cout<<max<<endl;
+    }
+    return 0;
+}

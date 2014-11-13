@@ -1,0 +1,31 @@
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+struct elem
+{
+ int x,y;
+};
+bool cmp(elem a1,elem a2)
+{
+ if(a1.x==a2.x)return a1.y<a2.y;
+ return a1.x<a2.x;
+}
+int n,k;
+elem a[1010];
+int main()
+{
+ int i,i2;
+ scanf("%d%d",&n,&k);
+ for(i=1;i<=n;i++)scanf("%d%d",&a[i].x,&a[i].y);
+ sort(a,a+n,cmp);
+ i2=0;
+ if(k==1)printf("%d %d\n",a[n/2].x,a[n/2].y);
+ else
+  for(i=n/k;i<=n;i+=(n/k))
+  {
+   printf("%d %d\n",a[i].x,a[i].y);
+   i2++;
+   if(i2==k)break;
+  }
+ return 0;
+}

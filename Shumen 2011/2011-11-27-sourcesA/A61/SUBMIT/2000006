@@ -1,0 +1,56 @@
+#include <iostream>
+#include <map>
+#include <set>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <string.h>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+struct POINT{
+    int x,y;
+};
+
+POINT p[1000];
+int N,K;
+
+int sort_by_pos(const POINT &a,const POINT &b){
+    if(a.x==b.x)
+        return a.y<b.y;
+    return a.x<b.x;
+}
+
+int main(){
+    //freopen("clustering.in","r",stdin);
+    scanf("%d%d",&N,&K);
+    int a,b;
+    for(int i=0; i<N; i++){
+        scanf("%d%d",&p[i].x,&p[i].y);
+    }
+    sort(p,p+N,sort_by_pos);
+    int group=N/K;
+    float midx=0.0,midy=0.0;
+    while(N-group>=K){
+        midx=0.0,midy=0.0;
+        for(int i=N-1; i>=N-group; i--){
+            midx+=double(p[i].x);
+            midy+=double(p[i].y);
+        }
+        midx/=group;
+        midy/=group;
+        N-=group;
+         printf("%.6f %.6f\n",midx,midy);
+    }
+    midx=0.0,midy=0.0;
+    for(int i=0; i<N; i++){
+        midx+=double(p[i].x);
+        midy+=double(p[i].y);
+    }
+    midx/=N;
+    midy/=N;
+    printf("%.6f %.6f\n",midx,midy);
+	return 0;
+}

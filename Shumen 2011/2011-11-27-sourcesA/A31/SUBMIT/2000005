@@ -1,0 +1,99 @@
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+const int Maxn=1020;
+int n,m,k;
+
+struct bitset{
+    int niz[35];
+    bitset(){memset(niz,0,sizeof niz);}
+    bitset& operator |= (const int x){
+        int poz=x/31,mod=x%31;
+        niz[poz]|=1<<mod;
+    }
+    friend bitset operator | (const bitset& x, const bitset& y){
+        bitset ret;
+        for (int i=0;i<35;++i)ret.niz[i]=x.niz[i]|y.niz[i];
+        return ret;
+    }
+};
+
+bitset niz[Maxn];
+bitset mat[Maxn][Maxn]; //od i-tog do j-tog retka;
+int sol[Maxn][Maxn]; //od i-tog do j-tog retka;
+
+char bio[Maxn][Maxn];
+
+bitset getmat(int x, int y){
+    if (x==y)return mat[x][y]=niz[x];
+    if (bio[x][y])return mat[x][y];
+    bio[x][y]=1;
+    return mat[x][y]=getmat(x+1,y)|niz[x];
+}
+
+int ocijeni(bitset a){
+    int cnt=0,best=0,koraka=0,tmp=0;
+
+    int x;
+    for (int i=0;i<35;++i){
+        x=a.niz[i];
+        if (!x)tmp+=35;
+        while(x){
+            ++koraka;
+            if (x&1){
+                koraka+=tmp;
+                tmp=0;
+                best=max(cnt,best);
+                cnt=0;
+            }
+            else ++cnt;
+            x>>=1;
+        }
+    }
+    //printf("x->%d, %d\n", _x,koraka);
+    best=max(best,m-koraka);
+    return best;
+}
+
+int getsol(int x, int y){
+    //printf("uso u sol: %d %d\n", x, y);
+    if (bio[x][y]==2)return sol[x][y];
+    //puts("proso bio");
+    bio[x][y]=2;
+    if (x==y)return sol[x][y]=ocijeni(mat[x][x]);
+    sol[x][y]=ocijeni(mat[x][y])*(y-x+1);
+    sol[x][y]=max(sol[x][y],getsol(x+1,y));
+    sol[x][y]=max(sol[x][y],getsol(x,y-1));
+    return sol[x][y];
+}
+
+int main(void){
+    //puts("ok");
+    scanf("%d%d", &n, &m);
+    for (int i=0;i<n;++i){
+        int x=0;
+        for (int j=m-1;j>=0;--j){
+            scanf("%d", &x);
+            if (x)
+                niz[i]|=j;
+        }
+    }
+    //puts("done");
+    //for (int i=0;i<n;++i)
+        for (int j=0;j<n;++j)
+            getmat(0,j); //il od i,j
+    //puts("imam mat");
+
+    getsol(0,n-1);
+    //puts("imam sol");
+    //return 0;
+    scanf("%d", &k);
+    for (int i=0;i<k;++i){
+        int x,y;
+        scanf("%d%d", &x, &y);
+        printf("%d\n", sol[x-1][y-1]);
+    }
+
+    return 0;
+}

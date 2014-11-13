@@ -1,0 +1,47 @@
+/*
+TASK: standart
+LANG: C++
+*/
+
+#include <cstdio>
+
+int N, M, Q, r1, r2;
+int a[1024][1024], f[1024][1024];
+
+inline int get ( int x1, int y1, int x2, int y2 ) {
+	return f[x2][y2] - f[x2][y1-1] - f[x1-1][y2] + f[x1-1][y1-1];
+}
+
+int main (void) {
+	
+	scanf ( "%d%d", &N, &M );
+	for ( int i=1; i<=N; ++i ) for ( int j=1; j<=M; ++j ) scanf ( "%d", a[i]+j );
+	
+	for ( int i=1; i<=N; ++i ) for ( int j=1; j<=M; ++j ) f[i][j] = a[i][j] + f[i-1][j] + f[i][j-1] - f[i-1][j-1];
+	/*
+	for ( int i=1; i<=N; ++i ) {
+		for ( int j=1; j<=M; ++j ) printf ( "%3d", f[i][j] );
+		printf ( "\n" );
+		}
+	*/
+	scanf ( "%d", &Q );
+	
+	int ans, i1, i2, j1, j2, t;
+	while ( Q -- ) {
+		
+		scanf ( "%d%d", &r1, &r2 );
+		
+		ans = -1;
+		for ( i1=r1; i1<=r2; ++i1 ) for ( j1=1; j1<=M; ++j1 )
+			for ( i2=i1; i2<=r2; ++i2 ) for ( j2=j1; j2<=M; ++j2 ) {
+				t = get ( i1, j1, i2, j2 );
+//				printf ( "[%d;%d] to [%d;%d] = %d\n", i1, j1, i2, j2, t );
+				if ( !t && ans < (j2-j1+1)*(i2-i1+1) ) ans = (j2-j1+1)*(i2-i1+1);
+				}
+
+		
+		printf ( "%d\n", ans );
+		
+		}	
+	
+}

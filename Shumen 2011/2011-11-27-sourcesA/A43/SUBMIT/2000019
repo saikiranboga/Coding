@@ -1,0 +1,101 @@
+#include<stdio.h>
+#include<algorithm>
+#include<math.h>
+using namespace std;
+
+#define pi pair<int,int>
+#define x first
+#define y second
+#define plf pair<double,double>
+#define NMAX 1005
+#define KMAX 105
+
+int n,k;
+double sx,sy;
+pi p[NMAX];
+double d[NMAX][NMAX];
+plf punct[NMAX][NMAX];
+double c[NMAX][KMAX];
+int pred[NMAX][KMAX];
+double INF=2000000009.0;
+
+
+void rec(int n,int k)
+{
+        if(!k)
+                return ;
+        printf("%.6lf %.6lf\n",punct[n-pred[n][k]+1][n].x,punct[n-pred[n][k]+1][n].y);
+        rec(n-pred[n][k],k-1);
+}
+
+inline int cmp(const pi& a,const pi& b)
+{
+        if(a.y==b.y)
+                return a.x<b.x;
+        return a.y<b.y; 
+}
+
+inline double dist(plf a,pi b)
+{
+        return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+}
+
+int main ()
+{
+        int i,j,t;
+        plf med;
+        
+        //freopen("point.in","r",stdin);
+        //freopen("point.out","w",stdout);
+        
+        scanf("%d%d",&n,&k);          
+        
+        for(i=1;i<=n;i++)
+                scanf("%d%d",&p[i].x,&p[i].y);
+
+        sort(p+1,p+n+1,cmp);   
+
+        for(i=1;i<=n;i++)
+        {
+                sx=0;
+                sy=0;
+                for(j=i;j>=1;j--)     
+                {
+                        sx+=p[j].x;
+                        sy+=p[j].y;
+                        med.x=sx/(i-j+1);
+                        med.y=sy/(i-j+1);
+                        
+                        d[j][i]=0;
+                        punct[j][i]=med;
+                        for(t=j;t<=i;t++)
+                                d[j][i]+=dist(med,p[t]);
+                }        
+        }        
+        for(i=1;i<=k;i++)
+                c[0][i]=INF;
+        for(i=1;i<=n;i++)
+                c[i][0]=INF;        
+        for(i=1;i<=n;i++)
+                for(j=1;j<=k;j++)
+                {
+                        c[i][j]=INF;
+                        for(t=1;t<=i;t++)
+                                if(c[i-t][j-1]+d[i-t+1][i]<c[i][j])
+                                {
+                                        c[i][j]=c[i-t][j-1]+d[i-t+1][i];
+                                        pred[i][j]=t;
+                                }
+                }                
+        /*for(i=1;i<=n;i++)
+                for(j=1;j<=k;j++)
+                        printf("Pentru %d,%d am %d si %lf\n",i,j,pred[i][j],c[i][j]);        */
+        rec(n,k);
+        return 0;
+}
+
+
+
+
+
+

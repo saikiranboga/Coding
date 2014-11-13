@@ -1,0 +1,90 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+using namespace std;
+
+const int N=1002,K=102,inf=1<<30;
+struct caine{double x,y;} dog[K];
+struct oaie{int x,y;} a[N];
+double sumX[K],sumY[K];
+int nr[K],n,k,x=inf,X=-inf,y=inf,Y=-inf;
+
+ifstream in("date.in");
+
+inline int min(int a,int b)
+{
+    return a<b ? a : b;
+}
+
+inline int max(int a,int b)
+{
+    return a>b ? a : b;
+}
+
+inline double dist(oaie a,caine b)
+{
+    return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+}
+
+void read()
+{
+    cin>>n>>k;
+    for (int i=1;i<=n;i++)
+    {
+        cin>>a[i].x>>a[i].y;
+        x=min(x,a[i].x);
+        X=max(X,a[i].x);
+        y=min(y,a[i].y);
+        Y=max(Y,a[i].y);
+    }
+}
+
+inline void random(caine& a)
+{
+    int x1=rand(),y1=rand();
+    a.x=x1%(X-x)+x;
+    a.y=y1%(Y-y)+y;
+}
+
+void cluster()
+{
+    for (int i=1;i<=k;i++)
+    {
+        sumX[i]=sumY[i]=0;
+        nr[i]=0;
+    }
+    for (int i=1;i<=n;i++)
+    {
+        int x=1;
+        for (int j=2;j<=k;j++)
+            if (dist(a[i],dog[j])<dist(a[i],dog[x]))
+                x=j;
+        nr[x]++;
+        sumX[x]+=a[i].x;
+        sumY[x]+=a[i].y;
+    }
+    for (int i=1;i<=k;++i)
+        if (nr[i])
+            dog[i]=(caine){sumX[i]/nr[i],sumY[i]/nr[i]};
+        else
+            random(dog[i]);
+}
+
+int main()
+{
+    int t=300;
+    read();
+    if (n<=k)
+    {
+        for (int i=1;i<=k;i++)
+            printf("%d %d\n",a[min(i,n)].x,a[min(i,n)].y);
+        return 0;
+    }
+    for (int i=1;i<=k;i++)
+        random(dog[i]);
+    while (t--)
+        cluster();
+    for (int i=1;i<=k;i++)
+        printf("%.6lf %.6lf\n",dog[i].x,dog[i].y);
+    return 0;
+}

@@ -1,0 +1,81 @@
+program ololo;
+uses Math;
+
+type point = record
+	n,x,y: longint;
+  end;
+
+var i,j,qa,qb,ta,q: longint;
+  s: string;
+  x, res,n,m: int64;
+  c: array[1..10000] of integer;
+  t: array[1..2000, 1..2000] of longint;
+  a: array[1..2000, 1..2000] of point;
+
+
+function getans(qa, qb, ti, tj, height: longint): int64;
+var i,tii, tjj, ans: longint;
+begin
+  getans := 0;
+  ans := 0;
+  if (qa>qb) or (ti>tj) then Exit;
+
+  for i := 1 to c[qa] do
+  	if ((a[qa, i].x <= tj) and (a[qa,i].y >= tj)) or ((a[qa, i].y >= ti) and (a[qa, i].x <=ti)) then
+  	  begin
+          tii :=max(ti, a[qa,i].x);
+          tjj :=min(tj, a[qa,i].y);
+          x := getans(qa+1, qb, tii, tjj, height+1);
+
+          //writeln(x, ' ', height);
+         // writeln(height*(tj-ti+1), '  ', height);
+           ans := max(ans, max(height*(tjj-tii+1), x));
+  	  end;
+  getans := ans;
+end;
+
+begin
+//assign(input, 'input.txt');
+//reset(input);
+//assign(output, 'output.txt');
+//rewrite(output);
+
+read(n, m);
+
+for i := 1 to n do
+	for j := 1 to m do
+		read(t[i,j]);
+
+for i := 1 to n do
+	begin
+	j := 1;
+	while j<=m do
+		begin
+		res := 0;
+		ta := j;
+		while (t[i, j]=0) and (j<=m) do
+		  begin
+		  inc(res);
+		  inc(j);
+		  end;
+		if res > 0 then
+			 begin
+			 inc(c[i]);
+			 a[i,c[i]].n := res;
+			 a[i,c[i]].x := ta;
+			 a[i,c[i]].y := ta+res-1;
+			 end;
+		inc(j);
+		end;
+	end;
+
+read(q);
+for i := 1 to q do
+	begin
+	read(qa, qb);
+	writeln(getans(qa, qb,1,m,1));
+	end;
+
+close(input);
+close(output);
+end.

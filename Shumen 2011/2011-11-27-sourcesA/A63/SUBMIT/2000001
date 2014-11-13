@@ -1,0 +1,37 @@
+#include "iostream"
+
+using namespace std;
+
+int main()
+{
+    int n,m,q,br;
+    cin>>n>>m;
+    bool a[n][m];
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<m; j++)
+        {
+            cin>>a[i][j];
+        }
+    }
+    cin>>q;
+    int r[q][2];
+    for(int i=0; i<q; i++)
+    {
+        cin>>r[i][0]>>r[i][1];
+        r[i][0]--;
+        r[i][1]--;
+    }
+    for(int i=0; i<q; i++)
+    {
+        br=0;
+        for(int j=r[i][0]; j<=r[i][1]; j++)
+        {
+            for(int k=0; k<m; k++)
+            {
+                if(a[n][m])br++;
+            }
+        }
+        cout<<br/2<<endl;
+    }
+}

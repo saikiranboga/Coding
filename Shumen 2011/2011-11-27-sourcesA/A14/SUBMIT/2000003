@@ -1,0 +1,99 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+const int MAXN = 1 << 10;
+
+int sum[MAXN][MAXN];
+int down[MAXN][MAXN];
+int ma3x[MAXN][MAXN];
+
+int n , m;
+int q;
+
+void read()
+{
+    scanf ( "%d%d" , &n , &m );
+
+    int i , j;
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= m; ++j)
+            scanf ( "%d" , &ma3x[i][j] );
+}
+
+void init()
+{
+    int i , j;
+
+
+    for (i = 1; i <= n; ++i)
+        for (j = 1; j <= m; ++j)
+        {
+            sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + ma3x[i][j];
+            if ( ma3x[i][j] )
+                down[i][j] = i;
+
+            else if ( i == 1 )
+                down[i][j] = 1;
+
+            else
+                down[i][j] = down[i - 1][j];
+        }
+}
+
+inline int get_sum ( int x1 , int y1 , int x2 , int y2 )
+{
+    return sum[x2][y2] - sum[x1 - 1][y2] - sum[x2][y1 - 1] + sum[x1 - 1][y1 - 1];
+}
+
+int go ( int r1 , int r2 )
+{
+    //printf ( "beg %d %d\n" , r1 , r2 );
+    int i , j;
+    int res = 0;
+
+    for (i = r1; i <= r2; ++i)
+        for (j = 1; j <= m; ++j)
+        {
+            int bnd = max ( r1 , down[i][j] ); //printf ( "%d %d   %d\n" , i , j , bnd );
+            for (int k = bnd; k <= r2; ++k)
+            {
+                int l = 0 , r = m + 1 , mid;
+                while ( l + 1 < r )
+                {
+                    mid = (l + r) >> 1; //if ( r1 == 2 ) { printf ( "%d %d  %d %d  %d\n" , k , mid , i , j , get_sum ( k , mid , i , j ) ); }
+                    if ( get_sum ( k , mid , i , j ) == 0 )
+                    {
+                        res = max ( res , (i - k + 1) * ( j - mid + 1) );
+                        r = mid;
+                    }
+                    else
+                        l = mid;
+                }
+            }
+        }
+        return res;
+}
+
+void solve()
+{
+    init();
+
+    int q;
+    scanf ( "%d" , &q );
+    while ( q-- )
+    {
+        int r1 , r2;
+        scanf ( "%d%d" , &r1 , &r2 );
+        printf ( "%d\n" , go ( r1 , r2 ) );
+    }
+}
+
+int main()
+{
+    read();
+    solve();
+
+    return 0;
+}

@@ -1,0 +1,40 @@
+#include<iostream>
+using namespace std;
+int n,m,x[1<<20],rx[1<<20],q;
+void findRec()
+{
+    for(int i=0;i<n;i++) rx[i]=0;
+    for(int i=0;i<n;i++)
+    {
+        int j=i+1;
+        while(x[i]>=x[j] && j<n) j++;
+        rx[j]++;
+    }
+    return;
+}
+int findMaxRec()
+{
+    int ans=rx[0];
+    for(int i=1;i<n;i++) ans=max(rx[i],ans);
+    return ans;
+}
+int main()
+{
+    cin>>n>>m;
+    //if(m<=100 && n<=1000)
+    {
+        for(int i=0;i<n;i++) cin>>x[i];
+        findRec();
+        for(int i=0;i<m;i++)
+        {
+            cin>>q;
+            if(q==0) cout<<findMaxRec()<<endl;
+            else
+            {
+                swap(x[q],x[q-1]);
+                findRec();
+            }
+        }
+    }
+    return 0;
+}

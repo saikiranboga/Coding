@@ -1,0 +1,55 @@
+#include <cstdio>
+#include <cstring>
+#define NMAX 1005
+int n,k,A[NMAX],cnt[NMAX];
+void read()
+{
+    scanf("%d%d",&n,&k);
+    int i;
+    for (i=1; i<=n; i++)
+        scanf("%d",&A[i]);
+}
+void solve()
+{
+    int i,j,t,aux,x,poz,best;
+    for (i=1; i<=k; i++)
+    {
+        scanf("%d",&x);
+        if (x)
+        {
+            aux=A[x]; A[x]=A[x+1]; A[x+1]=aux;
+        }
+        else
+        {
+            memset(cnt,0,sizeof(cnt));
+            best=0;
+            for (j=1; j<=n; j++)
+            {
+                poz=-1;
+                for (t=j+1; t<=n; t++)
+                    if (A[t]>A[j])
+                    {
+                        poz=t;
+                        break ;
+                    }
+                if (poz!=-1)
+                {
+                    cnt[poz]++;
+                    if (cnt[poz]>best)
+                        best=cnt[poz];
+                   // if (i==1 && cnt[poz]==2)
+                     //   printf("%d\n",poz);
+                }
+            }
+            printf("%d\n",best);
+        }
+    }
+}
+int main()
+{
+    //freopen("test.in","r",stdin);
+   // freopen("test.out","w",stdout);
+    read();
+    solve();
+    return 0;
+}

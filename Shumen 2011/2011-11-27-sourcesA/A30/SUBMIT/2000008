@@ -1,0 +1,49 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <ctime>
+#include <cmath>
+
+using namespace std;
+
+
+int n, k;
+
+int X[ 1005 ], Y[ 1005 ];
+
+
+double sqr( double x ){ return x*x; }
+int main( void ) {
+
+ srand( time( NULL ) );
+ scanf( "%d%d", &n, &k );
+ for( int i = 0; i < n; ++i )
+    scanf( "%d%d", &X[i], &Y[i] );
+
+ vector< pair< double, double > > sol;
+ double ans = 1<<30;
+ for( int t = 0; t < 10; ++t ){
+    vector< pair< double, double > > V;
+    for( int i = 0; i < k; ++i ){
+        int a, b, c;
+        a = rand()%n, b = rand()%n, c = rand()%n;
+        double x, y;
+        x = X[a]+X[b]+X[c];
+        y = Y[a]+Y[b]+Y[c];
+        x /= 3; y /= 3;
+        V.push_back( make_pair( x, y ) );
+    }
+
+    double curr = 0;
+    for( int i = 0; i < n; ++i ) {
+        double dist = 1<<30;
+        for( int j = 0; j < k; ++j ) dist = min( dist, sqrt( sqr( V[j].first-X[i] )+sqr( V[j].second-Y[i] ) ) );
+        curr += dist;
+    }
+
+    if( ans > curr ){ ans = curr; sol = V; }
+ }
+
+ for( int i = 0; i < k; ++i ) printf( "%.6lf %.6lf\n", sol[i].first, sol[i].second );
+ return 0;
+}

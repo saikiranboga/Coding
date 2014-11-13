@@ -1,0 +1,122 @@
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+#include<queue>
+#include<stack>
+#include<vector>
+#include<map>
+#include<string>
+#include<cstring>
+using namespace std;
+struct point
+{
+    double x , y;
+    double raz;
+};
+struct ans {
+double x , y;
+};
+double dist(point a,point b)
+{
+    return sqrt(abs(a.x-b.x)*abs(a.x-b.x)+abs(a.y-b.y)*abs(a.y-b.y));
+}
+vector<ans> vec;
+point a[10000],s;
+int n, k ;
+void read ()
+{
+      int i ;
+      s.x=0;
+      s.y=0;
+      cin>>n>>k;
+      for(i=1;i<=n;i++)
+       {cin>>a[i].x>>a[i].y;
+         a[i].raz=dist(a[i],s);
+       }
+}
+void putin ( double l , double r)
+{
+    double x=0,y=0;
+    for(int i =l ;i <=r;i++)
+    {
+
+        x+=a[i].x;
+        y+=a[i].y;
+    }
+    ans p;
+    //cout<<maxx<<' '<<maxy<<' '<<minx<<' '<<miny<<endl;
+    p.x=(x)/(r-l+1);
+    p.y=y/(r-l+1);
+    vec.push_back(p);
+}
+int cmp (point a , point b)
+{
+    return  a.raz <  b.raz;
+}
+int ask (int x ,int y)
+{
+    //cout<<"ask"<<endl;
+     int l=x,r=y;
+     int mid,gg;
+    while(l<=r)
+    {
+         mid=(l+r)/2;
+         //cout<<mid<<' '<<dist(a[l],a[mid])<<' '<<dist(a[r],a[mid])<<endl;
+         if(dist(a[x],a[mid])<dist(a[y],a[mid])){gg=mid;l=mid+1;}
+         else r=mid-1;
+    }
+    //cout<<"ask"<<endl;
+    return gg;
+}
+void rec (int l, int r , int k)
+{
+     // cout<<l<<' '<<r<<' '<<k<<endl;
+      if(k==1){putin(l,r);return;}
+      int pos=ask(l,r);
+      //cout<<pos<<endl;
+      double bra,brb;
+      bra=dist(a[pos],a[l]);
+      brb=dist(a[pos+1],a[r]);
+      int gol=1,gor=1;
+      k-=2;
+     //cout<<"here"<<endl;
+      if(k>0)
+      {
+
+
+      int y;
+      double u;
+     // cout<<bra<<' '<<brb<<endl;
+      u=double(k)/(bra+brb);
+      //cout<<u<<endl;
+      if(bra>brb)y=ceil(bra*u);
+      else y=(bra*u);
+      //cout<<y<<endl;
+      rec(l,pos,gol+y);
+      rec(pos+1,r,gor+k-y);}
+      else
+      {
+           rec(l,pos,gol);
+           rec(pos+1,r,gor);
+      }
+
+}
+void solve()
+{
+     sort(a+1,a+n+1,cmp);
+    a[1].raz=0;
+    int i  , j;
+    for(i=2;i<=n;i++)a[i].raz=dist(a[1],a[i]);
+    sort(a+1,a+1+n,cmp);
+    if(k==1)putin(1,n);
+    else rec (1,n,k);
+    for(i=0;i<vec.size();i++)
+    printf("%.6lf %.6lf\n",vec[i].x,vec[i].y);
+}
+int main ()
+{
+    read();
+    solve();
+    return 0;
+}

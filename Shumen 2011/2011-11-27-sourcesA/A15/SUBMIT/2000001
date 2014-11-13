@@ -1,0 +1,104 @@
+#include <cstdio>
+#include <algorithm>
+#include <map>
+using namespace std;
+
+map<int,int> myMap;
+
+struct sub {
+    int d;
+    int sig;
+    sub *to,*prev;
+};
+sub inp[1000002];
+sub* a[1000002];
+
+int n,m,com;
+
+void razm(int pos)
+{
+    if (a[pos]->d<a[pos+1]->d) {
+        a[pos+1]->sig--;
+        myMap[a[pos+1]->sig+1]-=1; myMap[a[pos+1]->sig]+=1;
+        if (myMap[a[pos+1]->sig+1]==0) { myMap.erase(a[pos+1]->sig+1); }
+        a[pos]->to=a[pos+1]->prev;
+        a[pos]->to->sig++;
+        myMap[a[pos]->to->sig-1]-=1; myMap[a[pos]->to->sig]+=1;
+        if (myMap[a[pos]->to->sig-1]==0) { myMap.erase(a[pos]->to->sig-1); }
+        if (pos!=0) {
+            a[pos+1]->sig+=a[pos]->sig;
+            myMap[a[pos+1]->sig]+=1; myMap[a[pos]->sig]+=1;
+            myMap[a[pos+1]->sig-a[pos]->sig]-=1; myMap[a[pos]->sig]-=1;
+            if (myMap[a[pos+1]->sig-a[pos]->sig]==0) {
+                myMap.erase(a[pos+1]->sig-a[pos]->sig);
+            }
+            if (myMap[a[pos]->sig]==0) { myMap.erase(a[pos]->sig); }
+            myMap[0]++;
+            a[pos]->sig=0;
+            if (a[pos-1]->d>a[pos]->d) {
+                if (a[pos+1]->d>a[pos-1]->d) {
+                    int i=pos+2;
+                    for(;i<n && a[i]->d<a[pos-1]->d;i++) {}
+                    if (i>=n) { a[pos+1]->prev=NULL; }
+                    else { a[pos+1]->prev=a[i]; }
+                }
+            }
+            else {
+                a[pos+1]->prev=a[pos+1];
+            }
+        }
+        swap((*a[pos]), (*a[pos+1]));
+    }
+    else {
+        a[pos]->sig++;
+        myMap[a[pos]->sig]++; myMap[a[pos]->sig-1]--;
+        if (myMap[a[pos]->sig-1]==0) { myMap.erase(a[pos]->sig-1); }
+        a[pos+1]->to->sig--;
+        myMap[a[pos+1]->to->sig]++; myMap[a[pos+1]->to->sig+1]--;
+        if (myMap[a[pos+1]->to->sig+1]==0) { myMap.erase(a[pos+1]->to->sig+1); }
+        a[pos]->prev=a[pos+1]->to;
+        if (pos>0) {
+            if (a[pos-1]->d<a[pos+1]->d) {
+                a[pos-1]->to=a[pos+1];
+                a[pos]->sig--; a[pos+1]->sig++;
+                myMap[a[pos]->sig]++; myMap[a[pos]->sig+1]--;
+                if (myMap[a[pos]->sig+1]==0) { myMap.erase(a[pos]->sig+1); }
+                myMap[a[pos+1]->sig]++; myMap[a[pos+1]->sig-1]--;
+                if (myMap[a[pos+1]->sig-1]==0) { myMap.erase(a[pos+1]->sig-1); }
+            }
+        }
+        swap(a[pos], a[pos+1]);
+    }
+}
+
+int main()
+{
+    scanf("%d %d", &n, &m);
+    for (int i=0;i<n;i++) {
+        scanf("%d", &inp[i].d);
+        inp[i].to=inp[i].prev=NULL;
+        a[i]=inp+i;
+        if (i==0) { continue; }
+        for (int j=i-1;j>=0 && inp[j].d<inp[i].d;j--) {
+            if (inp[j].to==NULL) { inp[j].to=inp+i; inp[i].sig++; }
+        }
+        //printf("%d -> %d\n", i, inp[i].sig);
+        myMap[inp[i].sig]+=1;
+        for (int j=i-1;j>0;j--) {
+            if (inp[i].d>inp[j-1].d && inp[j].prev==NULL) {
+                inp[j].prev=inp+i;
+            }
+            if (inp[j].d>=inp[i].d) { break; }
+        }
+    }
+    map<int,int>::iterator it;
+    for (int i=0;i<m;i++) {
+        scanf("%d", &com);
+        if (com==0) {
+            for (it=myMap.end();it->second==0;it--) {}
+            printf("%d\n", it->first);
+        }
+        else { razm(com-1); }
+    }
+    return 0;
+}

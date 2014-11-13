@@ -1,0 +1,93 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXN=1<<20;
+const int MAXM=1<<20;
+int n, m, command, max_signals_recieved;
+struct sub
+{
+  int num, d;
+};
+
+int sig_rec[MAXN];
+sub subs[MAXN];
+
+void switch_em(int sn )
+{
+    swap(subs[sn], subs[sn+1]);
+}
+
+int find_signal_reciever(int cur_dep, int cur_number, int j)
+{
+    if(cur_dep < subs[j].d)
+    {
+        sig_rec[j]++;
+        return 0;
+    }
+    return 1;
+}
+
+void signal()
+{
+    for(int i=1; i<=n; i++)
+    {
+        int j=i+1;
+        int cur_depth=subs[i].d;
+        int cur_num=subs[i].num;
+
+
+        bool not_found=1;
+  /*      if(cur_num+2>= j)*/
+            while(not_found)
+            {
+                not_found=find_signal_reciever(cur_depth, cur_num, j);
+                j++;
+            }
+    }
+    for(int i=1; i<=n; i++)
+    {
+        if(max_signals_recieved < sig_rec[i])
+        max_signals_recieved = sig_rec[i];
+    }
+    printf("%d\n", max_signals_recieved);
+    max_signals_recieved=0;
+
+    for(int i=1; i<=n; i++)
+        sig_rec[i]=0;
+
+}
+
+void input_sol()
+{
+    scanf("%d%d", &n, &m);
+    for (int i=1; i<=n; i++)
+    {
+        subs[i].num = i;
+        scanf("%d", &subs[i].d);
+    }
+    for(int i=0; i<m; i++)
+    {
+
+        scanf("%d", &command);
+        if (command > 0)
+            switch_em(command);
+    /*   printf("\n");
+        for(int i=1; i<n; i++)
+            printf("%d ", subs[i].d);
+        printf("\n");
+    */
+    else
+            signal();
+    }
+
+
+}
+
+int main()
+{
+    input_sol();
+
+    return 0;
+}

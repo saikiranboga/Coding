@@ -1,0 +1,111 @@
+#include<algorithm>
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<vector>
+#include<string>
+#include<queue>
+#include<stack>
+#include<ctime>
+#include<cmath>
+#include<set>
+
+#define INF 1000000000
+#define NC -1
+
+#define f(i,beg,end) for(int i=beg; i<=end; i++)
+#define F(i,beg,end) for(int i=beg; i>=end; i--)
+#define Min(a,b) ((a<b)?a:b)
+#define Max(a,b) ((a>b)?a:b)
+#define Mod(a)   ((a>-a)?a:-a)
+#define input(file)  freopen(file,"r",stdin)
+#define output(file) freopen(file,"w",stdout)
+#define fill(arr,val) memset(arr,val,sizeof(arr))
+#define iread(var) scanf("%d",&var)
+
+using namespace std;
+struct nqkfa
+{
+    int c1,c2;
+};
+
+vector < nqkfa > V[1001];
+int g[1001][1001], sol[1001][1001], n, m;
+
+inline int zeros(int r1, int c1, int r2, int c2)
+{
+    f(i,r1,r2)
+        f(j,c1,c2)
+            if (g[i][j]) return 0;
+    return 1;
+}
+
+inline int ok(int r1, int c1, int r2, int c2)
+{
+    return zeros(r1,c1,r2,c2);
+}
+
+void init()
+{
+    fill(sol,0);
+    iread(n); iread(m);
+    f(i,1,n)
+        f(j,1,m)
+            iread(g[i][j]);
+    f(i,1,n)
+        f(j,1,m)
+            if (!g[i][j]) sol[i][i]=1;
+    
+    nqkfa tmp;
+    int end;
+    f(i,1,n)
+    {
+        int j=1;
+        while (j<=n) 
+        {
+            while (g[i][j]==1) { j++; if (j>=n) {end=1; break;} }
+            if (end) break;
+            tmp.c1=j;
+            while (g[i][j]==0) { j++; if (j>=n) {end=1; break;} }
+            tmp.c2=j;
+            V[i].push_back(tmp);        
+        }
+    }
+    
+    f(i,1,n)
+        f(j,1,m)
+            f(i1,i,n)
+                f(j1,j,m)
+                    if (ok(i,j,i1,j1))
+                        sol[i][i1]=Max(sol[i][i1],(i1-i+1)*(j1-j+1));
+    fill(sol,NC);
+    int q;     cin>>q;
+    
+    int r1, r2;
+    f(i,1,q)
+    {
+        cin>>r1>>r2;
+        //cout<<solve(r1,r2)<<endl;
+        if (sol[r1][r2]!=NC)
+        {
+            cout<<sol[r1][r2]<<endl;
+            continue;
+        }
+        f(i,r1,r2)
+            f(j,1,m)
+                f(i1,r1,r2)
+                    f(j1,j,m)
+                        if (ok(i,j,i1,j1))
+                            sol[i][i1]=Max(sol[i][i1],(i1-i+1)*(j1-j+1));
+        cout<<sol[r1][r2]<<endl;
+    }
+    
+}
+
+int main()
+{
+    //input("test.txt");
+    init();
+    
+    return 0;
+}

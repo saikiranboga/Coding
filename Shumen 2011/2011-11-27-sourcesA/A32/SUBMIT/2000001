@@ -1,0 +1,51 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXN = 1000000;
+
+int n, m, d[MAXN], b[MAXN];
+vector <int> v;
+
+void update();
+
+int main() {
+    scanf("%d%d", &n, &m);
+
+    for(int i = 0; i < n; ++i)
+        scanf("%d", d + i);
+
+    update();
+
+    for(int i = 0; i < m; ++i) {
+        int a;
+        scanf("%d", &a);
+
+        if(!a) {
+            int mx = 0;
+            for(int j = 0; j < n; ++j)
+                mx = max(mx, b[j]);
+
+            printf("%d\n", mx);
+        }
+        else {
+            --a;
+            swap(d[a], d[a + 1]);
+
+            update();
+        }
+    }
+
+    return 0;
+}
+
+void update() {
+    memset(b, 0, sizeof(b));
+
+    v.clear();
+    for(int i = 1; i < n; ++i)
+        for(v.push_back(d[i - 1]); v.size() && v.back() < d[i]; v.pop_back())
+            ++b[i];
+}

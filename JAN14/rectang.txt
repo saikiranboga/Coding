@@ -1,0 +1,218 @@
+
+
+The Maximal Rectangle Problem
+
+by David Vandevoorde
+
+
+
+Listing One
+
+// Variables to keep track of the best rectangle so far: 
+
+best_11 = (0, 0); best_ur = (-1, -1) 
+
+main algorithm: 
+
+   for 11.x = 0 .. N 
+
+      for 11.y = 0 .. M 
+
+         for ur.x = 11.x .. N 
+
+            for ur.y = 11.y .. M 
+
+               if area(11, ur)>area(best_11, best_ur) 
+
+               and all_ones(11, ur) 
+
+                  best_11 = 11; best_ur = ur 
+
+end main algorithm 
+
+define area(11, ur) 
+
+   if 11.x>ur.x or 11.y>ur.y // If ur is left of or 
+
+      return 0               // below 11: return 0 
+
+   else 
+
+      return (ur.x-11.x+1)*(ur.y-11.y+1) 
+
+define all_ones(11, ur) 
+
+   for x = 11.x .. ur.x 
+
+      for y = 11.y .. ur.y 
+
+         if b[x, y]==0 
+
+            return false 
+
+   return true 
+
+
+
+
+
+Listing Two 
+
+// Variables to keep track of the best rectangle so far: 
+
+best_11 = (0, 0); best_ur = (-1, -1) 
+
+main algorithm: 
+
+   for 11.x = 0 .. N-1 
+
+      for 11.y = 0 .. M-1 
+
+          ur = grow_ones(11) 
+
+          if area(11, ur)>area(best_11, best_ur) 
+
+             best_11 = 11; best_ur = ur 
+
+end main algorithm 
+
+define grow_ones(11) 
+
+   ur = (11.x-1, 11.y-1) // Zero area ur-choice 
+
+   x_max = N // Right edge of growth zone 
+
+   y = 11.y-1 
+
+   while y+1<M and b[11.x, y+1]!=0 
+
+      y = y+1; x = 11.x // Scan a new layer 
+
+      while x+1<xÑmax and b[x+1, y]!=0 
+
+         x = x+1 
+
+      x_max = x 
+
+      if area(11, (x, y))>area(11, ur) 
+
+         ur = (x, y) 
+
+   return ur 
+
+
+
+
+
+Listing Three
+
+// Variables to keep track of the best rectangle so far: 
+
+best_11 = (0, 0); best_ur = (-1, -1) 
+
+// The cache starts with all zeros: 
+
+c[0 .. M-1] = 0 
+
+main algorithm: 
+
+   for 11.x = N-1 .. 0 
+
+      update_cache(11.x) 
+
+      for 11.y = 0 .. M-1 
+
+          ur = grow_ones(11) 
+
+          if area(11, ur)>area(best_11, best_ur) 
+
+             best_11 = 11; best_ur = ur 
+
+end main algorithm 
+
+define update_cache(x) 
+
+   for y = 0 .. M-1 
+
+      if b[x, y]!=0 
+
+         c[y] = c[y]+1 
+
+      else 
+
+         c[y] = 0 
+
+define grow_ones(11) 
+
+   ur = (11.x-1, 11.y-1) // Zero area ur-choice 
+
+   y = 11.y-1 
+
+   while y+1<M and b[y]!=0 
+
+      y = y+1; // Scan a new layer 
+
+      x = min(11.x+c[y]-1, x_max) // Use the cache, Luke! 
+
+      x_max = x 
+
+      if area(11, (x, y))>area(11, ur) 
+
+         ur = (x, y) 
+
+   return ur 
+
+
+
+
+
+Listing Four
+
+// Variables to keep track of the best rectangle so far: 
+
+best_ll = (0, 0); best_ur = (-1, -1)
+
+// The cache starts with all zeros: 
+
+c[0 .. M-1] = 0 // One extra element (closes all rectangles)
+
+main algorithm: 
+
+   for x = N-1 .. 0 
+
+      update_cache(x)
+
+      width = 0 // Width of widest opened rectangle 
+
+      for y = 0 .. M 
+
+         if c[y]>width // Opening new rectangle(s)? 
+
+            push(y, width)
+
+            width = c[y] 
+
+         if c[y]<width // Closing rectangle(s)? 
+
+            do 
+
+               (y0, w0)= pop()
+
+               if width*(y-y0)>area(best_ll, best_ur)
+
+                  best_ll = (x, y0)
+
+                  best_ur = (x+width-1, y-1)
+
+               width = w0 
+
+            until c[y]>=width 
+
+            width = c[y] 
+
+            if width!=0 // Popped an active "opening"? 
+
+               push(y0, width)
+
+
+

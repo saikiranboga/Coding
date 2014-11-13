@@ -1,0 +1,84 @@
+#include "iostream"
+
+using namespace std;
+
+int main()
+{
+    int n, m, c, max=0, z=0, t;
+    cin>>n>>m;
+    int a[n],sig[n], val[n];
+    for(int i=0; i<n; i++)
+    {
+        cin>>a[i];
+        sig[i]=0;
+    }
+    for(int j=0; j<n-1; j++)
+    {
+        for(int k=j+1; k<n; k++)
+        {
+            if(a[j]<a[k])
+            {
+                sig[k]++;
+                if(max<sig[k])
+                {
+                    max=sig[k];
+                }
+                break;
+            }
+        }
+    }
+    for(int i=0; i<m; i++)
+    {
+        cin>>c;
+        if(c==0)
+        {
+            val[z]=max;
+            z++;
+        }
+        else
+        {
+            if(a[c]>a[c-1])
+            {
+                sig[c-1]+=sig[c];
+                if(max<sig[c-1])
+                {
+                    max=sig[c-1];
+                }
+                sig[c]=0;
+                for(int i=c+1; i<n; i++)
+                {
+                    if(a[i]>a[c])
+                    {
+                        sig[i]++;
+                        if(max<sig[i])
+                        {
+                            max=sig[i];
+                        }
+                        break;
+                    }
+                }
+            }
+            else if(a[c]<a[c-1])
+            {
+                t=0;
+                for(int j=a[c-2]; j>=a[c-sig[c]-1]; j--)
+                {
+                    if(a[j]>=a[c])t++;
+                }
+                sig[c-1]-=t;
+                sig[c]=t;
+                if(max<sig[c])
+                {
+                    max=sig[c];
+                }
+            }
+            t=a[c-1];
+            a[c-1]=a[c];
+            a[c]=t;
+        }
+    }
+    for(int i=0; i<z; i++)
+    {
+        cout<<val[i]<<endl;
+    }
+}

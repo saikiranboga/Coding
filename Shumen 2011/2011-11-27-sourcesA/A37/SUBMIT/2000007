@@ -1,0 +1,204 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+#define maxn 1000010
+
+int n, m, st0, k, dmax;
+int v[maxn], d[maxn], st[maxn];
+int av[3*maxn], ad[3*maxn], am[3*maxn];
+
+void stiva()
+{
+    int sol=0, rez;
+
+    st0=0;
+    st[st0]=5000000;
+
+    for(int i=1; i<=n; ++i)
+    {
+        rez=0;
+        while(st[st0]<v[i])
+        {
+            --st0;
+            ++d[i];
+        }
+        st[++st0]=v[i];
+    }
+}
+
+void build(int nod, int left, int right)
+{
+    if(left==right)
+    {
+        av[nod]=v[left];
+        ad[nod]=am[nod]=d[left];
+        return;
+    }
+
+    int med=(left+right)/2;
+
+    build(nod*2, left, med);
+    build(nod*2+1, med+1, right);
+
+    av[nod]=max(av[nod*2], av[nod*2+1]);
+    ad[nod]=ad[nod*2]+ad[nod*2+1];
+    am[nod]=max(am[nod*2], am[nod*2+1]);
+}
+
+int queryV(int nod, int left, int right, int qleft, int qright)
+{
+    if(qleft<=left && right<=qright)
+        return av[nod];
+
+    int med=(left+right)/2;
+
+    int rez=-1;
+    if(qleft<=med)
+        rez=max(rez, queryV(nod*2, left, med, qleft, qright));
+    if(med<qright)
+        rez=max(rez, queryV(nod*2+1, med+1, right, qleft, qright));
+
+    return rez;
+}
+
+
+int queryD(int nod, int left, int right, int qleft, int qright)
+{
+    if(qleft<=left && right<=qright)
+        return ad[nod];
+
+    int med=(left+right)/2;
+
+    int rez=0;
+    if(qleft<=med)
+        rez+=queryD(nod*2, left, med, qleft, qright);
+    if(med<qright)
+        rez+=queryD(nod*2+1, med+1, right, qleft, qright);
+
+    return rez;
+}
+
+void updateV(int nod, int left, int right, int poz)
+{
+    if(left==right)
+    {
+        av[nod]=v[left];
+        return;
+    }
+
+    int med=(left+right)/2;
+
+    if(poz<=med)
+        updateV(nod*2, left, med, poz);
+    else
+        updateV(nod*2+1, med+1, right, poz);
+
+    av[nod]=max(av[nod*2], av[nod*2+1]);
+}
+
+void updateD(int nod, int left, int right, int poz)
+{
+    if(left==right)
+    {
+        ad[nod]=am[nod]=d[left];
+        return;
+    }
+
+    int med=(left+right)/2;
+
+    if(poz<=med)
+        updateD(nod*2, left, med, poz);
+    else
+        updateD(nod*2+1, med+1, right, poz);
+
+    ad[nod]=ad[nod*2]+ad[nod*2+1];
+    am[nod]=max(am[nod*2], am[nod*2+1]);
+}
+
+void calculate(int k)
+{
+    int left=1, right=k-1, pz=-1;
+    while(left<=right)
+    {
+        int med=(left+right)/2;
+        if(queryV(1, 1, n, med, k-1)<v[k])
+        {
+            pz=med;
+            right=med-1;
+        }
+        else
+            left=med+1;
+    }
+
+    if(pz==-1)
+        d[k]=0;
+    else
+        d[k]=k-pz-queryD(1, 1, n, pz, k-1);
+
+  //  printf("%d %d\n", k, d[k]);
+
+    updateD(1, 1, n, pz);
+}
+
+void forward(int val, int k, int plus)
+{
+    int left=k+1, right=n, pz=-1;
+    while(left<=right)
+    {
+        int med=(left+right)/2;
+        if(queryV(1, 1, n, k+1, med)>val)
+        {
+            pz=med;
+            right=med-1;
+        }
+        else
+            left=med+1;
+    }
+
+    if(pz==-1)
+        return;
+
+ //   printf("%d %d\n", d[pz], pz);
+
+    d[pz]+=plus;
+    updateD(1, 1, n, pz);
+}
+
+int main()
+{
+  //  freopen("submarines.in", "r", stdin);
+  //  freopen("submarines.out", "w", stdout);
+
+    scanf("%d%d", &n, &m);
+    for(int i=1; i<=n; ++i)
+        scanf("%d", &v[i]);
+
+    stiva();
+    build(1, 1, n);
+
+    for(int i=1; i<=m; ++i)
+    {
+        scanf("%d", &k);
+        if(k==0)
+            printf("%d\n", am[1]);
+        else
+        {
+            swap(v[k], v[k+1]);
+
+            updateV(1, 1, n, k);
+            updateV(1, 1, n, k+1);
+
+            calculate(k);
+            calculate(k+1);
+
+            if(v[k]<v[k+1])
+                forward(v[k], k+1, -1);
+            else
+                forward(v[k+1], k+1, 1);
+        }
+    }
+
+    return 0;
+}

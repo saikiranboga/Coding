@@ -1,0 +1,89 @@
+#include <cstdio>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <cstring>
+
+#define MAXN 1000006
+#define MAX_VALUE 2000006
+
+using namespace std;
+
+struct submarine
+{
+    int index,value;
+};
+
+submarine a[MAXN],b[MAXN];
+
+int n,tree[MAXN],br[MAXN];
+
+bool f(const submarine &x, const submarine &y)
+{
+    if ( x.value > y.value ) return true;
+    if ( x.value < y.value ) return false;
+    if ( x.index > y.index ) return true;
+    return false;
+}
+
+inline int query(int i)
+{
+    int mini = MAX_VALUE;
+    while ( i <= n )
+    {
+        if ( tree[i] < mini ) mini = tree[i];
+        i += i&(-i);
+    }
+    return mini;
+}
+
+inline void update(int i)
+{
+    int st = i;
+    while (i)
+    {
+        if ( tree[i] > st ) tree[i] = st;
+        i -= i&(-i);
+    }
+}
+
+int main()
+{
+     int m,i,j,x,maxi,sendTo;
+     submarine t;
+     scanf ("%d%d",&n,&m);
+     for ( i=1; i<=n; i++ )
+     {
+        scanf ("%d",&a[i].value);
+        a[i].index = i;
+     }
+     for ( i=1; i<=m; i++ )
+     {
+         scanf ("%d",&x);
+         if (!x)
+         {
+             for ( j=1; j<=n; j++ ) { tree[j] = MAX_VALUE; b[j] = a[j]; br[j] = 0; }
+             sort (b+1,b+n+1,f);
+             for ( j=1; j<=n; j++ )
+             {
+                 sendTo = query(b[j].index);
+                 if ( sendTo < MAX_VALUE ) br[ sendTo ]++;
+                 update(b[j].index);
+             }
+             maxi = 0;
+             for ( j=1; j<=n; j++ )
+                if ( maxi < br[j] )
+                    maxi = br[j];
+             printf("%d\n",maxi);
+         }
+         else
+         {
+             t = a[x];
+             a[x] = a[x+1];
+             a[x+1] = t;
+             a[x].index = x;
+             a[x+1].index = x+1;
+         }
+     }
+}

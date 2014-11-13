@@ -1,0 +1,47 @@
+#include<iostream>
+using namespace std;
+bool t[1<<8][1<<8];
+int n,m,q,x,y,ans[1<<8][1<<8][1<<8],rs[1<<8][1<<8],col;
+
+int solve()
+{
+    //is it a good column
+    for(int r1=0;r1<n;r1++)
+        for(int r2=r1;r2<n;r2++)
+            for(int c=0;c<m;c++)
+                if(r1==r2) ans[r1][r2][c]=(1-t[r1][c]);
+                else ans[r1][r2][c]=(1-t[r2][c])*ans[r1][r2-1][c];
+
+
+    for(int r1=0;r1<n;r1++)
+        for(int r2=r1;r2<n;r2++)
+        {
+            col=0;
+            for(int c=0;c<=m;c++)
+            {
+                if(ans[r1][r2][c]) col++;
+                else
+                {
+                    rs[r1][r2]=max(col, rs[r1][r2]);
+                    col=0;
+                }
+            }
+        }
+
+}
+
+int main()
+{
+    cin>>n>>m;
+    for(int i=0;i<n;i++) for(int j=0;j<m;j++) cin>>t[i][j];
+    solve();
+    cin>>q;
+    for(int i=0;i<q;i++)
+    {
+        cin>>x>>y;
+        int sol = rs[x-1][y-1]*(y-x+1);
+        cout<<sol<<endl;
+    }
+    return 0;
+}
+

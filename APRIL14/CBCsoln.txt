@@ -1,0 +1,74 @@
+<<Bing Translator>>
+1,O (n*m*q)
+
+DP[i][j] indicates the first number I constitute a collection of subsets, and for a number of species j.
+
+Transfer is o (1): DP[i][j]=DP[i-1][j-NUM[i]]+DP[i-1][j]
+
+But even so, over. n=100000,m=100,q=30.
+
+2,O (m^3*q)
+
+Taking into account the large n, and m is relatively small, so after m modulo n number will repeat number.
+
+CNT[r] denotes n number number m modulo remainders r, 0<=r<m, so divide the number n into m heaps, each pile of CNT[r]. Note CNT[r] can be quite large.
+
+With respect to r, its combination of r,2R,3R ... After the m modulo, remains at best only m, m<CNT[r].
+
+Add[r][j] means that only take into account r heaps, combination j, of all kinds. add[r][r*t%m] =Sum( C(cnt[r],t)
+
+Obtained after you add, through the transfer of m^3, it is possible to calculate the final result.
+
+dp[0][0]=1;
+FOR(i,0,m)
+FOR(j,0,m)//rep j
+FOR(r,0,m)//combine r
+dp[i+1][j] = ( dp[i+1][j] + dp[i][(j-r+m)%m] * add[i][r] % MOD )%MOD;
+Computing add complexity is o (n), which combine computation of, needs to be optimized, otherwise still times out.
+
+Calculating complexity of DP is m^3,
+
+Complexity of o (m^3*q).
+
+
+
+<<Google Translator>>
+
+Solution:
+
+Meaning of the questions that is very complicated, in fact, a word, ask a subset of a set of elements and the number of subsets of m (modulus) of. The idea may seem a bit like a backpack, but not necessarily.
+
+Because of this question, for modulo m, so its complexity can be reduced to very low.
+
+Thinking 1, O (n * m * q)
+
+dp [i] [j] represents a collection of pre-configured number i, which is a subset of the number of types of j.
+
+Transfer is O (1): dp [i] [j] = dp [i-1] [j-num [i]] + dp [i-1] [j]
+
+Even so, actually timed out. n = 100000, m = 100, q = 30.
+
+Ideas 2, O (m ^ 3 * q)
+
+Taking into account the relatively large n, and m is relatively small, so certainly a lot of repetitive after a few number of m modulo n.
+
+cnt [r] indicates the number n of a remainder of the modulo m is the number of r, 0 <= r <m, and therefore the number n is divided into m stack, each stack has cnt [r] a. Note cnt [r] will be great.
+
+R For the first stack, the combination of its own, r, 2r, 3r ... After modulo m, is still only a maximum of m, m <cnt [r].
+
+Therefore add [r] [j] represents consideration of only the first stack r, j are combined into a number of all types. add [r] [r * t% m] = Sum (C (cnt [r], t)
+
+After obtained add, by m ^ 3 transfer, you can calculate the final result.
+
+dp [0] [0] = 1; 
+FOR (i, 0, m) 
+FOR (j, 0, m) / / rep j 
+FOR (r, 0, m) / / combine r 
+dp [i +1] [j] = (dp [i +1] [j] + dp [i] [(j-r + m)% m] * add [i] [r]% MOD)% MOD; 
+
+Add the calculation complexity is O (n), wherein the calculated number of combinations needs to be optimized, otherwise still out.
+
+The complexity is calculated dp m ^ 3,
+
+Therefore, the complexity of O (m ^ 3 * q).
+

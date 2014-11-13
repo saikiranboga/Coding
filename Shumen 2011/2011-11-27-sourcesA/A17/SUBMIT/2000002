@@ -1,0 +1,30 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int main()
+{
+    long n,m,q,i,j,a,o,g,l;vector<int>v[1001],r;cin>>n>>m;
+    
+    for(i=1;i<=n;i++){v[i].push_back(0);for(j=1;j<=m;j++){
+    cin>>a;if(a)v[i].push_back(0);else v[i].push_back(v[i][j-1]+1);}}
+    cin>>q;for(i=0;i<q;i++){cin>>a;r.push_back(a);cin>>a;r.push_back(a);}
+    
+    for(l=0;l<q*2;l+=2){o=0;for(i=r[l];i<=r[l+1];i++)for(j=1;j<=m;j++){if(v[i][j]>o)o=v[i][j];
+    for(g=i+1;g<=r[l+1];g++)if(v[i][j]>v[g][j]){g--;break;}if(g>r[l+1])g=r[l+1];
+    if(o<v[i][j]*((g-i)+1))o=v[i][j]*((g-i)+1);}cout<<o<<endl;}
+    
+    
+    return 0;
+}
+
+/*
+3 4
+0 1 0 0
+1 0 0 0
+0 0 0 0 
+3 
+1 2
+2 3
+1 3
+*/

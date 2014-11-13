@@ -1,0 +1,96 @@
+#include <cstdio>
+#include <stack>
+#include <iostream>
+#include <algorithm>
+#include <utility>
+#define MAXN (1 << 10)
+using namespace std;
+
+int n, m;
+int a[MAXN][MAXN];
+int b[MAXN][MAXN];
+
+inline int blah(int from, int to) {
+
+	int sol = 0;
+
+	for (int i=to; i >= from; --i) {
+		stack< pair< int, int> > st;
+		while (st.size()) st.pop();
+
+		for (int j=0; j < m; ++j) {
+
+			int cur = b[i][j];
+
+			while (st.size() > 0) {
+				int h = st.top().first;
+				int id = st.top().second;
+
+				if (h > cur) {
+					int w = j-id+1;
+					sol = max(sol, h*w);
+					st.pop();
+				} else break;
+			}
+
+			st.push(make_pair(cur, j));
+		}
+		//cout << i << endl;
+		while (st.size()) {
+			int h = st.top().first;
+			int id = st.top().second;
+
+			int w = m-id;
+			//printf("w = %d from %d %d\n", w, h, id);
+			sol = max(sol, h*w);
+			st.pop();
+		}
+	}
+
+	return sol;
+}
+
+int fill(int from, int to) {
+	for (int j=0; j < m; ++j)
+		b[from][j] = !a[from][j];
+
+	for (int i=from+1; i <= to; ++i) {
+		for (int j=0; j < m; ++j)
+			if (a[i][j] == 1)
+				b[i][j] = 0;
+			else
+				b[i][j] = b[i-1][j] + 1;
+	}
+/*
+	for (int i=from; i <= to; ++i)
+		for (int j=0; j < m; ++j)
+			printf("%d%c", b[i][j], (j+1 == m) ? '\n' : ' ' );*/
+}
+
+inline void solve() {
+	int q;
+	scanf("%d", &q);
+
+	for (int i=0; i < q; ++i) {
+		int from, to;
+		scanf("%d%d", &from, &to);
+		from --;
+		to --;
+		fill(from, to);
+		printf("%d\n", blah(from, to));
+	}
+}
+
+inline void read() {
+	scanf("%d%d", &n, &m);
+
+	for (int i=0; i < n; ++i)
+		for (int j=0; j < m; ++j)
+			scanf("%d", &a[i][j]);
+}
+
+int main (){
+	read();
+	solve();
+	return 0;
+}

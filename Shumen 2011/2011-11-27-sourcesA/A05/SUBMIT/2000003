@@ -1,0 +1,136 @@
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+#define RNG 10000
+#define MAXN 1000
+#define MAXK 100
+
+using namespace std;
+
+struct coord
+{
+    float x, y, id;
+}s[MAXN], ssf[MAXN], dg[MAXK];
+
+bool sortx(const coord &a, const coord &b)
+{
+    return a.x < b.x;
+}
+
+bool sorty(const coord &a, const coord &b)
+{
+    return a.y < b.y;
+}
+
+vector <coord> clusx[MAXN];
+vector <coord> clus[MAXN];
+int N, K;
+
+int main()
+{
+    scanf("%d %d", &N, &K);
+    
+    int mxx = 0, mxy = 0, mnx = RNG, mny = RNG;
+    
+    for(int i = 0;i < N;i++)
+    {
+        scanf("%f %f", &s[i].x, &s[i].y);
+        s[i].id = i;
+        ssf[i] = s[i];
+        if(mxx < s[i].x)
+            mxx = s[i].x;
+        if(mnx > s[i].x)
+            mnx = s[i].x;
+        if(mxy < s[i].y)
+            mxy = s[i].y;
+        if(mny > s[i].y)
+            mny = s[i].y;
+    }
+    
+    float crat = sqrt((mxx-mnx)/(mxy-mny));//cluster ratio
+    int Kx, Ky;
+    
+    Kx = sqrt(crat*K);
+    Ky = K/Kx;
+    
+    if(Kx == 0)
+    {
+        Kx++;
+        while(Kx*Ky > K)
+            Ky--;
+    }
+    if(Ky == 0)
+    {
+        Ky++;
+        while(Kx*Ky > K)
+            Kx--;
+    }
+    
+    sort(s, s + N, sortx);
+    int mxd = (mxx-mnx)/Kx, d = 0, clcur = 0;
+    clusx[0].push_back(s[0]);
+    for(int i = 1;i < N;i++)
+    {
+        d += s[i].x - s[i-1].x;
+        if(d > mxd)
+        {
+            d = 0;
+            clcur++;
+        }
+        clusx[clcur].push_back(s[i]);
+    }
+    
+    int clcur2 = -1;
+    for(int j = 0;j <= clcur;j++)
+    {
+        clcur2++;
+        d = 0;
+        sort(clusx[j].begin(), clusx[j].end(), sorty);
+        mxd = clusx[j][clusx[j].size()-1].y - clusx[j][0].y;
+        
+        for(int i = 0;i < clusx[j].size();i++)
+        {
+            d += clusx[j][i].y - clusx[j][i-1].y;
+            if(d > mxd)
+            {
+                d = 0;
+                clcur2++;
+            }
+            clus[clcur2].push_back(clusx[j][i]);
+        }
+    }
+    
+    int i;
+    for(i = 0;i <= clcur2;i++)
+    {
+        float x = 0, y = 0;
+        for(int j = 0;j < clus[i].size();j++)
+        {
+            x += clus[i][j].x;
+            y += clus[i][j].y;
+        }
+        x /= clus[i].size();
+        y /= clus[i].size();
+        dg[i].x = x;
+        dg[i].y = y;
+    }
+    
+    srand(time(NULL));
+    for(;i < K;i++)
+    {
+        dg[i].x = (rand()%(mxx-mnx)) + mnx;
+        dg[i].y = (rand()%(mxy-mny)) + mny;
+    }
+    
+    for(int i = 0;i < K;i++)
+        printf("%.6f %.6f\n", dg[i].x, dg[i].y);
+    
+    //printf("%d %d", clcur, clcur2);
+    
+    return 0;
+}

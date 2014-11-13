@@ -1,0 +1,199 @@
+#include <cstdio>
+#include <set>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int N, M;
+
+const int maxn = 1000005;
+
+int arb_valori[maxn * 4], val[maxn];
+int a[maxn], stive[maxn], muchie[maxn];
+
+inline int max(int a, int b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+inline int min(int a, int b) {
+	if (a < b)
+		return a;
+	return b;
+}
+
+void update_valori(int nod, int left, int right, int &poz, int &value) {
+	if (left == right) {
+		arb_valori[nod] = value;
+		return;
+	}
+
+	int mid = (left + right) / 2;
+	if (poz <= mid)
+		update_valori(nod * 2, left, mid, poz, value);
+	else
+		update_valori(nod * 2 + 1, mid + 1, right, poz, value);
+	arb_valori[nod] = max(arb_valori[nod * 2], arb_valori[nod * 2 + 1]);
+}
+
+int unu = 1;
+int query_valori(int nod, int left, int right, int &start, int &finish, int &value, bool swaped = false) {
+	if (finish < left || right < start)
+		return 0;
+
+	if (left <= start && finish <= right)
+		if (arb_valori[nod] < value)
+			return 0;
+	if (left == right)
+		return left;
+	
+	int mid = (left + right) / 2;
+	int answer;
+	if (swaped == false)
+		answer = query_valori(nod * 2 + 1, mid + 1, right, start, finish, value);
+	else
+		answer = query_valori(nod * 2, left, mid, start, finish, value);
+
+	if (answer)
+		return answer;
+	if (swaped == false)
+		return query_valori(nod * 2, left, mid, start, finish, value);
+	return query_valori(nod * 2 + 1, mid + 1, right, start, finish, value);
+}
+
+int arb_muchii[maxn * 4][2];
+
+void update_muchii(int nod, int left, int right, int &poz, int &value) {
+	if (left == right) {
+		arb_muchii[nod][0] = left;
+		arb_muchii[nod][1] = 1;
+		return;
+	}
+
+	int mid = (left + right) / 2;
+	if (poz <= mid)
+		update_muchii(nod * 2, left, mid, poz, value);
+	else
+		update_muchii(nod * 2 + 1, mid + 1, right, poz, value);
+	if (muchie[arb_muchii[nod * 2][0]] < muchie[arb_muchii[nod * 2 + 1][0]]) {
+		arb_muchii[nod][0] = arb_muchii[nod * 2][0];
+		arb_muchii[nod][1] = arb_muchii[nod * 2][1];
+	}
+	else {
+		arb_muchii[nod][0] = arb_muchii[nod * 2 + 1][0];
+		arb_muchii[nod][1] = arb_muchii[nod * 2 + 1][1];
+	}
+
+	if (muchie[arb_muchii[nod * 2][0]] == muchie[arb_muchii[nod * 2 + 1][0]])
+		arb_muchii[nod][1] += arb_muchii[nod * 2][1];
+}
+
+int query_muchii(int nod, int left, int right, int &start, int &finish, int &value) {
+	if (finish < left || right < start)
+		return 0;
+	if (left <= start && finish <= right) 
+		if (a[arb_muchii[nod][0]] <= value)
+			return arb_muchii[nod][1];
+		else {
+			int mid = (left + right) / 2;
+			int answer = query_muchii(nod * 2, left, mid, start, finish, value);
+			if (answer == arb_muchii[nod * 2][1])
+				return answer + query_muchii(nod * 2 + 1, mid + 1, right, start, finish, value);
+			return answer;
+		}
+	
+	int mid = (left + right) / 2;
+	int answer = query_muchii(nod * 2, left, mid, start, finish, value);
+	if (a[arb_muchii[nod * 2][0]] > value)
+		return answer;
+	return answer + query_muchii(nod * 2 + 1, mid + 1, right, start, finish, value);
+}
+
+inline void update(multiset<int> &answer, int poz, int value) {
+	update_valori(1, 1, N, poz, value);
+	answer.erase(answer.find(val[poz]));
+	val[poz] = value;
+	answer.insert(value);
+}
+
+int main() {
+	//freopen("submarines.in", "r", stdin);
+	//freopen("submarines.out", "w", stdout);
+
+	scanf("%d%d", &N, &M);
+	for (int i = 1; i <= N; ++i)
+		scanf("%d", &a[i]);
+
+	reverse(a + 1, a + N + 1);
+	multiset<int> answer;
+	int p = 1, q = 0;
+	for (int i = 1; i <= N; ++i) {
+		while (p <= q && a[stive[q]] <= a[i]) {
+			--q;
+		}
+
+		if (p <= q) {
+			++val[stive[q]];
+			fprintf(stderr, "%d -> %d\n", i, stive[q]);
+			muchie[i] = stive[q];
+		}
+
+		stive[++q] = i;
+	}
+
+	for (int i = 1; i <= N; ++i)
+		answer.insert(val[i]);
+	
+	for (int i = 0; i < M; ++i) {
+		int x; scanf("%d", &x);
+
+		x = N - x;
+		if (x == N) {
+			printf("%d\n", *answer.rbegin());
+			continue;
+		}
+	
+		if (a[x] > a[x + 1]) {
+			update(answer, x + 1, val[x] + val[x + 1] - 1);
+			update(answer, x, 0);
+			muchie[x + 1] = muchie[x];
+			--x;
+			muchie[x] = query_valori(1, 1, N, unu, x, a[x + 1]);
+			++x;
+			if (muchie[x] > 0)
+				update(answer, muchie[x], val[muchie[x]] + 1);
+			
+			update_muchii(1, 1, N, x, muchie[x]);
+			++x;
+			update_muchii(1, 1, N, x, muchie[x + 1]);
+			--x;
+			swap(a[x], a[x + 1]);
+			
+			continue;
+		}
+		
+		if (muchie[x] > 0)
+			update(answer, muchie[x], val[muchie[x]] - 1);
+
+		swap(muchie[x], muchie[x + 1]);
+		muchie[x + 1] = x;
+		update_muchii(1, 1, N, x, muchie[x]);
+		++x;
+		update_muchii(1, 1, N, x, muchie[x + 1]);
+		--x;
+
+		int many = 0;
+		if (x + 2 < N) {
+			++x; ++x;
+			int poz = query_valori(1, 1, N, x, N, a[x], true) - 1;
+			many = query_muchii(1, 1, N, x, poz, a[x]);
+			--x; --x;
+		}
+
+		update(answer, x, val[x + 1] - many + 1);
+		update(answer, x + 1, many);
+		swap(a[x], a[x + 1]);
+	}
+}

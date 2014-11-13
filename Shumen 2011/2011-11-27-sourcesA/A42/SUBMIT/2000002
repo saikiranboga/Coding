@@ -1,0 +1,138 @@
+#include <cstdio>
+
+using namespace std;
+
+const int maxN = 1010;
+const int maxP = 35;
+const int bucket = 30;
+
+int mat[maxN][maxN];
+int vals[maxN][maxP];
+int p2[31], currentState[maxP];
+int prepTotal[1 << 15], prepLeft[1 << 15], prepRight[1 << 15];
+int N, M, nrP, Q, a, b;
+int rez[maxN][maxN];
+
+inline void preprocess() {
+	int curr[20], i;
+	for (int mask = 0; mask < (1 << 15); mask++) {
+		//i want the biggest continuous sequence of 1's as a whole, the biggest sequence at left and at right
+		for (i = 0; i < 15; i++)
+			if (mask & (1 << i))
+				curr[i] = 1;
+			else
+				curr[i] = 0;
+
+		for (i = 0; i < 15 && curr[i] == 1; i++, prepRight[mask]++);
+		for (i = 14; i >= 0 && curr[i] == 1; i--, prepLeft[mask]++);
+		
+		int cons = 0;
+		for (i = 0; i < 15; i++) {
+			if (curr[i] == 1)
+				cons++;
+			else {
+				if (cons > prepTotal[mask])
+					prepTotal[mask] = cons;
+				cons = 0;
+			}
+		}
+		if (cons > prepTotal[mask])
+			prepTotal[mask] = cons;
+	}
+}
+
+inline void updateRez(int &val, int l, int c) {
+	if (l * c > val)
+		val = l * c;
+}
+
+inline int max(int a, int b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+int main() {
+	int i, j, k;
+//	freopen("data.in", "r", stdin);
+//	freopen("data.out", "w", stdout);
+
+	scanf("%d%d", &N, &M);
+
+	for (i = 0; i < 32; i++)
+		p2[i] = (1 << i);
+
+	for (i = 0; i < N; i++) {
+		int curr = -1;
+		for (j = 0; j < M; j++) {
+			scanf("%d", &mat[i][j]);
+			mat[i][j] = 1 - mat[i][j];
+			if (j % 30 == 0)
+				curr++;
+			vals[i][curr] += mat[i][j] * p2[j % bucket];
+		}
+	}
+
+	nrP = M / 30;
+
+	preprocess();
+
+//	fprintf(stderr, "check %d %d %d\n", prepTotal[32767], prepLeft[32767], prepRight[32767]);
+
+	for (i = 0; i < N; i++) {
+		for (j = 0; j <= nrP; j++)
+			currentState[j] = vals[i][j];
+		for (j = i; j >= 0; j--) {
+			//I'll do the solution between j and i EXACTLY, and update in the rez matrix with the maximums
+			for (k = 0; k <= nrP; k++)
+				currentState[k] &= vals[j][k];
+			
+			int full = 0;
+			for (k = 0; k <= nrP; k++) {
+				//now I have to get the maximum subsequence of length 1, using the data I've preprocessed
+				int p2 = currentState[k] & ((1 << 15) - 1);
+				int p1 = currentState[k] >> 15;
+//				fprintf(stderr, "%d   %d %d    %d %d\n", currentState[k], p1, prepTotal[p1], p2, prepTotal[p2]);
+				if (prepTotal[p1] + prepTotal[p2] == 30) {
+					full += 30;
+					rez[j][i] = max(rez[j][i], full * (i - j + 1));
+					continue;
+				}
+
+				if (prepTotal[p2] == 15)
+					updateRez(rez[j][i], full + 15 + prepRight[p1], i - j + 1);
+				else
+					updateRez(rez[j][i], full + prepRight[p2], i - j + 1);
+
+				updateRez(rez[j][i], prepTotal[p1], i - j + 1);
+				updateRez(rez[j][i], prepTotal[p2], i - j + 1);
+				updateRez(rez[j][i], prepLeft[p2] + prepRight[p1], i - j + 1);
+
+				if (prepTotal[p1] == 15)
+					full = 15 + prepLeft[p2];
+				else
+					full = prepLeft[p1];
+
+			}
+
+//			i = N + 1;
+		}
+	}
+
+	for (i = 0; i < N; i++)
+		for (j = i; j < M; j++) 
+			rez[i][j] = max(rez[i][j], rez[i][j - 1]);
+		
+	for (i = N - 1; i >= 0; i--)
+		for (j = 0; j < M; j++)
+			rez[i][j] = max(rez[i][j], rez[i + 1][j]);
+	
+	scanf("%d", &Q);
+	for (i = 1; i <= Q; i++) {
+		scanf("%d%d", &a, &b);
+		printf("%d\n", rez[a - 1][b - 1]);
+	}
+
+	return 0;
+}
+

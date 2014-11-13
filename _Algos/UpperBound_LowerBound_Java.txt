@@ -1,0 +1,39 @@
+public static int lower_bound(Comparable[] arr, Comparable key) {
+        int len = arr.length;
+        int lo = 0;
+        int hi = len-1;
+        int mid = (lo + hi)/2;
+        while (true) {
+            int cmp = arr[mid].compareTo(key);
+            if (cmp == 0 || cmp > 0) {
+                hi = mid-1;
+                if (hi < lo)
+                    return mid;
+            } else {
+                lo = mid+1;
+                if (hi < lo)
+                    return mid<len-1?mid+1:-1;
+            }
+            mid = (lo + hi)/2;
+        }
+    }
+
+    public static int upper_bound(Comparable[] arr, Comparable key) {
+        int len = arr.length;
+        int lo = 0;
+        int hi = len-1;
+        int mid = (lo + hi)/2;
+        while (true) {
+            int cmp = arr[mid].compareTo(key);
+            if (cmp == 0 || cmp < 0) {
+                lo = mid+1;
+                if (hi < lo)
+                    return mid<len-1?mid+1:-1;
+            } else {
+                hi = mid-1;
+                if (hi < lo)
+                    return mid;
+            }
+            mid = (lo + hi)/2;
+        }
+    }

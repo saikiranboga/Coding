@@ -1,0 +1,147 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+const int N_MAX = 1 << 10;
+
+class Point
+{
+public:
+    int x, y;
+    
+    Point()
+    {
+        this -> x = 0;
+        this -> y = 0;
+    }
+    
+    Point (int _x, int _y)
+    {
+        this -> x = _x;
+        this -> y = _y;
+    }
+    
+    void readCords()
+    {
+        scanf("%d%d", &this -> x, &this -> y);
+    }
+    
+    bool operator >(const Point &A) const
+    {
+        if (this -> x > A.x) return true;
+        if (this -> x == A.x && this -> y > A.y) return true;
+        
+        return false;
+    }
+    
+    bool operator ==(const Point &A) const
+    {
+        return this -> x == A.x && this -> y == A.y;
+    }
+};
+
+class Vector : Point
+{
+public:
+    void createVector(Point A, Point B)
+    {
+        this -> x = B.x - A.x;
+        this -> y = B.y - A.y;
+    }
+    
+    int crossProduct(Vector V)
+    {
+        return this -> x * V.y - this -> y * V.x;
+    }
+};
+
+int n, k;
+Point points[N_MAX];
+
+void input()
+{
+    scanf("%d%d", &n, &k);
+    
+    for (int i = 0; i < n; i++)
+        points[i].readCords();
+}
+
+void showPoints()
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d %d\n", points[i].x, points[i].y);
+    }
+}
+
+bool cmp(Point A, Point B)
+{
+    Vector V1, V2;
+    
+    V1.createVector(points[0], A);
+    V2.createVector(points[0], B);
+    
+    return V1.crossProduct(V2) < 0;
+}
+
+void GrahamScan()
+{
+    for (int i = 1; i < n; i++)
+        if (points[0] > points[i])
+            swap(points[0], points[i]);
+    
+    //printf("%d %d\n", points[0].x, points[0].y);
+    
+    sort(points + 1, points + n, cmp);
+    //showPoints();
+    
+    vector <Point> convexHull;
+    
+    convexHull.push_back(points[0]);
+    convexHull.push_back(points[1]);
+    
+    for (int i = 2; i < n; i++)
+    {
+        Vector V1, V2;
+        
+        V1.createVector(convexHull[convexHull.size() - 2], convexHull[convexHull.size() - 1]);
+        V2.createVector(convexHull[convexHull.size() - 2], points[i]);
+        
+        int crossProduct = V1.crossProduct(V2);
+        
+        while (crossProduct > 0)
+        {
+            convexHull.pop_back();
+            V1.createVector(convexHull[convexHull.size() - 2], convexHull[convexHull.size() - 1]);
+            V2.createVector(convexHull[convexHull.size() - 2], points[i]);
+            crossProduct = V1.crossProduct(V2);
+        }
+        convexHull.push_back(points[i]);
+    }
+    
+    /*for (int i = 0; i < convexHull.size(); i++)
+    {
+        printf("%d %d\n", convexHull[i].x, convexHull[i].y);
+    }*/
+    
+    for (int i = 0; i < k ; i++)
+    {
+        Point A = convexHull[i % k];
+        Point B = convexHull[convexHull.size() / 2 + i % k];
+        
+        double x = (B.x - A.x) / 2.0;
+        double y = (B.y - A.y) / 2.0;
+        
+        printf("%.6lf %.6lf\n", x, y);
+    }
+}
+
+int main()
+{
+    input();
+    GrahamScan();
+    
+    return 0;
+}

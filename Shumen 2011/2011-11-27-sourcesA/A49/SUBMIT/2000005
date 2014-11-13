@@ -1,0 +1,55 @@
+program aaa;
+{$MODE OBJFPC}
+          {$O-}
+type
+  tvect = record
+    x, y: longint;
+  end;
+
+var
+  q, t, n, m, i, j, k, p, min, x, y: longint;
+  a, d: array [1..1000, 1..1000] of longint;
+
+function mn(x, y: longint): longint;
+begin
+  if x>y then result := y else result := x;
+end;
+
+begin
+{  assign(input, 'input.txt');
+  reset(input);
+  assign(output, 'output.txt');
+  rewrite(output);}
+  read(n, m);
+  for i := 1 to n do
+    for j := 1 to m do
+      read(a[i, j]);
+  for i := n downto 1 do
+    for j := m downto 1 do
+     if a[i, j]<>1 then d[i, j] := d[i+1, j]+1;
+
+  read(q);
+  for t := 1 to q do begin
+    read(x, y);
+    p := 0;
+    for i := x to y do
+      for j := 1 to m do begin
+        k := j;
+        min := mn(d[i, k], y-i+1);
+        while (a[i, k]=0)and(k<=m) do begin
+          if (mn(d[i, k], y-i+1)<min)or(min=0) then begin
+
+            min := mn(d[i, k], y-i+1);
+          end;
+          if (min*(k-j+1)>p) then
+              p := min*(k-j+1);
+          inc(k);
+        end;
+        dec(k);
+        if (min*(k-j+1)>p) then
+        p := min*(k-j+1);
+      end;
+     writeln(p);
+  end;
+end.
+

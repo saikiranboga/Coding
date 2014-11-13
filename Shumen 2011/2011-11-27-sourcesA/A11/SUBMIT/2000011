@@ -1,0 +1,121 @@
+#include<cstdio>
+#include<vector>
+#include<ctime>
+using namespace std;
+
+struct point
+{
+    double x,y;
+};
+double sqdist(point a,point b)
+{ return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+}
+struct llist
+{
+    point a;
+    llist* next;
+};
+struct group
+{
+    llist* fl;
+    int size;
+    point sum;
+    double sqdistsum;
+    point mean;
+    void upmean()
+    {
+        mean.x=sum.x/size;
+        mean.y=sum.y/size;
+    }
+    void add(point a)
+    {
+        if(fl==NULL)
+        {
+            fl=new llist;
+            fl->a=a;
+        }else{
+        llist *p=new llist;
+        p->a=a;
+        p->next=fl;
+        fl=p;}
+        sum.x+=a.x;sum.y+=a.y;size++;
+
+    }
+    void calcsqdist()
+    {
+        llist *p;
+        p=fl;
+        while(p!=NULL)
+        {
+            sqdistsum+=sqdist(mean,p->a);
+            p=p->next;
+        }
+    }
+};
+
+vector <group> v;
+
+int main()
+{
+    int n,k;
+    scanf("%d%d",&n,&k);
+    point t;
+    v.resize(200);
+   //printf("%d",n);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%lf%lf",&t.x,&t.y);
+        v[0].add(t);
+    }
+    //printf("out");
+    v[0].upmean();
+    v[0].calcsqdist();
+    int r=1,num=1,gsize=(n/k)+((n%k)!=0);
+    llist *p;
+    p=v[0].fl;
+    while(p!=NULL)
+    {
+        v[r].add(p->a);
+        v[r].upmean();
+        if(num==gsize) r++;
+        num++;
+        p=p->next;
+    }
+    r=k;
+    for(int i=1;i<=r;i++) v[i].calcsqdist();
+    while((double)clock()/(double)CLOCKS_PER_SEC<1.1)
+    {
+        int testy=1;
+        for(int i=2;i<=r;i++)
+        if(v[i].sqdistsum>v[testy].sqdistsum) testy=i;
+        p=v[testy].fl;
+        llist **move;
+        move=&p;
+        while(p!=NULL)
+        {
+            if(sqdist(p->a,v[testy].mean)>sqdist((*move)->a,v[testy].mean)) move=&p;
+            p=p->next;
+        }
+        if(*move==NULL||move==NULL) break;
+        int home=1;
+        printf("%d\n",(*move)->a);
+        for(int i=2;i<=r;i++)
+        if(sqdist(v[i].mean,(*move)->a)<sqdist(v[home].mean,(*move)->a)) home=i;
+
+        v[home].add((*move)->a);
+        p=*move;
+        *move=p->next;
+
+        v[testy].size--;
+        v[testy].sum.x-=p->a.x;
+        v[testy].sum.y-=p->a.y;
+        delete p;
+        v[testy].upmean();
+        v[home].upmean();
+        v[testy].calcsqdist();
+        v[home].calcsqdist();
+    }
+    for(int i=1;i<=r;i++)
+    printf("%.6lf %.6lf\n",v[i].mean.x,v[i].mean.y);
+   // printf("%lf\n",(double)clock()/(double)CLOCKS_PER_SEC);
+}
